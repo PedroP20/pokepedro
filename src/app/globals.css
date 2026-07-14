@@ -1,0 +1,45 @@
+/* 1º OBRIGATÓRIO: Importação de fontes externas sempre no topo absoluto! */
+@import url('https://fonts.cdnfonts.com/css/pokemon-solid');
+/* 2º OBRIGATÓRIO: Importação do Tailwind v4 logo em seguida */
+@import "tailwindcss";
+
+@theme {
+  /* Mapeamento estrito da Tipografia do PokéPedro */
+  --font-logo: 'Pokemon Solid', sans-serif;
+  --font-navbar: var(--font-montserrat), sans-serif;
+  --font-heading: var(--font-fredoka), sans-serif;
+  --font-card: var(--font-montserrat), sans-serif;
+  --font-body: var(--font-nunito), sans-serif;
+  --font-button: var(--font-montserrat), sans-serif;
+  --font-stats: var(--font-orbitron), sans-serif;
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 96.1%;
+    --foreground: 0 0% 11.8%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: #D9D9D9;
+  }
+  body {
+    background-color: #F5F5F5;
+    color: #1E1E1E;
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Garante que todos os H1, H2, H3, H4 usem Fredoka Bold automaticamente */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 700;
+  }
+}
+
+::selection {
+  background-color: #EE1515;
+  color: #FFFFFF;
+}
