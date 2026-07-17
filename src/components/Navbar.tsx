@@ -18,7 +18,11 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 w-full border-b border-[#D9D9D9] bg-[#FFFFFF]/90 backdrop-blur-md shadow-sm font-navbar font-semibold">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* LOGO POKÉMON SOLID */}
-        <Link href="/" className="flex items-center gap-2 group shrink-0" onClick={closeMenu}>
+        <Link
+          href="/"
+          className="flex items-center gap-2 group shrink-0"
+          onClick={closeMenu}
+        >
           <span className="text-2xl sm:text-3xl font-logo tracking-normal text-[#1B4F9C] drop-shadow-sm group-hover:scale-105 transition-transform pt-1">
             Poké<span className="text-[#EE1515]">Pedro</span>
           </span>
@@ -72,6 +76,18 @@ export default function Navbar() {
             <span>Academia</span>
           </Link>
 
+          <Link
+            href="/review"
+            className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${
+              pathname === "/review"
+                ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold"
+                : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"
+            }`}
+          >
+            <span>📚</span>
+            <span>Revisão</span>
+          </Link>
+
           {/* Botão Jogar Agora */}
           <Link
             href="/game"
@@ -107,7 +123,9 @@ export default function Navbar() {
                 href="/"
                 onClick={closeMenu}
                 className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${
-                  pathname === "/" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
+                  pathname === "/"
+                    ? "bg-[#EE1515] text-[#FFFFFF]"
+                    : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
                 }`}
               >
                 <span>🏠</span>
@@ -118,7 +136,9 @@ export default function Navbar() {
                 href="/pokedex"
                 onClick={closeMenu}
                 className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${
-                  pathname === "/pokedex" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
+                  pathname === "/pokedex"
+                    ? "bg-[#EE1515] text-[#FFFFFF]"
+                    : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
                 }`}
               >
                 <PokedexIcon className="w-5 h-5" />
@@ -130,11 +150,26 @@ export default function Navbar() {
                 href="/academy"
                 onClick={closeMenu}
                 className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${
-                  pathname === "/academy" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
+                  pathname === "/academy"
+                    ? "bg-[#EE1515] text-[#FFFFFF]"
+                    : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
                 }`}
               >
                 <span>🎓</span>
                 <span>Academia</span>
+              </Link>
+
+              <Link
+                href="/review"
+                onClick={closeMenu}
+                className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${
+                  pathname === "/review"
+                    ? "bg-[#EE1515] text-[#FFFFFF]"
+                    : "text-[#1E1E1E] hover:bg-[#F5F5F5]"
+                }`}
+              >
+                <span>🎓</span>
+                <span>Revisão</span>
               </Link>
 
               <Link

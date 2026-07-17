@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 
 interface PokemonDisplayProps {
+  id?: number;
   imageUrl: string;
   name: string;
   isRevealed: boolean;
