@@ -32,6 +32,12 @@ const orbitron = Orbitron({
 export const metadata: Metadata = {
   title: "PokéPedro - Aprenda a Pokédex jogando!",
   description: "Plataforma Web para Aprendizado e Memorização de Pokémon.",
+  manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
