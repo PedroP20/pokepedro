@@ -1,14 +1,16 @@
 // src/app/review/page.tsx
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLearningStore } from "@/store/useLearningStore";
-import { REGION_RANGES, Region } from "@/types/pokemon";
+import { Region, REGION_RANGES } from "@/types/pokemon";
 import Image from "next/image";
 import Link from "next/link";
 
-const REGION_FILTERS: { id: Region | "ALL"; name: string }[] = [
-  { id: "ALL", name: "🌟 Todos" },
+type ReviewTab = 'MISSED' | 'STRUGGLED' | 'DIFFICULT';
+
+const REGIONS_LIST = [
+  { id: "ALL", name: "Todos" },
   { id: "KANTO", name: "1ª Gen (Kanto)" },
   { id: "JOHTO", name: "2ª Gen (Johto)" },
   { id: "HOENN", name: "3ª Gen (Hoenn)" },
@@ -21,136 +23,172 @@ const REGION_FILTERS: { id: Region | "ALL"; name: string }[] = [
 ];
 
 export default function ReviewPage() {
-  const { getMissedPokemon, getStruggledPokemon } = useLearningStore();
-  const [activeTab, setActiveTab] = useState<'MISSED' | 'STRUGGLED'>('MISSED');
+  const [mounted, setMounted] = useState(false);
+  const { getMissedPokemon, getStruggledPokemon, getDifficultPokemon, toggleDifficultyMark } = useLearningStore();
+
+  const [activeTab, setActiveTab] = useState<ReviewTab>('MISSED');
+  const [selectedRegion, setSelectedRegion] = useState<Region>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedRegion, setSelectedRegion] = useState<Region | "ALL">("ALL");
 
-  const baseList = activeTab === 'MISSED' ? getMissedPokemon() : getStruggledPokemon();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, []);
 
-  // Filtra por ID de Região e por Busca de ID
-  const filteredList = useMemo(() => {
-    return baseList.filter((item) => {
-      // Filtro de Busca (por ID)
-      const matchesSearch = String(item.id).includes(searchQuery.trim());
-      
-      // Filtro por Região
-      let matchesRegion = true;
-      if (selectedRegion !== "ALL") {
-        const [min, max] = REGION_RANGES[selectedRegion];
-        matchesRegion = item.id >= min && item.id <= max;
+  // 1. Coleta os dados de forma otimizada
+  const missed = useMemo(() => getMissedPokemon(), [getMissedPokemon]);
+  const struggled = useMemo(() => getStruggledPokemon(), [getStruggledPokemon]);
+  const difficult = useMemo(() => getDifficultPokemon ? getDifficultPokemon() : [], [getDifficultPokemon]);
+
+  if (!mounted) return null;
+
+  // 2. Define qual lista será filtrada com base na Aba ativa
+  const currentData = activeTab === 'MISSED' ? missed : activeTab === 'STRUGGLED' ? struggled : difficult;
+
+  // 3. Aplica os filtros (Busca e Região)
+  const filteredData = currentData.filter((stat) => {
+    // Filtro de Busca
+    if (searchQuery && !String(stat.id).includes(searchQuery)) {
+      return false;
+    }
+    // Filtro de Região
+    if (selectedRegion !== "ALL") {
+      const range = REGION_RANGES[selectedRegion as Region];
+      if (range && (stat.id < range[0] || stat.id > range[1])) {
+        return false;
       }
-
-      return matchesSearch && matchesRegion;
-    });
-  }, [baseList, searchQuery, selectedRegion]);
+    }
+    return true;
+  });
 
   return (
-    <main className="flex-1 flex flex-col items-center p-4 sm:p-8 max-w-6xl mx-auto w-full space-y-6 font-navbar animate-fade-in">
+    <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-8 max-w-6xl mx-auto w-full font-body">
+      
+      {/* BOTÃO DE VOLTAR AO INÍCIO */}
+      <div className="w-full flex justify-start mb-4">
+        <Link href="/" className="px-4 py-2 bg-white text-[#1B4F9C] font-button font-black text-xs sm:text-sm rounded-xl border-2 border-[#1B4F9C]/10 shadow-sm hover:bg-blue-50 transition flex items-center gap-2 w-fit">
+          <span className="text-xl leading-none -mt-0.5">⬅</span> Voltar ao Início
+        </Link>
+      </div>
+
       {/* CABEÇALHO */}
-      <div className="text-center space-y-1 w-full border-b border-[#D9D9D9] pb-4">
-        <span className="px-3 py-1 rounded-full bg-[#1B4F9C]/10 text-[#1B4F9C] font-button font-black text-xs uppercase tracking-widest">
-          🧠 Memória Ativa
+      <div className="text-center space-y-2 mb-8">
+        <span className="inline-block px-3 py-1 rounded-full bg-pink-100 text-pink-600 font-button font-black text-[10px] uppercase tracking-widest shadow-sm">
+          🧠 MEMÓRIA ATIVA
         </span>
-        <h1 className="text-3xl sm:text-4xl font-black text-[#1E1E1E] font-heading flex items-center justify-center gap-2">
+        <h1 className="text-4xl font-heading font-black text-[#1E1E1E] flex items-center justify-center gap-3">
           <span>📚</span> Central de Revisão
         </h1>
-        <p className="text-xs sm:text-sm text-[#1E1E1E]/70 font-body">
-          Acompanhe seus erros e refine seu conhecimento. Use os filtros abaixo para organizar seus estudos!
+        <p className="text-sm text-gray-500 font-medium">
+          Acompanhe seus erros, lide com suas dificuldades e refine seu conhecimento. Use os filtros abaixo!
         </p>
       </div>
 
-      {/* ABAS E BARRA DE BUSCA */}
-      <div className="w-full flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-3xl border border-[#D9D9D9] shadow-sm">
-        <div className="flex bg-[#F5F5F5] p-1 rounded-2xl border border-[#D9D9D9] w-full md:w-auto">
-          <button
-            onClick={() => setActiveTab('MISSED')}
-            className={`flex-1 md:flex-none px-5 py-2 rounded-xl text-xs sm:text-sm font-black transition ${
-              activeTab === 'MISSED' ? 'bg-[#EE1515] text-white shadow' : 'text-[#1E1E1E]/60 hover:text-[#1E1E1E]'
-            }`}
+      {/* PAINEL DE CONTROLE (Abas e Busca) */}
+      <div className="w-full bg-white border border-gray-200 rounded-3xl p-2 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 mb-6">
+        
+        {/* ABAS */}
+        <div className="flex gap-2 w-full sm:w-auto overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+          <button 
+            onClick={() => setActiveTab('MISSED')} 
+            className={`shrink-0 px-4 py-2.5 rounded-2xl font-button font-bold text-sm transition flex items-center gap-2 ${activeTab === 'MISSED' ? 'bg-[#EE1515] text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
           >
-            ❌ Erros Frequentes ({getMissedPokemon().length})
+            <span>✕</span> Erros Frequentes ({missed.length})
           </button>
-          <button
-            onClick={() => setActiveTab('STRUGGLED')}
-            className={`flex-1 md:flex-none px-5 py-2 rounded-xl text-xs sm:text-sm font-black transition ${
-              activeTab === 'STRUGGLED' ? 'bg-[#FFCB05] text-[#1B4F9C] shadow' : 'text-[#1E1E1E]/60 hover:text-[#1E1E1E]'
-            }`}
+          <button 
+            onClick={() => setActiveTab('STRUGGLED')} 
+            className={`shrink-0 px-4 py-2.5 rounded-2xl font-button font-bold text-sm transition flex items-center gap-2 ${activeTab === 'STRUGGLED' ? 'bg-gray-700 text-white shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
           >
-            ⏱️ Lentos ({getStruggledPokemon().length})
+            <span>⏱️</span> Lentos ({struggled.length})
+          </button>
+          
+          {/* ⭐ NOVA ABA DE DIFICULDADE */}
+          <button 
+            onClick={() => setActiveTab('DIFFICULT')} 
+            className={`shrink-0 px-4 py-2.5 rounded-2xl font-button font-bold text-sm transition flex items-center gap-2 ${activeTab === 'DIFFICULT' ? 'bg-[#FFCB05] text-[#1B4F9C] shadow-md' : 'text-gray-500 hover:bg-gray-100'}`}
+          >
+            <span>⚠️</span> Dificuldade ({difficult.length})
           </button>
         </div>
 
-        {/* Campo de Busca por ID */}
-        <input
-          type="text"
-          placeholder="🔍 Buscar por Nº na Pokédex (ex: 25, 150)..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full md:w-72 px-4 py-2 rounded-xl border border-[#D9D9D9] bg-[#F5F5F5] text-sm font-body focus:outline-none focus:border-[#1B4F9C] focus:bg-white"
-        />
+        {/* BARRA DE BUSCA */}
+        <div className="relative w-full sm:w-auto">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">🔍</span>
+          <input 
+            type="text" 
+            placeholder="Buscar por Nº (ex: 25, 150)" 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-64 pl-9 pr-4 py-2.5 rounded-2xl bg-gray-50 border border-gray-200 text-sm font-body focus:outline-none focus:ring-2 focus:ring-[#1B4F9C]/30 transition"
+          />
+        </div>
       </div>
 
-      {/* FILTROS POR REGIÃO / GERAÇÃO */}
-      <div className="w-full flex items-center gap-1.5 overflow-x-auto pb-2 custom-scrollbar">
-        {REGION_FILTERS.map((reg) => (
-          <button
-            key={reg.id}
-            onClick={() => setSelectedRegion(reg.id)}
-            className={`px-3 py-1.5 rounded-xl text-xs font-button font-bold whitespace-nowrap transition border ${
-              selectedRegion === reg.id
-                ? "bg-[#1B4F9C] border-[#1B4F9C] text-white shadow-sm"
-                : "bg-white border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-[#F5F5F5]"
-            }`}
+      {/* FILTRO DE REGIÃO (Estilo Scroll) */}
+      <div className="w-full flex items-center gap-2 overflow-x-auto custom-scrollbar pb-4 mb-6 snap-x">
+        {REGIONS_LIST.map((reg) => (
+          <button 
+            key={reg.id} 
+            onClick={() => setSelectedRegion(reg.id as Region)}
+            className={`shrink-0 snap-start px-4 py-2 rounded-xl text-xs sm:text-sm font-button font-bold transition shadow-sm border ${selectedRegion === reg.id ? 'bg-[#1B4F9C] text-white border-[#1B4F9C]' : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'}`}
           >
+            {selectedRegion === reg.id && <span className="text-[#FFCB05] mr-1.5">🌟</span>}
             {reg.name}
           </button>
         ))}
       </div>
 
-      {/* GRID DE RESULTADOS LIMPO E COMPACTO */}
-      {filteredList.length === 0 ? (
-        <div className="w-full text-center p-12 bg-white rounded-3xl border border-[#D9D9D9] shadow-sm space-y-3">
-          <span className="text-5xl inline-block animate-bounce">🎉</span>
-          <h3 className="text-lg font-black text-[#1E1E1E] font-heading">Nenhum Pokémon Encontrado!</h3>
-          <p className="text-xs text-[#1E1E1E]/60 font-body max-w-sm mx-auto">
-            Não há registros com este critério de busca ou região. Continue treinando para alimentar o algoritmo!
-          </p>
+      {/* GRID DE POKÉMON */}
+      {filteredData.length === 0 ? (
+        <div className="w-full flex flex-col items-center justify-center p-12 bg-white border border-gray-200 rounded-3xl border-dashed">
+          <span className="text-5xl mb-3 grayscale opacity-50">🍃</span>
+          <p className="text-gray-500 font-button font-bold text-center">Nenhum Pokémon encontrado nesta categoria ou região!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 w-full">
-          {filteredList.map((stat) => (
-            <div
-              key={stat.id}
-              className="flex flex-col items-center bg-white p-3 rounded-2xl shadow-sm border border-[#D9D9D9] hover:border-[#1B4F9C] transition group relative"
-            >
-              <div className="relative w-16 h-16 group-hover:scale-110 transition-transform">
-                <Image
-                  src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${stat.id}.png`}
-                  fill
-                  sizes="64px"
-                  className="object-contain"
-                  alt="Pokemon"
-                  unoptimized
-                />
-              </div>
-              <span className="text-[10px] font-stats font-bold text-[#1E1E1E]/40 mt-1">
-                #{String(stat.id).padStart(4, '0')}
-              </span>
+        <div className="w-full flex flex-wrap gap-4 justify-center sm:justify-start">
+          {filteredData.map((stat) => (
+            <div key={stat.id} className="w-[120px] sm:w-[140px] bg-white border border-gray-200 rounded-3xl p-3 flex flex-col items-center shadow-sm hover:shadow-md transition group relative">
+              
+              {/* Botão de Desmarcar Dificuldade Rápido (Aparece ao passar o mouse) */}
+              {activeTab === 'DIFFICULT' && (
+                <button 
+                  onClick={() => toggleDifficultyMark(stat.id)}
+                  className="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-sm hover:bg-red-50 text-red-500 z-10"
+                  title="Remover das Dificuldades"
+                >
+                  ✕
+                </button>
+              )}
 
-              {activeTab === 'MISSED' ? (
-                <span className="mt-1 px-2 py-0.5 bg-red-100 text-[#EE1515] font-stats font-black text-[11px] rounded-full">
-                  {stat.timesWrong} erro{stat.timesWrong > 1 ? 's' : ''}
-                </span>
-              ) : (
-                <span className="mt-1 px-2 py-0.5 bg-yellow-100 text-yellow-800 font-stats font-black text-[11px] rounded-full">
-                  ~{(stat.avgTimeMs / 1000).toFixed(1)}s
-                </span>
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 mb-2 group-hover:scale-110 transition-transform">
+                <Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${stat.id}.png`} alt={`Pokemon ${stat.id}`} fill sizes="80px" className="object-contain drop-shadow" unoptimized />
+              </div>
+              
+              <span className="text-[10px] sm:text-xs font-black text-gray-400 mb-2">#{String(stat.id).padStart(4, '0')}</span>
+              
+              {/* ETIQUETA DINÂMICA BASEADA NA ABA */}
+              {activeTab === 'MISSED' && (
+                <div className="w-full bg-red-50 text-[#EE1515] font-black text-[10px] sm:text-xs py-1.5 rounded-lg text-center border border-red-100">
+                  {stat.timesWrong} erro(s)
+                </div>
+              )}
+              {activeTab === 'STRUGGLED' && (
+                <div className="w-full bg-gray-100 text-gray-700 font-black text-[10px] sm:text-xs py-1.5 rounded-lg text-center border border-gray-200">
+                  {(stat.avgTimeMs / 1000).toFixed(1)}s média
+                </div>
+              )}
+              {activeTab === 'DIFFICULT' && (
+                <div className="w-full bg-[#FFCB05]/20 text-[#1B4F9C] font-black text-[10px] sm:text-xs py-1.5 rounded-lg text-center border border-[#FFCB05]/50">
+                  ⚠️ Difícil
+                </div>
               )}
             </div>
           ))}
         </div>
       )}
+
     </main>
   );
 }

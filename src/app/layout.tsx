@@ -1,43 +1,19 @@
+// src/app/layout.tsx
 import type { Metadata } from "next";
-import { Montserrat, Fredoka, Nunito, Orbitron } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/lib/queryProvider";
-import Navbar from "@/components/Navbar";
-
-// Configuração otimizada das fontes oficiais do projeto
-const montserrat = Montserrat({
-  subsets: ["latin"],
-  variable: "--font-montserrat",
-  weight: ["400", "500", "600", "700"],
-});
-
-const fredoka = Fredoka({
-  subsets: ["latin"],
-  variable: "--font-fredoka",
-  weight: ["700"],
-});
-
-const nunito = Nunito({
-  subsets: ["latin"],
-  variable: "--font-nunito",
-  weight: ["400", "600", "700"],
-});
-
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-  weight: ["700", "900"],
-});
+import QueryProvider from "@/providers/QueryProvider";
+import AuthWrapper from "@/components/AuthWrapper";
+import Navbar from "@/components/Navbar"; // ⭐ IMPORTAMOS A NAVBAR AQUI!
 
 export const metadata: Metadata = {
-  title: "PokéPedro - Aprenda a Pokédex jogando!",
-  description: "Plataforma Web para Aprendizado e Memorização de Pokémon.",
+  title: "PokéPedro - Mestre da Pokédex",
+  description: "Treine sua memória com silhuetas, modo digitação e repetição inteligente SRS!",
   manifest: "/manifest.json",
   icons: {
     icon: "/icon.png",
     shortcut: "/icon.png",
     apple: "/apple-touch-icon.png",
-  },
+  },  
 };
 
 export default function RootLayout({
@@ -46,14 +22,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${montserrat.variable} ${fredoka.variable} ${nunito.variable} ${orbitron.variable}`}
-    >
-      <body className="min-h-screen bg-[#F5F5F5] text-[#1E1E1E] antialiased flex flex-col font-body selection:bg-[#EE1515] selection:text-[#FFFFFF]">
+    <html lang="pt-BR">
+      <body className="antialiased bg-[#F5F5F5] text-[#1E1E1E] min-h-screen flex flex-col">
         <QueryProvider>
-          <Navbar />
-          <div className="flex-1 flex flex-col">{children}</div>
+          {/* O AuthWrapper monitora o login em todo o app! */}
+          <AuthWrapper>
+            
+            {/* ⭐ A NAVBAR GLOBAL FICA AQUI */}
+            <Navbar />
+            
+            {children}
+            
+          </AuthWrapper>
         </QueryProvider>
       </body>
     </html>
