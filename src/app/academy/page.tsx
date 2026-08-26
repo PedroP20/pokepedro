@@ -1,16 +1,45 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { POKEMON_TYPES, ATTACK_EFFECTIVENESS, calculateDefenseMultipliers, TypeInfo } from "@/lib/typeEffectiveness";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import Image from "next/image";
+import { fetchPokemonDetails, fetchPokemonMasterList } from "@/queries/pokeApi";
 
 export default function AcademyPage() {
   const [activeTab, setActiveTab] = useState<"DEFENSE" | "ATTACK">("DEFENSE");
   const [selectedAttackType, setSelectedAttackType] = useState<string>("Fogo");
   const [selectedDefenseTypes, setSelectedDefenseTypes] = useState<string[]>(["Planta", "Venenoso"]);
+  const [pokemonSearch, setPokemonSearch] = useState("");
+  const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
+
+  const { data: pokemonMasterList = [], isLoading: isPokemonListLoading } = useQuery({
+    queryKey: ["pokemonMasterList"],
+    queryFn: fetchPokemonMasterList,
+    staleTime: Infinity,
+  });
+
+  const { data: selectedPokemon, isLoading: isPokemonLoading } = useQuery({
+    queryKey: ["academyPokemon", selectedPokemonId],
+    queryFn: () => fetchPokemonDetails(selectedPokemonId!),
+    enabled: selectedPokemonId !== null,
+    staleTime: Infinity,
+  });
+
+  const pokemonSuggestions = useMemo(() => {
+    const term = pokemonSearch.trim().toLowerCase();
+    if (!term) return [];
+
+    return pokemonMasterList
+      .filter((pokemon) => pokemon.name.toLowerCase().includes(term) || String(pokemon.id) === term)
+      .slice(0, 6);
+  }, [pokemonMasterList, pokemonSearch]);
 
   const handleDefenseTypeClick = (type: string) => {
-    let newTypes = [...selectedDefenseTypes];
+    const currentTypes = selectedPokemon?.types ?? selectedDefenseTypes;
+    setSelectedPokemonId(null);
+    let newTypes = [...currentTypes];
     if (newTypes.includes(type)) {
       newTypes = newTypes.filter((t) => t !== type);
     } else {
@@ -20,8 +49,15 @@ export default function AcademyPage() {
     setSelectedDefenseTypes(newTypes);
   };
 
+  const handlePokemonSelect = (id: number, name: string) => {
+    setSelectedPokemonId(id);
+    setPokemonSearch(name);
+  };
+
   const attackRules = ATTACK_EFFECTIVENESS[selectedAttackType] || { superEffective: [], notVeryEffective: [], noEffect: [] };
-  const defenseResults = calculateDefenseMultipliers(selectedDefenseTypes);
+  // Enquanto há um Pokémon pesquisado, sua tipagem prevalece sobre a seleção manual.
+  const defenseTypes = selectedPokemon?.types ?? selectedDefenseTypes;
+  const defenseResults = calculateDefenseMultipliers(defenseTypes);
 
   return (
     <main className="flex-1 flex flex-col items-center p-3 sm:p-6 max-w-5xl mx-auto w-full space-y-6 font-navbar">
@@ -75,6 +111,81 @@ export default function AcademyPage() {
             transition={{ duration: 0.2 }}
             className="w-full space-y-6"
           >
+            {/* PESQUISA DE POKÉMON: preenche a tipagem real automaticamente */}
+            <div className="bg-[#FFFFFF] border-2 border-[#FFCB05]/60 rounded-3xl p-5 sm:p-6 shadow-md space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                <div>
+                  <h2 className="text-base font-heading font-black text-[#1B4F9C]">🔎 Pesquise um Pokémon</h2>
+                  <p className="text-xs text-[#1E1E1E]/60 font-body">Veja a tipagem e os melhores tipos de ataque contra ele.</p>
+                </div>
+                {selectedPokemon && (
+                  <span className="text-[10px] font-stats font-black bg-[#2A75BB]/10 text-[#1B4F9C] px-2.5 py-1 rounded-full border border-[#2A75BB]/25">
+                    #{String(selectedPokemon.id).padStart(4, "0")}
+                  </span>
+                )}
+              </div>
+
+              <div className="relative">
+                <input
+                  value={pokemonSearch}
+                  onChange={(event) => { setPokemonSearch(event.target.value); setSelectedPokemonId(null); }}
+                  placeholder="Digite o nome ou número do Pokémon..."
+                  aria-label="Pesquisar Pokémon"
+                  className="w-full rounded-xl border border-[#D9D9D9] bg-[#F5F5F5] px-4 py-3 pr-10 text-sm font-body font-semibold outline-none transition focus:border-[#2A75BB] focus:bg-white focus:ring-2 focus:ring-[#2A75BB]/20"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2">🔍</span>
+
+                {pokemonSearch.trim() && !selectedPokemonId && (
+                  <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-xl border border-[#D9D9D9] bg-white shadow-lg">
+                    {isPokemonListLoading ? (
+                      <p className="p-3 text-xs font-body text-[#1E1E1E]/60">Carregando Pokémon...</p>
+                    ) : pokemonSuggestions.length > 0 ? (
+                      pokemonSuggestions.map((pokemon) => (
+                        <button
+                          key={pokemon.id}
+                          onClick={() => handlePokemonSelect(pokemon.id, pokemon.name)}
+                          className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-[#F5F5F5]"
+                        >
+                          <Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`} alt="" width={32} height={32} unoptimized />
+                          <span className="font-button text-xs font-black text-[#1E1E1E]">{pokemon.name}</span>
+                          <span className="ml-auto font-stats text-[10px] text-[#1E1E1E]/45">#{String(pokemon.id).padStart(4, "0")}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="p-3 text-xs font-body text-[#1E1E1E]/60">Nenhum Pokémon encontrado.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {isPokemonLoading && (
+                <p className="text-xs font-body text-[#1E1E1E]/60">Consultando tipagem...</p>
+              )}
+
+              {selectedPokemon && !isPokemonLoading && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-[#F5F5F5] border border-[#D9D9D9] p-3">
+                  <div className="relative h-16 w-16 shrink-0 self-center sm:self-auto">
+                    <Image src={selectedPokemon.artworkUrl} alt={selectedPokemon.name} fill sizes="64px" className="object-contain" unoptimized />
+                  </div>
+                  <div className="min-w-0 flex-1 text-center sm:text-left">
+                    <p className="font-heading font-black text-[#1E1E1E]">{selectedPokemon.name}</p>
+                    <div className="mt-1 flex flex-wrap justify-center sm:justify-start gap-1.5">
+                      {selectedPokemon.types.map((type) => {
+                        const info = POKEMON_TYPES[type];
+                        return <span key={type} className={`rounded-lg px-2 py-0.5 text-xs font-button font-black ${info.colorBg} ${info.colorText}`}>{info.icon} {info.name}</span>;
+                      })}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => { setSelectedDefenseTypes(selectedPokemon.types); setPokemonSearch(""); setSelectedPokemonId(null); }}
+                    className="shrink-0 rounded-xl bg-[#1B4F9C] px-3 py-2 text-xs font-button font-black text-white shadow-sm hover:bg-[#2A75BB]"
+                  >
+                    Editar tipos
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* 1. SELETOR DE TIPOS COM SLOTS VISUAIS */}
             <div className="bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl p-5 sm:p-6 shadow-md space-y-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pb-3 border-b border-[#D9D9D9]/60">
@@ -85,10 +196,10 @@ export default function AcademyPage() {
                 {/* Slots Visualmente Claros */}
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5 bg-[#F5F5F5] px-3 py-1.5 rounded-xl border border-[#D9D9D9] min-w-[140px] justify-center">
-                    {selectedDefenseTypes.length === 0 ? (
+                    {defenseTypes.length === 0 ? (
                       <span className="text-xs text-[#1E1E1E]/40 font-bold">Nenhum Tipo</span>
                     ) : (
-                      selectedDefenseTypes.map((type: string) => {
+                      defenseTypes.map((type: string) => {
                         const t = POKEMON_TYPES[type];
                         return (
                           <span key={type} className={`px-2 py-0.5 rounded-lg text-xs font-button font-black flex items-center gap-1 shadow-sm ${t.colorBg} ${t.colorText}`}>
@@ -98,9 +209,9 @@ export default function AcademyPage() {
                       })
                     )}
                   </div>
-                  {selectedDefenseTypes.length > 0 && (
+                  {defenseTypes.length > 0 && (
                     <button
-                      onClick={() => setSelectedDefenseTypes([])}
+                      onClick={() => { setSelectedPokemonId(null); setSelectedDefenseTypes([]); }}
                       className="px-2.5 py-1.5 bg-[#EE1515]/10 hover:bg-[#EE1515] text-[#EE1515] hover:text-[#FFFFFF] font-button font-black rounded-xl text-xs transition border border-[#EE1515]/20"
                       title="Limpar Tipagem"
                     >
@@ -113,7 +224,7 @@ export default function AcademyPage() {
               {/* Grid Compacto de 18 Tipos */}
               <div className="grid grid-cols-3 xs:grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2">
                 {(Object.values(POKEMON_TYPES) as TypeInfo[]).map((t: TypeInfo) => {
-                  const isSelected = selectedDefenseTypes.includes(t.name);
+                  const isSelected = defenseTypes.includes(t.name);
                   return (
                     <button
                       key={t.name}
@@ -133,7 +244,7 @@ export default function AcademyPage() {
             </div>
 
             {/* 2. DASHBOARD DE RESULTADOS (Limpo e Sem Caixas Vazias!) */}
-            {selectedDefenseTypes.length === 0 ? (
+            {defenseTypes.length === 0 ? (
               <div className="bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl p-10 text-center space-y-2">
                 <span className="text-4xl animate-bounce inline-block">👆</span>
                 <h3 className="text-base font-black text-[#1E1E1E] font-heading">Selecione uma tipagem acima</h3>

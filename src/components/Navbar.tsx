@@ -65,6 +65,10 @@ export default function Navbar() {
               <span>🎓</span> <span>Academia</span>
             </Link>
 
+            <Link href="/gofest" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/gofest" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
+              <span>⚡</span> <span>GOFEST</span>
+            </Link>
+
             <Link href="/review" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/review" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
               <span>📚</span> <span>Revisão</span>
             </Link>
@@ -125,6 +129,9 @@ export default function Navbar() {
               </Link>
               <Link href="/academy" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/academy" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
                 <span>🎓</span> <span>Academia</span>
+              </Link>
+              <Link href="/gofest" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/gofest" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
+                <span>⚡</span> <span>GOFEST</span>
               </Link>
               <Link href="/review" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/review" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
                 <span>📚</span> <span>Revisão</span>
