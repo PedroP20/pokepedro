@@ -14,7 +14,6 @@ export default function GameCompletionScreen() {
     totalInRegion = 0,
     sessionStartTime = 0,
     sessionEndTime = 0,
-    gameMode,
     isMultiplayer,
     players,
     restartCurrentGame,

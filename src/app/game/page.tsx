@@ -17,7 +17,7 @@ import Image from "next/image";
 export default function GamePage() {
   const {
     status, gameMode, answerMode, mediaStyle, currentCorrectId, currentOptionIds,
-    selectedOptionId, isPartialMatch, score, totalAnswered, streak, isSilhouetteMode,
+    selectedOptionId, score, totalAnswered, streak, isSilhouetteMode,
     toggleSilhouetteMode, answerQuestion, answerByTyping, nextQuestion,
     isMultiplayer, players, currentPlayerIndex, learningPhase
   } = useGameStore();

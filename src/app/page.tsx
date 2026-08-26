@@ -114,8 +114,8 @@ export default function Home() {
       const isPersistent = sessionSaveMode === 'SAVED';
       startGame(selectedRegion, selectedOrder, mediaStyle, selectedMode, selectedAnswerMode, isPersistent, isMultiplayer, multiplayerType, playerCount, filteredIds);
       router.push("/game");
-    } catch (e) {
-      router.push("/game");
+    } catch {
+      alert("Não foi possível montar a lista de Pokémon. Verifique sua conexão e tente novamente.");
     } finally {
       setIsLoadingQueue(false);
     }
@@ -265,7 +265,20 @@ export default function Home() {
 
       {/* ❓ MODAL COMO JOGAR */}
       <AnimatePresence>
-        {/* ... (mantido igual) ... */}
+        {showHowToPlay && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+            <button className="absolute inset-0" onClick={() => setShowHowToPlay(false)} aria-label="Fechar instruções" />
+            <motion.section initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} className="relative z-10 w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+              <button onClick={() => setShowHowToPlay(false)} className="absolute right-4 top-4 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-black text-[#1E1E1E]" aria-label="Fechar">✕</button>
+              <h2 className="font-heading text-2xl font-black text-[#1B4F9C]">Como jogar</h2>
+              <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-[#1E1E1E]/75">
+                <li>Escolha o modo, a região e os filtros desejados.</li>
+                <li>Defina se prefere imagem, silhueta ou o grito do Pokémon.</li>
+                <li>Inicie a partida e acerte o maior número de Pokémon possível.</li>
+              </ol>
+            </motion.section>
+          </motion.div>
+        )}
       </AnimatePresence>
     </main>
   );

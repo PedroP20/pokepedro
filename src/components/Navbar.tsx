@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import PokedexIcon from "@/components/icons/PokedexIcon";
@@ -81,11 +82,13 @@ export default function Navbar() {
           {/* ⭐ ÁREA DO USUÁRIO DESKTOP (Linha divisória + Avatar + Botões) */}
           <div className="flex items-center gap-2 ml-2 pl-4 border-l-2 border-gray-200">
             <div className="flex items-center gap-2 mr-1">
-              <img 
+              <Image
                 src={user.photoURL || "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"} 
                 alt="Perfil" 
-                referrerPolicy="no-referrer"
-                className="w-8 h-8 rounded-full border-2 border-[#1B4F9C] object-cover bg-white shadow-sm" 
+                width={32}
+                height={32}
+                unoptimized
+                className="w-8 h-8 rounded-full border-2 border-[#1B4F9C] object-cover bg-white shadow-sm"
               />
               <span className="text-xs font-black text-[#1B4F9C] truncate max-w-[90px]">
                 {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
@@ -143,7 +146,7 @@ export default function Navbar() {
               {/* ⭐ ÁREA DO USUÁRIO MOBILE */}
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <img src={user.photoURL || "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"} alt="Perfil" referrerPolicy="no-referrer" className="w-10 h-10 rounded-full border-2 border-[#1B4F9C] object-cover bg-white" />
+                  <Image src={user.photoURL || "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"} alt="Perfil" width={40} height={40} unoptimized className="w-10 h-10 rounded-full border-2 border-[#1B4F9C] object-cover bg-white" />
                   <div className="flex flex-col">
                     <span className="text-[10px] text-gray-500 uppercase font-bold leading-none">Treinador</span>
                     <span className="text-sm font-black text-[#1B4F9C] leading-tight">{user.displayName?.split(' ')[0] || user.email?.split('@')[0]}</span>
