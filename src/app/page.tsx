@@ -11,6 +11,7 @@ import { Region, OrderType, REGION_RANGES } from "@/types/pokemon";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { generateFilteredQueue } from "@/lib/pokemonFilters";
+import HomeTour from "@/components/HomeTour";
 
 const REGIONS_LIST = [
   { id: "ALL", name: "Todas as Regiões", total: "1025", mascotId: 25, badgeBg: "from-blue-600 to-indigo-700" },
@@ -280,6 +281,7 @@ export default function Home() {
           </motion.div>
         )}
       </AnimatePresence>
+      <HomeTour userId={user.uid} />
     </main>
   );
 }
