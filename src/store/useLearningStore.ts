@@ -68,7 +68,7 @@ export const useLearningStore = create<LearningState>()(
         set({ stats: { ...currentStats, [id]: newStatData } });
 
         const user = useAuthStore.getState().user;
-        if (user) {
+        if (user && db) {
           try { await setDoc(doc(db, "users", user.uid, "mastery", String(id)), newStatData); } 
           catch (e) { console.error("Erro ao salvar na nuvem:", e); }
         }
@@ -88,7 +88,7 @@ export const useLearningStore = create<LearningState>()(
         set({ stats: { ...currentStats, [id]: newStatData } });
 
         const user = useAuthStore.getState().user;
-        if (user) {
+        if (user && db) {
           try { await setDoc(doc(db, "users", user.uid, "mastery", String(id)), newStatData); } 
           catch (e) { console.error("Erro ao salvar na nuvem:", e); }
         }
@@ -119,6 +119,7 @@ export const useLearningStore = create<LearningState>()(
       },
 
       syncFromFirebase: async (uid: string) => {
+        if (!db) return;
         try {
           const querySnapshot = await getDocs(collection(db, "users", uid, "mastery"));
           const cloudStats: Record<number, PokemonStats> = {};

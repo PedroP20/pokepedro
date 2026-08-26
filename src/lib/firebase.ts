@@ -1,7 +1,7 @@
 // src/lib/firebase.ts
-import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
+import { Auth, getAuth, GoogleAuthProvider } from "firebase/auth";
+import { Firestore, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -12,11 +12,19 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
+const hasFirebaseConfig = Object.values(firebaseConfig).every(Boolean);
 
-// 🌟 NOVO: Instanciamos o provedor de Login do Google
-const googleProvider = new GoogleAuthProvider();
+// A Firebase client SDK só é necessária no navegador. Não a inicializamos no
+// servidor de build, onde variáveis NEXT_PUBLIC podem ainda não estar definidas.
+const app: FirebaseApp | null = typeof window !== "undefined" && hasFirebaseConfig
+  ? (getApps().length ? getApp() : initializeApp(firebaseConfig))
+  : null;
 
-export { app, auth, db, googleProvider };
+const auth: Auth | null = app ? getAuth(app) : null;
+const db: Firestore | null = app ? getFirestore(app) : null;
+const googleProvider = app ? new GoogleAuthProvider() : null;
+const firebaseConfigurationError = hasFirebaseConfig
+  ? null
+  : "A configuração da Firebase está ausente. Defina as variáveis NEXT_PUBLIC_FIREBASE_* no ambiente.";
+
+export { app, auth, db, googleProvider, firebaseConfigurationError };

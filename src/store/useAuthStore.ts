@@ -16,6 +16,12 @@ export const useAuthStore = create<AuthState>((set) => ({
   isLoading: true, // O app começa "carregando" para não piscar a tela errada
 
   initAuthListener: () => {
+    if (!auth) {
+      console.error("Firebase não foi inicializada. Confira as variáveis de ambiente.");
+      set({ user: null, isLoading: false });
+      return;
+    }
+
     onAuthStateChanged(auth, async (currentUser) => {
       set({ user: currentUser, isLoading: false });
       
@@ -30,6 +36,10 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    if (!auth) {
+      set({ user: null, isLoading: false });
+      return;
+    }
     await signOut(auth);
     set({ user: null });
   },

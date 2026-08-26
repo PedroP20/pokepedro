@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { auth, googleProvider } from "@/lib/firebase";
+import { auth, firebaseConfigurationError, googleProvider } from "@/lib/firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -21,6 +21,11 @@ export default function LoginPage() {
   }, [user, isLoading, router]);
 
   const handleGoogleLogin = async () => {
+    if (!auth || !googleProvider) {
+      alert(firebaseConfigurationError || "A Firebase não está disponível neste ambiente.");
+      return;
+    }
+
     setIsLoggingIn(true);
     try {
       await signInWithPopup(auth, googleProvider);
@@ -70,7 +75,7 @@ export default function LoginPage() {
           <div className="pt-4">
             <button 
               onClick={handleGoogleLogin} 
-              disabled={isLoggingIn}
+              disabled={isLoggingIn || !auth || !googleProvider}
               className="w-full flex items-center justify-center gap-4 bg-white hover:bg-gray-50 text-gray-800 font-button font-black py-4 sm:py-5 px-6 rounded-2xl shadow-lg border-2 border-gray-200 transition transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoggingIn ? (
@@ -82,6 +87,7 @@ export default function LoginPage() {
                 </>
               )}
             </button>
+            {firebaseConfigurationError && <p className="mt-3 text-xs font-bold text-red-600">{firebaseConfigurationError}</p>}
           </div>
         </div>
       </div>
