@@ -21,6 +21,7 @@ const REGION_OPTIONS: { id: Region; label: string }[] = [
   { id: "KALOS", label: "🔵 Kalos" },
   { id: "ALOLA", label: "🟠 Alola" },
   { id: "GALAR", label: "🟤 Galar" },
+  { id: "HISUI", label: "🪨 Hisui" },
   { id: "PALDEA", label: "🟣 Paldea" },
 ];
 

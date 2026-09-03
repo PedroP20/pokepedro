@@ -19,6 +19,7 @@ const REGIONS_LIST = [
   { id: "KALOS", name: "6ª Gen (Kalos)" },
   { id: "ALOLA", name: "7ª Gen (Alola)" },
   { id: "GALAR", name: "8ª Gen (Galar)" },
+  { id: "HISUI", name: "Hisui" },
   { id: "PALDEA", name: "9ª Gen (Paldea)" },
 ];
 

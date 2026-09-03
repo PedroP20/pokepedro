@@ -13,6 +13,7 @@ import PokemonInfoCard from "@/components/game/PokemonInfoCard";
 import GameCompletionScreen from "@/components/game/GameCompletionScreen";
 import Link from "next/link";
 import Image from "next/image";
+import TypeQuizGame from "@/components/game/TypeQuizGame";
 
 export default function GamePage() {
   const {
@@ -41,6 +42,7 @@ export default function GamePage() {
   const toggleDifficultyMark = useLearningStore((state) => state.toggleDifficultyMark);
 
   if (status === "FINISHED") return <GameCompletionScreen />;
+  if (gameMode === "TYPE_STANDARD" || gameMode === "TYPE_HARD") return <TypeQuizGame />;
 
   // ⭐ CONTROLE DA FASE 1: Força a revelação automática para o usuário ler!
   const isLearningReveal = gameMode === 'ADVANCED' && learningPhase === 1;

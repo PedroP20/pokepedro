@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { Region, OrderType } from '@/types/pokemon';
 import { GameMode, AnswerMode, MediaStyle, MultiplayerType, Player } from '@/store/useGameStore';
+import { TypeQuizQuestion } from '@/lib/typeQuiz';
 
 export interface SavedGameSession {
   mode: GameMode;
@@ -22,6 +23,9 @@ export interface SavedGameSession {
   players: Player[];
   currentPlayerIndex: number;
   learningPhase: number;
+  currentTypeQuestion?: TypeQuizQuestion | null;
+  remainingTypeQuestions?: TypeQuizQuestion[];
+  typeFoundAnswers?: string[];
 }
 
 interface SavedGameState {

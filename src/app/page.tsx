@@ -12,6 +12,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { generateFilteredQueue } from "@/lib/pokemonFilters";
 import HomeTour from "@/components/HomeTour";
+import { fetchTypeQuizQuestions } from "@/lib/typeQuiz";
 
 const REGIONS_LIST = [
   { id: "ALL", name: "Todas as Regiões", total: "1025", mascotId: 25, badgeBg: "from-blue-600 to-indigo-700" },
@@ -23,6 +24,7 @@ const REGIONS_LIST = [
   { id: "KALOS", name: "Kalos (6ª Gen)", total: "72", mascotId: 658, badgeBg: "from-blue-500 to-cyan-600" },
   { id: "ALOLA", name: "Alola (7ª Gen)", total: "88", mascotId: 778, badgeBg: "from-orange-400 to-pink-500" },
   { id: "GALAR", name: "Galar (8ª Gen)", total: "89", mascotId: 815, badgeBg: "from-rose-500 to-red-600" },
+  { id: "HISUI", name: "Hisui (Lendas Arceus)", total: "7", mascotId: 905, badgeBg: "from-stone-500 to-amber-700" },
   { id: "PALDEA", name: "Paldea (9ª Gen)", total: "120", mascotId: 908, badgeBg: "from-violet-500 to-purple-600" },
 ];
 
@@ -51,6 +53,7 @@ export default function Home() {
   const router = useRouter();
   const { user, isLoading } = useAuthStore();
   const startGame = useGameStore((state) => state.startGame);
+  const startTypeQuiz = useGameStore((state) => state.startTypeQuiz);
   const { savedSession, clearSavedGame } = useSavedGameStore();
 
   const [selectedMode, setSelectedMode] = useState<GameMode>("NORMAL");
@@ -75,6 +78,7 @@ export default function Home() {
   const [isLoadingQueue, setIsLoadingQueue] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const isTypeQuiz = selectedMode === "TYPE_STANDARD" || selectedMode === "TYPE_HARD";
 
   useEffect(() => {
     const timer = setTimeout(() => { setIsMounted(true); }, 0);
@@ -93,6 +97,12 @@ export default function Home() {
   const handleStartGame = async () => {
     setIsLoadingQueue(true);
     try {
+      if (isTypeQuiz) {
+        const questions = await fetchTypeQuizQuestions();
+        startTypeQuiz(selectedMode, questions, sessionSaveMode === "SAVED");
+        router.push("/game");
+        return;
+      }
       const [min, max] = REGION_RANGES[selectedRegion] || [1, 1025];
       const allRegionIds = Array.from({ length: max - min + 1 }, (_, i) => min + i);
 
@@ -124,6 +134,12 @@ export default function Home() {
 
   const handleContinueSavedGame = () => {
     if (!savedSession) return;
+    if ((savedSession.mode === "TYPE_STANDARD" || savedSession.mode === "TYPE_HARD") && savedSession.currentTypeQuestion) {
+      startTypeQuiz(savedSession.mode, [savedSession.currentTypeQuestion, ...(savedSession.remainingTypeQuestions || [])], true, true);
+      useGameStore.setState({ status: "PLAYING", score: savedSession.score, totalAnswered: savedSession.totalAnswered, streak: savedSession.streak, sessionStartTime: savedSession.sessionStartTime, typeFoundAnswers: savedSession.typeFoundAnswers || [] });
+      router.push("/game");
+      return;
+    }
     startGame(savedSession.region, savedSession.order, savedSession.mediaStyle, savedSession.mode, savedSession.answerMode, true, savedSession.isMultiplayer, savedSession.multiplayerType, savedSession.players.length, savedSession.remainingIds);
     useGameStore.setState({
       status: "PLAYING", score: savedSession.score, totalAnswered: savedSession.totalAnswered, streak: savedSession.streak,
@@ -158,7 +174,7 @@ export default function Home() {
       <AnimatePresence>
         {isMounted && savedSession && (
           <motion.div initial={{ opacity: 0, y: -10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-3xl bg-white border-4 border-green-500 rounded-3xl p-5 my-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 font-stats">
-            <div className="flex items-center gap-3.5"><span className="text-4xl">💾</span><div><span className="px-2.5 py-0.5 bg-green-100 text-green-800 font-button font-black text-[10px] rounded-full uppercase tracking-wider border border-green-200">Partida em Aberto</span><h3 className="text-lg font-black text-[#1E1E1E] mt-1">Continuar Desafio Salvo?</h3><p className="text-xs text-gray-500">Progresso: <b>{savedSession.score} / {savedSession.totalInRegion}</b> • Região: <b>{REGIONS_LIST.find(r=>r.id===savedSession.region)?.name}</b></p></div></div>
+            <div className="flex items-center gap-3.5"><span className="text-4xl">💾</span><div><span className="px-2.5 py-0.5 bg-green-100 text-green-800 font-button font-black text-[10px] rounded-full uppercase tracking-wider border border-green-200">Partida em Aberto</span><h3 className="text-lg font-black text-[#1E1E1E] mt-1">Continuar Desafio Salvo?</h3><p className="text-xs text-gray-500">Progresso: <b>{savedSession.score} / {savedSession.totalInRegion}</b> • <b>{savedSession.mode === "TYPE_STANDARD" || savedSession.mode === "TYPE_HARD" ? "Desafio de Tipos" : REGIONS_LIST.find(r=>r.id===savedSession.region)?.name}</b></p></div></div>
             <div className="flex gap-2.5 w-full sm:w-auto"><button onClick={handleContinueSavedGame} className="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-button font-black text-sm rounded-xl shadow-md transition">▶️ CONTINUAR</button><button onClick={clearSavedGame} className="px-4 py-3 bg-red-50 text-[#EE1515] font-button font-black text-xs rounded-xl border border-red-200">✕ Encerrar</button></div>
           </motion.div>
         )}
@@ -184,11 +200,14 @@ export default function Home() {
           {/* 2. MODO DE TREINAMENTO */}
           <div className="space-y-3 pt-3 border-t border-[#D9D9D9]/60">
             <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>🕹️</span> <span>2. Modo de Jogo:</span></label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               <button onClick={() => { setSelectedMode("NORMAL"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm ${selectedMode === "NORMAL" && !isMultiplayer ? "bg-[#2A75BB]/10 border-[#2A75BB] ring-2 ring-[#2A75BB]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="text-base font-button font-black text-[#1E1E1E] flex items-center gap-1.5"><span>🎲</span> Modo Clássico</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Modo normal de partida.</p></button>
               <button onClick={() => { setSelectedMode("ADVANCED"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "ADVANCED" && !isMultiplayer ? "bg-[#EE1515]/10 border-[#EE1515] ring-2 ring-[#EE1515]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#FFCB05] text-[#1B4F9C] font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Aprender ⭐</span><span className="text-base font-button font-black text-[#EE1515] flex items-center gap-1.5"><span>🧠</span> Aprender</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Modo para aprender a pokédex.</p></button>
               <button onClick={() => setIsMultiplayer(true)} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm ${isMultiplayer ? "bg-purple-100 border-purple-600 ring-2 ring-purple-600/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="text-base font-button font-black text-purple-950 flex items-center gap-1.5"><span>⚔️</span> Modo Versus</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Disputa de turnos em 1v1 ou 2v2!</p></button>
+              <button onClick={() => { setSelectedMode("TYPE_STANDARD"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "TYPE_STANDARD" ? "bg-[#FFCB05]/20 border-[#FFCB05] ring-2 ring-[#FFCB05]/30" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#FFCB05] text-[#1B4F9C] font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Novo</span><span className="text-base font-button font-black text-[#1B4F9C] flex items-center gap-1.5"><span>⚡</span> Tipos: Rápido</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Encontre uma fraqueza por vez.</p></button>
+              <button onClick={() => { setSelectedMode("TYPE_HARD"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "TYPE_HARD" ? "bg-[#EE1515]/10 border-[#EE1515] ring-2 ring-[#EE1515]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#EE1515] text-white font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Desafio</span><span className="text-base font-button font-black text-[#EE1515] flex items-center gap-1.5"><span>🧠</span> Tipos: Mestre</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Descubra todas as fraquezas.</p></button>
             </div>
+            {isTypeQuiz && <div className="rounded-2xl border-2 border-[#FFCB05] bg-yellow-50 p-3 text-xs font-body font-semibold text-[#1B4F9C]">⚡ Os desafios de tipos usam combinações que existem em Pokémon reais. As opções de região, mídia e filtros abaixo não se aplicam e foram bloqueadas.</div>}
             {isMultiplayer && (
               <div className="p-4 bg-purple-50 rounded-2xl border-2 border-purple-300 space-y-3 animate-fade-in font-stats mt-2">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"><span className="text-xs font-black text-purple-900 uppercase">⚔️ Formato da Arena:</span><div className="flex gap-1.5 bg-white p-1 rounded-xl border border-purple-200"><button onClick={() => setMultiplayerType('FFA')} className={`px-4 py-1.5 rounded-lg text-xs font-bold ${multiplayerType === 'FFA' ? 'bg-purple-600 text-white shadow' : 'text-gray-600'}`}>1v1 (Até 10 Jogadores)</button><button onClick={() => setMultiplayerType('TEAMS')} className={`px-4 py-1.5 rounded-lg text-xs font-bold ${multiplayerType === 'TEAMS' ? 'bg-purple-600 text-white shadow' : 'text-gray-600'}`}>2v2 (Até 5 Duplas)</button></div></div>
@@ -198,7 +217,7 @@ export default function Home() {
           </div>
 
           {/* 3. SELEÇÃO DE REGIÃO */}
-          <div className="space-y-3 pt-3 border-t border-[#D9D9D9]/60">
+          <div className={`space-y-3 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
             <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>📍</span> <span>3. Escolha a Região (Deslize para os lados):</span></label>
             <div className="flex flex-row items-stretch gap-3 overflow-x-auto pb-3 pt-1 custom-scrollbar snap-x">
               {REGIONS_LIST.map((reg) => {
@@ -214,7 +233,7 @@ export default function Home() {
           </div>
 
           {/* 4. FILTROS COM BOTÃO DE DIFICULDADE */}
-          <div className="space-y-3 pt-3 border-t border-[#D9D9D9]/60">
+          <div className={`space-y-3 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
             <div className="flex items-center justify-between"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>🔥</span> <span>4. Escolher por tipo e Raridade:</span></label>{(selectedTypes.length > 0 || onlyLegendaries || onlyMythicals || onlyUltraBeasts || onlyParadox || onlyDifficult) && <button onClick={clearFilters} className="text-xs text-[#EE1515] font-button font-black hover:underline bg-red-50 px-2.5 py-1 rounded border border-red-200">Limpar ✕</button>}</div>
             
             <div className="flex flex-wrap gap-2">
@@ -243,13 +262,13 @@ export default function Home() {
           </div>
 
           {/* 5. ESTILO E ORDEM */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#D9D9D9]/60">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
             <div className="space-y-2"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">🎨 5. Estilo do Pokémon:</label><div className="grid grid-cols-3 gap-2"><button onClick={() => setMediaStyle('IMAGE')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'IMAGE' ? "bg-[#1B4F9C] border-[#1B4F9C] text-white font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>🖼️</span> <span>Foto Normal</span></button><button onClick={() => setMediaStyle('SILHOUETTE')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'SILHOUETTE' ? "bg-purple-800 border-purple-600 text-white font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>👤</span> <span>Silhueta</span></button><button onClick={() => setMediaStyle('AUDIO')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'AUDIO' ? "bg-[#FFCB05] border-yellow-500 text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>🔊</span> <span>Som (Grito)</span></button></div></div>
             <div className="space-y-2"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">🔀 Ordem do Pokémon:</label><div className="grid grid-cols-2 gap-2"><button onClick={() => setSelectedOrder("RANDOM")} className={`py-3.5 px-3 rounded-xl border-2 text-xs font-button font-bold transition flex items-center justify-center gap-1.5 shadow-sm ${selectedOrder === "RANDOM" ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🎲</span> Aleatória</button><button onClick={() => setSelectedOrder("POKEDEX")} className={`py-3.5 px-3 rounded-xl border-2 text-xs font-button font-bold transition flex items-center justify-center gap-1.5 shadow-sm ${selectedOrder === "POKEDEX" ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🔢</span> Numérica</button></div></div>
           </div>
 
           {/* 6. RESPOSTA */}
-          <div className="space-y-2 pt-3 border-t border-[#D9D9D9]/60">
+          <div className={`space-y-2 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
             <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">✍️ 6. Modo de Resposta:</label>
             <div className="grid grid-cols-2 gap-3"><button onClick={() => setSelectedAnswerMode("OPTIONS")} className={`py-3.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-button font-bold transition flex items-center justify-center gap-2 shadow-sm ${selectedAnswerMode === "OPTIONS" ? "bg-[#1B4F9C] border-[#1B4F9C] text-white font-black" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🔘</span> <span>Alternativas</span></button><button onClick={() => setSelectedAnswerMode("TYPING")} className={`py-3.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-button font-bold transition flex items-center justify-center gap-2 shadow-sm ${selectedAnswerMode === "TYPING" ? "bg-[#EE1515] border-[#EE1515] text-white font-black" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}><span>⌨️</span> <span>Digitar</span></button></div>
           </div>
@@ -257,7 +276,7 @@ export default function Home() {
           {/* 🚀 BOTÃO INICIAR */}
           <div className="pt-3">
             <button onClick={handleStartGame} disabled={isLoadingQueue} className={`w-full py-5 bg-gradient-to-r ${sessionSaveMode === 'SAVED' ? 'from-green-600 via-emerald-600 to-green-600' : 'from-[#EE1515] via-[#cc1010] to-[#EE1515]'} hover:from-[#ff1f1f] text-white font-button font-black text-lg sm:text-xl rounded-2xl shadow-xl flex items-center justify-center gap-3 border-2 border-[#FFCB05]/40 transition active:scale-99 ${isLoadingQueue ? "opacity-75 cursor-not-allowed" : ""}`}>
-              {isLoadingQueue ? <span>GERANDO POKÉDEX...</span> : <><span>🚀</span><span>{isMultiplayer ? "INICIAR DISPUTA NA ARENA" : sessionSaveMode === 'SAVED' ? "INICIAR NOVO GAME SALVO" : "INICIAR PARTIDA RÁPIDA"}</span><span>⚡</span></>}
+              {isLoadingQueue ? <span>{isTypeQuiz ? "PREPARANDO DESAFIO DE TIPOS..." : "GERANDO POKÉDEX..."}</span> : <><span>🚀</span><span>{isTypeQuiz ? (sessionSaveMode === 'SAVED' ? "INICIAR DESAFIO DE TIPOS SALVO" : "INICIAR DESAFIO DE TIPOS") : isMultiplayer ? "INICIAR DISPUTA NA ARENA" : sessionSaveMode === 'SAVED' ? "INICIAR NOVO GAME SALVO" : "INICIAR PARTIDA RÁPIDA"}</span><span>⚡</span></>}
             </button>
           </div>
 

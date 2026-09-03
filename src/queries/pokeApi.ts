@@ -82,6 +82,11 @@ const parseEvolutionChain = (chainNode: PokeAPIEvolutionNode): EvolutionNode[] =
   return evolutions;
 };
 
+const speciesCanEvolve = (chainNode: PokeAPIEvolutionNode, speciesId: number): boolean => {
+  if (getIdFromUrl(chainNode.species.url) === speciesId) return chainNode.evolves_to.length > 0;
+  return chainNode.evolves_to.some((next) => speciesCanEvolve(next, speciesId));
+};
+
 export async function fetchPokemonOption(id: number): Promise<PokemonOption> {
   const res = await fetch(`${BASE_URL}/pokemon/${id}`);
   if (!res.ok) throw new Error(`Erro ao buscar Pokémon ${id}`);
@@ -101,11 +106,13 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
   const speciesData = await speciesRes.json();
 
   let evolutions: EvolutionNode[] = [];
+  let canEvolve = false;
   if (speciesData.evolution_chain?.url) {
     const evoRes = await fetch(speciesData.evolution_chain.url);
     if (evoRes.ok) {
       const evoData = await evoRes.json();
       evolutions = parseEvolutionChain(evoData.chain);
+      canEvolve = speciesCanEvolve(evoData.chain, id);
     }
   }
 
@@ -146,6 +153,7 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
     isMythic: speciesData.is_mythic,
     flavorText: flavorEntry ? flavorEntry.flavor_text.replace(/[\n\f\r]/g, " ") : "Sem descrição na Pokédex.",
     evolutions,
+    canEvolve,
     varieties,
     hasGenderDifferences: speciesData.has_gender_differences || false,
   };

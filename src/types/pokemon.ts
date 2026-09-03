@@ -8,6 +8,7 @@ export type Region =
   | "KALOS" 
   | "ALOLA" 
   | "GALAR" 
+  | "HISUI"
   | "PALDEA";
 
 export type OrderType = "RANDOM" | "POKEDEX";
@@ -24,6 +25,7 @@ export const REGION_RANGES: Record<Region, [number, number]> = {
   KALOS: [650, 721],
   ALOLA: [722, 809],
   GALAR: [810, 898],
+  HISUI: [899, 905],
   PALDEA: [906, 1025],
 };
 
@@ -59,6 +61,7 @@ export interface PokemonDetails {
   isMythic: boolean;
   flavorText: string;
   evolutions: EvolutionNode[];
+  canEvolve: boolean;
   varieties: PokemonVariety[]; // 👈 Lista de formas (Mega, G-Max, Alola, etc.)
   hasGenderDifferences: boolean; // 👈 Diferença Macho/Fêmea
 }

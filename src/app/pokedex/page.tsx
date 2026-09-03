@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import { PokedexFilters, Region, REGION_RANGES } from "@/types/pokemon";
 import { fetchPokemonMasterList, fetchIdsByType } from "@/queries/pokeApi";
 import { useQuery, useQueries } from "@tanstack/react-query";
+import { fetchPokemonDetails } from "@/queries/pokeApi";
 import Image from "next/image";
 import PokedexFilterBar from "@/components/pokedex/PokedexFilterBar";
 import PokedexDetailModal from "@/components/pokedex/PokedexDetailModal";
@@ -25,6 +26,7 @@ const REGION_TABS: { id: Region; label: string }[] = [
   { id: "KALOS", label: "🔵 Kalos" },
   { id: "ALOLA", label: "🟠 Alola" },
   { id: "GALAR", label: "🟤 Galar" },
+  { id: "HISUI", label: "🪨 Hisui" },
   { id: "PALDEA", label: "🟣 Paldea" },
 ];
 
@@ -105,13 +107,37 @@ export default function PokedexPage() {
       );
     }
 
-    // D. Ordenação (ID, Altura ou Peso) - Se não for ID padrão, ordena por ID como fallback rápido
-    if (filters.sortBy !== "ID") {
-      // Ordenação secundária é mantida nativamente pela ordem numérica
-    }
-
     return list;
   }, [masterList, filters, typeQueries]);
+
+  const needsDetails = filters.sortBy !== "ID" || filters.evolutionStatus !== "ALL";
+  const detailQueries = useQueries({
+    queries: needsDetails
+      ? filteredList.map((pokemon) => ({
+          queryKey: ["pokedexFilterDetails", pokemon.id],
+          queryFn: () => fetchPokemonDetails(pokemon.id),
+          staleTime: Infinity,
+        }))
+      : [],
+  });
+
+  const isDetailsLoading = needsDetails && detailQueries.some((query) => query.isLoading);
+  const displayList = useMemo(() => {
+    if (!needsDetails || isDetailsLoading) return filteredList;
+
+    const detailsById = new Map(detailQueries.map((query) => [query.data?.id, query.data]));
+    let list = filteredList.filter((pokemon) => {
+      const details = detailsById.get(pokemon.id);
+      if (!details) return false;
+      return filters.evolutionStatus === "ALL"
+        || (filters.evolutionStatus === "HAS_EVOLUTION" ? details.canEvolve : !details.canEvolve);
+    });
+
+    const direction = filters.sortBy.endsWith("DESC") ? -1 : 1;
+    if (filters.sortBy.startsWith("HEIGHT")) list = [...list].sort((a, b) => ((detailsById.get(a.id)?.height || 0) - (detailsById.get(b.id)?.height || 0)) * direction);
+    if (filters.sortBy.startsWith("WEIGHT")) list = [...list].sort((a, b) => ((detailsById.get(a.id)?.weight || 0) - (detailsById.get(b.id)?.weight || 0)) * direction);
+    return list;
+  }, [detailQueries, filteredList, filters.evolutionStatus, filters.sortBy, isDetailsLoading, needsDetails]);
 
   return (
     <main className="flex-1 flex flex-col items-center p-3 sm:p-8 max-w-6xl mx-auto w-full space-y-4 sm:space-y-6 font-navbar">
@@ -127,7 +153,7 @@ export default function PokedexPage() {
         </div>
 
         <span className="text-xs font-stats font-bold px-3 py-1.5 bg-[#2A75BB]/10 text-[#2A75BB] rounded-full border border-[#2A75BB]/30 self-start sm:self-center">
-          {filteredList.length} Pokémon exibidos
+          {displayList.length} Pokémon exibidos
         </span>
       </div>
 
@@ -153,16 +179,16 @@ export default function PokedexPage() {
         filters={filters}
         onChange={(newFilters) => setFilters(newFilters)}
         onReset={() => setFilters(DEFAULT_FILTERS)}
-        totalResults={filteredList.length}
+        totalResults={displayList.length}
       />
 
       {/* Grid de Exibição */}
-      {isMasterLoading ? (
+      {isMasterLoading || isDetailsLoading ? (
         <div className="p-12 text-center space-y-3 bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl w-full">
           <div className="w-12 h-12 border-4 border-[#EE1515] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs sm:text-sm font-bold text-[#1E1E1E]/60">Sincronizando catálogo de 1025 Pokémon...</p>
+          <p className="text-xs sm:text-sm font-bold text-[#1E1E1E]/60">{isDetailsLoading ? "Aplicando filtros avançados da Pokédex..." : "Sincronizando catálogo de 1025 Pokémon..."}</p>
         </div>
-      ) : filteredList.length === 0 ? (
+      ) : displayList.length === 0 ? (
         <div className="bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl p-12 text-center space-y-3 w-full">
           <span className="text-4xl">🔍</span>
           <h3 className="text-lg font-black text-[#1E1E1E] font-heading">Nenhum Pokémon compatível</h3>
@@ -178,7 +204,7 @@ export default function PokedexPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-3 w-full">
-          {filteredList.map((poke) => (
+          {displayList.map((poke) => (
             <PokemonGridItem
               key={poke.id}
               id={poke.id}
@@ -194,8 +220,8 @@ export default function PokedexPage() {
         pokemonId={selectedPokemonId}
         onClose={() => setSelectedPokemonId(null)}
         onNavigate={(newId) => setSelectedPokemonId(newId)}
-        minId={filteredList[0]?.id || 1}
-        maxId={filteredList[filteredList.length - 1]?.id || 1025}
+        minId={displayList[0]?.id || 1}
+        maxId={displayList[displayList.length - 1]?.id || 1025}
       />
     </main>
   );

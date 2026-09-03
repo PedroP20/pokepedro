@@ -6,9 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { fetchPokemonDetails, fetchPokemonMasterList } from "@/queries/pokeApi";
+import TypeGuide from "@/components/academy/TypeGuide";
 
 export default function AcademyPage() {
-  const [activeTab, setActiveTab] = useState<"DEFENSE" | "ATTACK">("DEFENSE");
+  const [activeTab, setActiveTab] = useState<"DEFENSE" | "ATTACK" | "GUIDE">("DEFENSE");
   const [selectedAttackType, setSelectedAttackType] = useState<string>("Fogo");
   const [selectedDefenseTypes, setSelectedDefenseTypes] = useState<string[]>(["Planta", "Venenoso"]);
   const [pokemonSearch, setPokemonSearch] = useState("");
@@ -68,7 +69,7 @@ export default function AcademyPage() {
             <span>🎓</span> Academia de Batalha
           </h1>
           <p className="text-xs sm:text-sm text-[#1E1E1E]/70 font-medium font-body mt-0.5">
-            Simulador visual de vantagens e fraquezas oficiais do Pokémon GO.
+            Consulte vantagens, monte tipagens e treine seu conhecimento em desafios rápidos.
           </p>
         </div>
 
@@ -94,12 +95,26 @@ export default function AcademyPage() {
           >
             <span>🔥</span> <span>Modo Ataque</span>
           </button>
+          <button
+            onClick={() => setActiveTab("GUIDE")}
+            className={`flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black transition flex items-center justify-center gap-1.5 ${
+              activeTab === "GUIDE"
+                ? "bg-[#FFCB05] text-[#1B4F9C] shadow-md scale-102"
+                : "text-[#1E1E1E]/70 hover:text-[#1E1E1E]"
+            }`}
+          >
+            <span>📚</span> <span>Guia de Tipos</span>
+          </button>
         </div>
       </div>
 
       {/* 🔄 CONTEÚDO DINÂMICO DA ACADEMIA */}
       <AnimatePresence mode="wait">
-        {activeTab === "DEFENSE" ? (
+        {activeTab === "GUIDE" ? (
+          <motion.div key="type-guide" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }} transition={{ duration: 0.2 }} className="w-full">
+            <TypeGuide />
+          </motion.div>
+        ) : activeTab === "DEFENSE" ? (
           /* =========================================================
              🛡️ MODO DEFESA: VISUAL LIMPO DE FRAQUEZAS E RESISTÊNCIAS
              ========================================================= */
