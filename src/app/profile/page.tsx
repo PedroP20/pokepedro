@@ -7,6 +7,7 @@ import { useLearningStore } from "@/store/useLearningStore";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import UserAvatar from "@/components/UserAvatar";
 
 export default function ProfilePage() {
   const { user, logout, isLoading } = useAuthStore();
@@ -56,14 +57,7 @@ export default function ProfilePage() {
 
         <div className="relative z-10 flex flex-col items-center space-y-3">
           <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full border-4 border-[#FFCB05] overflow-hidden shadow-xl bg-white">
-            <Image
-              src={user.photoURL || "/icon.png"}
-              alt="Foto do Treinador"
-              fill
-              sizes="112px"
-              className="object-cover"
-              unoptimized
-            />
+            <UserAvatar user={user} alt="Foto do Treinador" size={112} className="h-full w-full object-cover" />
           </div>
 
           <div>

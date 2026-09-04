@@ -6,6 +6,7 @@ import { useSavedGameStore } from "./useSavedGameStore";
 import { checkTypingMatch } from "@/lib/stringUtils";
 import { TypeQuizQuestion, shuffleTypes } from "@/lib/typeQuiz";
 import { ATTACK_EFFECTIVENESS } from "@/lib/typeEffectiveness";
+import { useAchievementStore } from "@/store/useAchievementStore";
 
 export type GameMode = 'NORMAL' | 'ADVANCED' | 'TYPE_STANDARD' | 'TYPE_HARD';
 export type AnswerMode = 'OPTIONS' | 'TYPING';
@@ -199,6 +200,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const state = get();
     if (!state.currentTypeQuestion || state.status !== "PLAYING") return;
     set({ score: isCorrect ? state.score + 1 : state.score, totalAnswered: state.totalAnswered + 1, streak: isCorrect ? state.streak + 1 : 0 });
+    useAchievementStore.getState().recordTypeAnswer(isCorrect);
     triggerSavedGameUpdate(get());
   },
 
@@ -226,6 +228,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     try { useLearningStore.getState().recordAnswer(state.currentCorrectId, isCorrect, timeTaken); } 
     catch (error) { console.error(error); }
+    useAchievementStore.getState().recordPokemonAnswer(state.currentCorrectId, isCorrect);
 
     const newRemaining = [...(Array.isArray(state.remainingIds) ? state.remainingIds : [])];
     
@@ -255,6 +258,7 @@ export const useGameStore = create<GameState>((set, get) => ({
 
     try { useLearningStore.getState().recordAnswer(state.currentCorrectId, isSuccess, timeTaken); } 
     catch (error) { console.error(error); }
+    useAchievementStore.getState().recordPokemonAnswer(state.currentCorrectId, isSuccess);
 
     const newRemaining = [...(Array.isArray(state.remainingIds) ? state.remainingIds : [])];
     

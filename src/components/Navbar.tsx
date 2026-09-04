@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import UserAvatar from "@/components/UserAvatar";
 import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import PokedexIcon from "@/components/icons/PokedexIcon";
@@ -74,6 +74,10 @@ export default function Navbar() {
               <span>📚</span> <span>Revisão</span>
             </Link>
 
+            <Link href="/achievements" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/achievements" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
+              <span>🏆</span> <span>Conquistas</span>
+            </Link>
+
             <Link href="/game" className="ml-1 px-4 py-2 bg-[#FFCB05] hover:bg-[#e6b600] text-[#1B4F9C] font-button font-bold rounded-xl text-sm shadow-md shadow-[#FFCB05]/30 transition transform hover:scale-105 border border-[#1B4F9C]/10 flex items-center gap-1.5">
               <span>⚡</span> <span>Jogar Agora</span>
             </Link>
@@ -82,14 +86,7 @@ export default function Navbar() {
           {/* ⭐ ÁREA DO USUÁRIO DESKTOP (Linha divisória + Avatar + Botões) */}
           <div className="flex items-center gap-2 ml-2 pl-4 border-l-2 border-gray-200">
             <div className="flex items-center gap-2 mr-1">
-              <Image
-                src={user.photoURL || "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"} 
-                alt="Perfil" 
-                width={32}
-                height={32}
-                unoptimized
-                className="w-8 h-8 rounded-full border-2 border-[#1B4F9C] object-cover bg-white shadow-sm"
-              />
+              <UserAvatar user={user} alt="Perfil" size={32} className="w-8 h-8 rounded-full border-2 border-[#1B4F9C] object-cover bg-white shadow-sm" />
               <span className="text-xs font-black text-[#1B4F9C] truncate max-w-[90px]">
                 {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
               </span>
@@ -139,6 +136,9 @@ export default function Navbar() {
               <Link href="/review" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/review" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
                 <span>📚</span> <span>Revisão</span>
               </Link>
+              <Link href="/achievements" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/achievements" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
+                <span>🏆</span> <span>Conquistas</span>
+              </Link>
               <Link href="/game" onClick={closeMenu} className="mt-2 w-full py-3.5 bg-[#FFCB05] text-[#1B4F9C] font-button font-bold text-center rounded-xl text-base shadow-md block border border-[#1B4F9C]/10">
                 ⚡ Jogar Agora
               </Link>
@@ -146,7 +146,7 @@ export default function Navbar() {
               {/* ⭐ ÁREA DO USUÁRIO MOBILE */}
               <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Image src={user.photoURL || "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png"} alt="Perfil" width={40} height={40} unoptimized className="w-10 h-10 rounded-full border-2 border-[#1B4F9C] object-cover bg-white" />
+                  <UserAvatar user={user} alt="Perfil" size={40} className="w-10 h-10 rounded-full border-2 border-[#1B4F9C] object-cover bg-white" />
                   <div className="flex flex-col">
                     <span className="text-[10px] text-gray-500 uppercase font-bold leading-none">Treinador</span>
                     <span className="text-sm font-black text-[#1B4F9C] leading-tight">{user.displayName?.split(' ')[0] || user.email?.split('@')[0]}</span>

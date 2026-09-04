@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "@/providers/QueryProvider";
 import AuthWrapper from "@/components/AuthWrapper";
 import Navbar from "@/components/Navbar"; // ⭐ IMPORTAMOS A NAVBAR AQUI!
+import AchievementNotifier from "@/components/AchievementNotifier";
 
 export const metadata: Metadata = {
   title: "PokéPedro - Mestre da Pokédex",
@@ -32,6 +33,7 @@ export default function RootLayout({
             <Navbar />
             
             {children}
+            <AchievementNotifier />
             
           </AuthWrapper>
         </QueryProvider>

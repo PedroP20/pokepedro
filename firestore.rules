@@ -1,0 +1,14 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cada treinador só pode ler e gravar os próprios dados de aprendizado e conquistas.
+    match /users/{userId}/mastery/{pokemonId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /users/{userId}/achievements/{documentId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
