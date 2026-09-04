@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchPokemonDetails } from "@/queries/pokeApi";
+import { fetchPokemonDetails, fetchPokemonFormData } from "@/queries/pokeApi";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import EvolutionModal from "@/components/game/EvolutionModal";
 import { PokemonVariety } from "@/types/pokemon";
+import Pokemon3DViewer from "@/components/pokedex/Pokemon3DViewer";
 
 interface PokedexDetailModalProps {
   pokemonId: number | null;
@@ -37,6 +38,16 @@ const TYPE_BADGE_COLORS: Record<string, string> = {
   Aço: "bg-slate-500 text-white", Fada: "bg-pink-400 text-black",
 };
 
+function PokemonArtwork({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!src || failed) {
+    return <div className="h-full w-full flex items-center justify-center text-center text-xs font-bold text-white/85 px-8">Arte indisponível para esta forma</div>;
+  }
+
+  return <Image src={src} alt={alt} fill sizes="208px" className="object-contain" priority unoptimized onError={() => setFailed(true)} />;
+}
+
 export default function PokedexDetailModal({
   pokemonId,
   onClose,
@@ -47,6 +58,7 @@ export default function PokedexDetailModal({
   const [isEvoModalOpen, setIsEvoModalOpen] = useState(false);
   const [isShiny, setIsShiny] = useState(false);
   const [selectedFormId, setSelectedFormId] = useState<number | null>(null);
+  const [is3DOpen, setIs3DOpen] = useState(false);
 
   const { data: details, isLoading } = useQuery({
     queryKey: ["pokemonDetails", pokemonId],
@@ -54,20 +66,30 @@ export default function PokedexDetailModal({
     enabled: pokemonId !== null,
   });
 
+  const { data: selectedFormData, isLoading: isSelectedFormLoading } = useQuery({
+    queryKey: ["pokemonForm", selectedFormId],
+    queryFn: () => fetchPokemonFormData(selectedFormId!),
+    enabled: selectedFormId !== null,
+    staleTime: Infinity,
+  });
+
   if (pokemonId === null) return null;
 
-  const primaryType = details?.types[0] || "Normal";
+  const activeVariety = details?.varieties.find((v) => v.id === selectedFormId);
+  const activeData = selectedFormId && selectedFormData ? selectedFormData : details;
+  const hasShinyArtwork = Boolean(activeData?.hasShinyArtwork);
+  const isShinyActive = isShiny && hasShinyArtwork;
+  const primaryType = activeData?.types[0] || details?.types[0] || "Normal";
   const bgGradient = TYPE_GRADIENTS[primaryType] || "from-slate-500 to-slate-700";
 
   // 🖼️ CALCULA O ID DA ARTE ATIVA (Normal vs Mega X vs Mega Y vs Regional)
-  const activeId = selectedFormId || details?.id || pokemonId;
-  const displayArtwork = isShiny
+  const activeId = activeData?.id || selectedFormId || details?.id || pokemonId;
+  const displayArtwork = isShinyActive
     ? `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/${activeId}.png`
     : `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${activeId}.png`;
 
   // 🏷️ CALCULA O NOME DINÂMICO EXATO DA FORMA SELECIONADA
-  const activeVariety = details?.varieties.find((v) => v.id === selectedFormId);
-  const displayName = activeVariety ? activeVariety.name : details?.name;
+  const displayName = activeData?.name || activeVariety?.name || details?.name;
 
   // 🕹️ HELPER: Busca as variedades de um tipo (Ex: Mega X e Mega Y)
   const getVarietiesForType = (formType: PokemonVariety["formType"]) => {
@@ -164,15 +186,7 @@ export default function PokedexDetailModal({
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   className="relative w-48 h-48 sm:w-52 sm:h-52 z-10 -mb-6 mt-2 drop-shadow-[0_15px_15px_rgba(0,0,0,0.4)]"
                 >
-                  <Image
-                    src={displayArtwork}
-                    alt={displayName || details.name}
-                    fill
-                    sizes="208px"
-                    className="object-contain"
-                    priority
-                    unoptimized
-                  />
+                  {isSelectedFormLoading ? <div className="h-full w-full border-4 border-white/70 border-t-transparent rounded-full animate-spin" /> : <PokemonArtwork key={displayArtwork} src={displayArtwork} alt={displayName || details.name} />}
                 </motion.div>
               </div>
 
@@ -180,15 +194,15 @@ export default function PokedexDetailModal({
               <div className="p-6 pt-8 space-y-4 overflow-y-auto custom-scrollbar flex-1 text-center bg-[#FFFFFF]">
                 <div>
                   <div className="text-xs font-bold text-[#1E1E1E]/50 uppercase tracking-widest font-stats">
-                    #{String(details.id).padStart(4, "0")} • {details.generation}
+                    #{String(activeId).padStart(4, "0")} • {details.generation}
                   </div>
                   {/* 👈 EXIBE O NOME DA FORMA ATIVA (Ex: Charizard Mega X ✨) */}
                   <h2 className="text-2xl sm:text-3xl font-black text-[#1E1E1E] tracking-tight mt-0.5 font-heading">
-                    {displayName} {isShiny && "✨"}
+                    {displayName} {isShinyActive && "✨"}
                   </h2>
                   
                   <div className="flex gap-2 justify-center mt-2">
-                    {details.types.map((type) => (
+                    {(activeData?.types || details.types).map((type) => (
                       <span
                         key={type}
                         className={`px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide shadow-sm font-button ${
@@ -208,41 +222,50 @@ export default function PokedexDetailModal({
                 <div className="grid grid-cols-2 gap-3 w-full font-card">
                   <div className="bg-[#F5F5F5] p-3 rounded-2xl border border-[#D9D9D9]">
                     <span className="text-[11px] text-[#1E1E1E]/60 font-bold block uppercase tracking-wider">⚖️ Peso</span>
-                    <span className="text-lg font-black text-[#1E1E1E] mt-0.5 block font-stats">{details.weight} kg</span>
+                    <span className="text-lg font-black text-[#1E1E1E] mt-0.5 block font-stats">{activeData?.weight ?? details.weight} kg</span>
                   </div>
                   <div className="bg-[#F5F5F5] p-3 rounded-2xl border border-[#D9D9D9]">
                     <span className="text-[11px] text-[#1E1E1E]/60 font-bold block uppercase tracking-wider">📏 Altura</span>
-                    <span className="text-lg font-black text-[#1E1E1E] mt-0.5 block font-stats">{details.height} m</span>
+                    <span className="text-lg font-black text-[#1E1E1E] mt-0.5 block font-stats">{activeData?.height ?? details.height} m</span>
                   </div>
                 </div>
 
                 {/* BOTÃO CADEIA EVOLUTIVA */}
-                {details.evolutions && details.evolutions.length > 1 && (
-                  <button
-                    onClick={() => setIsEvoModalOpen(true)}
-                    className="w-full py-3 px-4 bg-[#F5F5F5] hover:bg-[#FFFFFF] border border-[#D9D9D9] hover:border-[#2A75BB] rounded-2xl font-black text-sm text-[#1B4F9C] transition flex items-center justify-center gap-2 shadow-sm group font-button"
-                  >
-                    <span className="text-base">🧬</span>
-                    <span>Ver Cadeia Evolutiva ({details.evolutions.length} estágios)</span>
-                    <span className="text-xs text-[#1B4F9C]/60 group-hover:translate-x-0.5 transition-transform">↗</span>
-                  </button>
-                )}
+                <button
+                  onClick={() => setIsEvoModalOpen(true)}
+                  className="w-full py-3 px-4 bg-[#F5F5F5] hover:bg-[#FFFFFF] border border-[#D9D9D9] hover:border-[#2A75BB] rounded-2xl font-black text-sm text-[#1B4F9C] transition flex items-center justify-center gap-2 shadow-sm group font-button"
+                >
+                  <span className="text-base">🧬</span>
+                  <span>Ver Cadeia Evolutiva ({details.evolutions.length} forma{details.evolutions.length !== 1 ? "s" : ""})</span>
+                  <span className="text-xs text-[#1B4F9C]/60 group-hover:translate-x-0.5 transition-transform">↗</span>
+                </button>
+
+                <button
+                  onClick={() => setIs3DOpen(true)}
+                  className={`w-full py-3 px-4 bg-gradient-to-r ${bgGradient} hover:brightness-110 rounded-2xl font-black text-sm text-white transition flex items-center justify-center gap-2 shadow-md active:scale-[0.98] font-button`}
+                >
+                  <span className="text-base">🧊</span>
+                  <span>Ver em 3D</span>
+                  <span className="text-xs text-white/80">↗</span>
+                </button>
 
                 {/* 🎨 BARRA DE ÍCONES INTERATIVOS COM BADGES DE CONTADOR */}
                 <div className="pt-2 border-t border-[#D9D9D9]/60">
                   <div className="flex items-center justify-center gap-2.5 flex-wrap">
-                    {/* 1. SHINY (✨) */}
-                    <button
-                      onClick={() => setIsShiny(!isShiny)}
-                      title="Forma Shiny (Brilhante)"
-                      className={`w-11 h-11 rounded-2xl border-2 flex items-center justify-center text-xl transition shadow-sm relative ${
-                        isShiny
-                          ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] scale-110 shadow-md"
-                          : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/60 hover:border-[#FFCB05] hover:text-[#1E1E1E]"
-                      }`}
-                    >
-                      ✨
-                    </button>
+                    {/* 1. SHINY (✨) — somente quando a forma ativa possui arte shiny. */}
+                    {hasShinyArtwork && (
+                      <button
+                        onClick={() => setIsShiny(!isShinyActive)}
+                        title="Forma Shiny (Brilhante)"
+                        className={`w-11 h-11 rounded-2xl border-2 flex items-center justify-center text-xl transition shadow-sm relative ${
+                          isShinyActive
+                            ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] scale-110 shadow-md"
+                            : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/60 hover:border-[#FFCB05] hover:text-[#1E1E1E]"
+                        }`}
+                      >
+                        ✨
+                      </button>
+                    )}
 
                     {/* 2. MEGA EVOLUÇÃO (🔥) - Com Badge se tiver 2 Megas! */}
                     {megaForms.length > 0 && (
@@ -355,6 +378,9 @@ export default function PokedexDetailModal({
                       </button>
                     )}
                   </div>
+                  {isShiny && !isSelectedFormLoading && !hasShinyArtwork && (
+                    <p className="mt-2 text-[10px] font-bold text-[#1E1E1E]/55">Esta forma não possui arte Shiny disponível.</p>
+                  )}
                 </div>
               </div>
             </>
@@ -366,8 +392,47 @@ export default function PokedexDetailModal({
             isOpen={isEvoModalOpen}
             onClose={() => setIsEvoModalOpen(false)}
             evolutions={details.evolutions}
+            evolutionTree={details.evolutionTree}
             currentId={details.id}
+            onNavigate={onNavigate}
           />
+        )}
+
+        {details && is3DOpen && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center p-3 sm:p-5 bg-black/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.94, y: 12 }}
+              transition={{ duration: 0.22 }}
+              className="w-full max-w-md rounded-[28px] bg-[#101827] p-3 sm:p-4 shadow-2xl border border-white/20"
+              role="dialog"
+              aria-modal="true"
+              aria-label={`Visualizador 3D de ${displayName || details.name}`}
+            >
+              <div className="flex items-center justify-between gap-3 px-2 pb-3 text-white">
+                <div>
+                  <p className="text-[10px] uppercase tracking-[0.18em] font-bold text-white/60">Visualização 360°</p>
+                  <h3 className="font-black text-lg leading-tight">{displayName || details.name}{isShinyActive ? " ✨" : ""}</h3>
+                </div>
+                <button
+                  onClick={() => setIs3DOpen(false)}
+                  className="w-9 h-9 shrink-0 rounded-full bg-white/15 hover:bg-white/25 border border-white/20 text-white font-bold transition"
+                  aria-label="Fechar visualizador 3D"
+                >
+                  ✕
+                </button>
+              </div>
+              <Pokemon3DViewer
+                pokemonId={pokemonId}
+                name={displayName || details.name}
+                baseName={details.name}
+                formSlug={activeVariety?.slug || details.name.toLowerCase()}
+                isShiny={isShinyActive}
+                gradient={bgGradient}
+              />
+            </motion.div>
+          </div>
         )}
       </div>
     </AnimatePresence>

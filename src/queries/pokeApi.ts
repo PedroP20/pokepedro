@@ -1,4 +1,4 @@
-import { PokemonDetails, PokemonOption, EvolutionNode, PokemonVariety } from "@/types/pokemon";
+import { PokemonDetails, PokemonOption, EvolutionNode, EvolutionTreeNode, PokemonVariety, PokemonFormData } from "@/types/pokemon";
 
 const BASE_URL = "https://pokeapi.co/api/v2";
 
@@ -37,7 +37,24 @@ const TYPE_MAP_EN: Record<string, string> = Object.entries(TYPE_MAP_PT).reduce(
 
 interface PokeAPIFlavorEntry { flavor_text: string; language: { name: string } }
 interface PokeAPITypeEntry { type: { name: string } }
-interface PokeAPIEvolutionNode { species: { name: string; url: string }; evolves_to: PokeAPIEvolutionNode[] }
+interface PokeAPIEvolutionDetail {
+  trigger?: { name: string };
+  min_level?: number | null;
+  item?: { name: string } | null;
+  held_item?: { name: string } | null;
+  known_move?: { name: string } | null;
+  known_move_type?: { name: string } | null;
+  location?: { name: string } | null;
+  min_happiness?: number | null;
+  min_beauty?: number | null;
+  min_affection?: number | null;
+  time_of_day?: string;
+  gender?: number | null;
+  needs_overworld_rain?: boolean;
+  turn_upside_down?: boolean;
+  relative_physical_stats?: number | null;
+}
+interface PokeAPIEvolutionNode { species: { name: string; url: string }; evolves_to: PokeAPIEvolutionNode[]; evolution_details?: PokeAPIEvolutionDetail[] }
 interface PokeAPIVariety { is_default: boolean; pokemon: { name: string; url: string } }
 
 const getIdFromUrl = (url: string): number => {
@@ -82,6 +99,42 @@ const parseEvolutionChain = (chainNode: PokeAPIEvolutionNode): EvolutionNode[] =
   return evolutions;
 };
 
+const readableName = (value: string) => toTitleCase(value.replace(/-/g, "-"));
+
+const formatEvolutionConditions = (details: PokeAPIEvolutionDetail[] = []): string[] => {
+  const detail = details[0];
+  if (!detail) return [];
+
+  const conditions: string[] = [];
+  if (detail.min_level) conditions.push(`Nível ${detail.min_level}`);
+  if (detail.item) conditions.push(`Pedra/item: ${readableName(detail.item.name)}`);
+  if (detail.held_item) conditions.push(`Segurando: ${readableName(detail.held_item.name)}`);
+  if (detail.trigger?.name === "trade") conditions.push("Troca");
+  if (detail.known_move) conditions.push(`Movimento: ${readableName(detail.known_move.name)}`);
+  if (detail.known_move_type) conditions.push(`Movimento do tipo ${readableName(detail.known_move_type.name)}`);
+  if (detail.min_happiness) conditions.push("Amizade alta");
+  if (detail.min_beauty) conditions.push("Beleza alta");
+  if (detail.min_affection) conditions.push("Afeição alta");
+  if (detail.time_of_day) conditions.push(detail.time_of_day === "night" ? "À noite" : detail.time_of_day === "day" ? "De dia" : readableName(detail.time_of_day));
+  if (detail.location) conditions.push(`Local: ${readableName(detail.location.name)}`);
+  if (detail.gender === 1) conditions.push("Fêmea");
+  if (detail.gender === 2) conditions.push("Macho");
+  if (detail.needs_overworld_rain) conditions.push("Durante chuva");
+  if (detail.turn_upside_down) conditions.push("Console virado");
+  if (detail.relative_physical_stats === 1) conditions.push("Ataque > Defesa");
+  if (detail.relative_physical_stats === -1) conditions.push("Ataque < Defesa");
+  if (detail.relative_physical_stats === 0) conditions.push("Ataque = Defesa");
+  return conditions.length ? conditions : detail.trigger?.name === "level-up" ? ["Subir de nível"] : [];
+};
+
+const parseEvolutionTree = (node: PokeAPIEvolutionNode): EvolutionTreeNode => ({
+  id: getIdFromUrl(node.species.url),
+  name: capitalize(node.species.name),
+  spriteUrl: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getIdFromUrl(node.species.url)}.png`,
+  conditions: formatEvolutionConditions(node.evolution_details),
+  evolvesTo: (node.evolves_to || []).map(parseEvolutionTree),
+});
+
 const speciesCanEvolve = (chainNode: PokeAPIEvolutionNode, speciesId: number): boolean => {
   if (getIdFromUrl(chainNode.species.url) === speciesId) return chainNode.evolves_to.length > 0;
   return chainNode.evolves_to.some((next) => speciesCanEvolve(next, speciesId));
@@ -106,12 +159,14 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
   const speciesData = await speciesRes.json();
 
   let evolutions: EvolutionNode[] = [];
+  let evolutionTree: EvolutionTreeNode | null = null;
   let canEvolve = false;
   if (speciesData.evolution_chain?.url) {
     const evoRes = await fetch(speciesData.evolution_chain.url);
     if (evoRes.ok) {
       const evoData = await evoRes.json();
       evolutions = parseEvolutionChain(evoData.chain);
+      evolutionTree = parseEvolutionTree(evoData.chain);
       canEvolve = speciesCanEvolve(evoData.chain, id);
     }
   }
@@ -124,11 +179,11 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
 
     if (varName.includes("-mega")) formType = "MEGA";
     else if (varName.includes("-gmax")) formType = "GIGANTAMAX";
-    else if (varName.includes("-dmax") || (varId >= 810 && varId <= 898 && !v.is_default)) formType = "DYNAMAX";
+    else if (varName.includes("-dmax")) formType = "DYNAMAX";
     else if (varName.includes("-alola") || varName.includes("-galar") || varName.includes("-hisui") || varName.includes("-paldea")) formType = "REGIONAL";
     else if (!v.is_default) formType = "ALTERNATIVE";
 
-    return { name: toTitleCase(v.pokemon.name), id: varId, formType };
+    return { name: toTitleCase(v.pokemon.name), slug: v.pokemon.name.toLowerCase(), id: varId, formType };
   });
 
   const flavorEntry =
@@ -144,6 +199,7 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
     name: capitalize(pokemonData.name),
     spriteUrl: pokemonData.sprites.front_default || "",
     artworkUrl: pokemonData.sprites.other["official-artwork"].front_default || pokemonData.sprites.front_default,
+    hasShinyArtwork: Boolean(pokemonData.sprites.other?.["official-artwork"]?.front_shiny || pokemonData.sprites.front_shiny),
     types: pokemonData.types.map((t: PokeAPITypeEntry) => TYPE_MAP_PT[t.type.name.toLowerCase()] || capitalize(t.type.name)),
     height: pokemonData.height / 10,
     weight: pokemonData.weight / 10,
@@ -153,8 +209,28 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
     isMythic: speciesData.is_mythic,
     flavorText: flavorEntry ? flavorEntry.flavor_text.replace(/[\n\f\r]/g, " ") : "Sem descrição na Pokédex.",
     evolutions,
+    evolutionTree,
     canEvolve,
     varieties,
     hasGenderDifferences: speciesData.has_gender_differences || false,
+  };
+}
+
+/** Dados visuais e físicos da forma ativa. A espécie continua sendo a fonte de texto/evoluções. */
+export async function fetchPokemonFormData(id: number): Promise<PokemonFormData> {
+  const response = await fetch(`${BASE_URL}/pokemon/${id}`);
+  if (!response.ok) throw new Error(`Forma ${id} indisponível na PokéAPI`);
+
+  const data = await response.json();
+  const artwork = data.sprites?.other?.["official-artwork"]?.front_default || "";
+  return {
+    id: data.id,
+    name: toTitleCase(data.name),
+    spriteUrl: data.sprites?.front_default || "",
+    artworkUrl: artwork || data.sprites?.front_default || "",
+    hasShinyArtwork: Boolean(data.sprites?.other?.["official-artwork"]?.front_shiny || data.sprites?.front_shiny),
+    types: data.types.map((t: PokeAPITypeEntry) => TYPE_MAP_PT[t.type.name.toLowerCase()] || capitalize(t.type.name)),
+    height: data.height / 10,
+    weight: data.weight / 10,
   };
 }

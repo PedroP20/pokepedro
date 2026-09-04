@@ -40,9 +40,16 @@ export interface EvolutionNode {
   spriteUrl: string;
 }
 
+export interface EvolutionTreeNode extends EvolutionNode {
+  /** Condições para chegar a este Pokémon a partir do nó anterior. */
+  conditions: string[];
+  evolvesTo: EvolutionTreeNode[];
+}
+
 // 🧬 ESTRUTURA PARA FORMAS ALTERNATIVAS E MEGAS
 export interface PokemonVariety {
   name: string;
+  slug: string;
   id: number;
   formType: "NORMAL" | "MEGA" | "GIGANTAMAX" | "DYNAMAX" | "REGIONAL" | "ALTERNATIVE";
 }
@@ -52,6 +59,7 @@ export interface PokemonDetails {
   name: string;
   spriteUrl: string;
   artworkUrl: string;
+  hasShinyArtwork: boolean;
   types: string[];
   height: number;
   weight: number;
@@ -61,6 +69,7 @@ export interface PokemonDetails {
   isMythic: boolean;
   flavorText: string;
   evolutions: EvolutionNode[];
+  evolutionTree: EvolutionTreeNode | null;
   canEvolve: boolean;
   varieties: PokemonVariety[]; // 👈 Lista de formas (Mega, G-Max, Alola, etc.)
   hasGenderDifferences: boolean; // 👈 Diferença Macho/Fêmea
@@ -73,4 +82,15 @@ export interface PokedexFilters {
   selectedTypes: string[];
   sortBy: "ID" | "HEIGHT_ASC" | "HEIGHT_DESC" | "WEIGHT_ASC" | "WEIGHT_DESC";
   evolutionStatus: "ALL" | "HAS_EVOLUTION" | "NO_EVOLUTION";
+}
+
+export interface PokemonFormData {
+  id: number;
+  name: string;
+  spriteUrl: string;
+  artworkUrl: string;
+  hasShinyArtwork: boolean;
+  types: string[];
+  height: number;
+  weight: number;
 }

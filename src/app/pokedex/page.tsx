@@ -217,6 +217,7 @@ export default function PokedexPage() {
 
       {/* MODAL COM OS ÍCONES INTERATIVOS DE SHINY E MEGA! */}
       <PokedexDetailModal
+        key={selectedPokemonId}
         pokemonId={selectedPokemonId}
         onClose={() => setSelectedPokemonId(null)}
         onNavigate={(newId) => setSelectedPokemonId(newId)}

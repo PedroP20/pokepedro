@@ -126,6 +126,7 @@ export default function PokemonInfoCard({ details, onNext, isCorrect }: PokemonI
         isOpen={isEvoModalOpen}
         onClose={() => setIsEvoModalOpen(false)}
         evolutions={details.evolutions}
+        evolutionTree={details.evolutionTree}
         currentId={details.id}
       />
     </>
