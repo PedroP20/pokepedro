@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test": "node scripts/test-events.mjs && node scripts/test-regressions.mjs && node scripts/test-auth.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",

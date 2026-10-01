@@ -101,9 +101,9 @@ export default function GameCompletionScreen() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-[#D9D9D9]/60 font-button">
             <button onClick={restartCurrentGame} className="w-full py-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-500 text-white font-black text-sm sm:text-base rounded-2xl shadow transition flex items-center justify-center gap-2"><span>🔄</span> <span>Jogar Novamente</span></button>
-            <Link href="/review" className="w-full py-4 bg-[#FFCB05] hover:bg-[#ffbe00] text-[#1B4F9C] font-black text-sm sm:text-base rounded-2xl shadow transition flex items-center justify-center gap-2"><span>📚</span> <span>Revisão ({mistakes} erros)</span></Link>
-            <Link href="/" className="w-full py-3.5 bg-[#1B4F9C] hover:bg-[#153e7a] text-white font-black text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2"><span>🕹️</span> <span>Menu Principal</span></Link>
-            <Link href="/" className="w-full py-3.5 bg-[#F5F5F5] hover:bg-gray-200 text-[#1E1E1E]/80 font-bold text-xs sm:text-sm rounded-xl border transition flex items-center justify-center gap-2"><span>🏠</span> <span>Sair</span></Link>
+            <Link href="/play/review" className="w-full py-4 bg-[#FFCB05] hover:bg-[#ffbe00] text-[#1B4F9C] font-black text-sm sm:text-base rounded-2xl shadow transition flex items-center justify-center gap-2"><span>📚</span> <span>Revisão ({mistakes} erros)</span></Link>
+            <Link href="/play" className="w-full py-3.5 bg-[#1B4F9C] hover:bg-[#153e7a] text-white font-black text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2"><span>🕹️</span> <span>Menu Principal</span></Link>
+            <Link href="/play" className="w-full py-3.5 bg-[#F5F5F5] hover:bg-gray-200 text-[#1E1E1E]/80 font-bold text-xs sm:text-sm rounded-xl border transition flex items-center justify-center gap-2"><span>🏠</span> <span>Sair</span></Link>
           </div>
 
         </div>

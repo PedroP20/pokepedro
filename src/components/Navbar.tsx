@@ -1,30 +1,29 @@
-// src/components/Navbar.tsx
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
-import UserAvatar from "@/components/UserAvatar";
 import { usePathname, useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import PokedexIcon from "@/components/icons/PokedexIcon";
-import { useAuthStore } from "@/store/useAuthStore"; // ⭐ IMPORT DA AUTENTICAÇÃO
+import { AnimatePresence, motion } from "framer-motion";
+import UserAvatar from "@/components/UserAvatar";
+import { useAuthStore } from "@/store/useAuthStore";
+
+const destinations = [
+  { href: "/events", label: "Eventos", icon: "✦", index: "01" },
+  { href: "/pokedex", label: "Pokédex", icon: "◉", index: "02" },
+  { href: "/academy", label: "Combate", icon: "⚔", index: "03" },
+  { href: "/play", label: "Jogar", icon: "▶", index: "04" },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
-  // ⭐ PUXANDO DADOS DO USUÁRIO LOGADO
   const { user, logout } = useAuthStore();
 
-  // 🛡️ INTELIGÊNCIA: Esconde a Navbar na tela do Jogo e na tela de Login!
-  if (pathname === "/game" || pathname === "/login") return null;
+  if (pathname === "/game" || pathname === "/login" || !user) return null;
 
-  // Se o usuário ainda não estiver logado, a navbar não aparece
-  if (!user) return null;
-
+  const active = (href: string) => pathname === href || pathname.startsWith(`${href}/`) || (href === "/play" && pathname === "/review");
   const closeMenu = () => setIsMenuOpen(false);
-
   const handleLogout = async () => {
     closeMenu();
     await logout();
@@ -32,133 +31,50 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#D9D9D9] bg-[#FFFFFF]/90 backdrop-blur-md shadow-sm font-navbar font-semibold">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* LOGO POKÉMON SOLID */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 group shrink-0"
-          onClick={closeMenu}
-        >
-          <span className="text-2xl sm:text-3xl font-logo tracking-normal text-[#1B4F9C] drop-shadow-sm group-hover:scale-105 transition-transform pt-1">
-            Poké<span className="text-[#EE1515]">Pedro</span>
-          </span>
+    <header className="site-header sticky top-0 z-50 w-full">
+      <div className="site-header-inner mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-5 px-4 sm:px-6">
+        <Link href="/events" onClick={closeMenu} className="site-brand group shrink-0" aria-label="PokéPedro, ir para eventos">
+          <span className="brand-ball" aria-hidden="true"><span /></span>
+          <span className="font-heading text-xl font-black tracking-tight sm:text-2xl">Poké<span>Pedro</span><small>CLUB</small></span>
         </Link>
 
-        {/* 💻 NAVEGAÇÃO DESKTOP E PERFIL */}
-        <div className="hidden sm:flex items-center gap-2 lg:gap-3">
-          <nav className="flex items-center gap-2 lg:gap-3">
-            <Link href="/" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
-              <span>🏠</span> <span>Início</span>
+        <nav className="site-nav hidden items-center gap-1 lg:flex" aria-label="Navegação principal">
+          {destinations.map((item) => (
+            <Link key={item.href} href={item.href} aria-current={active(item.href) ? "page" : undefined} className={`site-nav-link ${active(item.href) ? "is-active" : ""}`}>
+              <span className="site-nav-index">{item.index}</span><span className="site-nav-icon" aria-hidden="true">{item.icon}</span>{item.label}
             </Link>
+          ))}
+        </nav>
 
-            <div className="relative group/tooltip flex items-center">
-              <Link href="/pokedex" className={`p-2.5 rounded-xl transition duration-200 flex items-center justify-center ${pathname === "/pokedex" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 scale-105" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`} aria-label="Abrir Pokédex">
-                <PokedexIcon className="w-5 h-5 transition-transform group-hover/tooltip:scale-110" />
-              </Link>
-              <div className="absolute -bottom-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-[#1E1E1E] text-[#FFFFFF] text-[11px] font-bold rounded-lg shadow-lg opacity-0 pointer-events-none group-hover/tooltip:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50">
-                Pokédex
-                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#1E1E1E] rotate-45" />
-              </div>
-            </div>
-
-            <Link href="/academy" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/academy" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
-              <span>🎓</span> <span>Academia</span>
-            </Link>
-
-            <Link href="/gofest" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/gofest" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
-              <span>⚡</span> <span>GOFEST</span>
-            </Link>
-
-            <Link href="/review" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/review" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
-              <span>📚</span> <span>Revisão</span>
-            </Link>
-
-            <Link href="/achievements" className={`px-3.5 py-2 rounded-xl text-sm transition duration-200 flex items-center gap-1.5 ${pathname === "/achievements" ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 font-bold" : "text-[#1E1E1E] hover:text-[#2A75BB] hover:bg-[#F5F5F5]"}`}>
-              <span>🏆</span> <span>Conquistas</span>
-            </Link>
-
-            <Link href="/game" className="ml-1 px-4 py-2 bg-[#FFCB05] hover:bg-[#e6b600] text-[#1B4F9C] font-button font-bold rounded-xl text-sm shadow-md shadow-[#FFCB05]/30 transition transform hover:scale-105 border border-[#1B4F9C]/10 flex items-center gap-1.5">
-              <span>⚡</span> <span>Jogar Agora</span>
-            </Link>
-          </nav>
-
-          {/* ⭐ ÁREA DO USUÁRIO DESKTOP (Linha divisória + Avatar + Botões) */}
-          <div className="flex items-center gap-2 ml-2 pl-4 border-l-2 border-gray-200">
-            <div className="flex items-center gap-2 mr-1">
-              <UserAvatar user={user} alt="Perfil" size={32} className="w-8 h-8 rounded-full border-2 border-[#1B4F9C] object-cover bg-white shadow-sm" />
-              <span className="text-xs font-black text-[#1B4F9C] truncate max-w-[90px]">
-                {user.displayName?.split(' ')[0] || user.email?.split('@')[0]}
-              </span>
-            </div>
-            <Link href="/profile" className="p-2 bg-[#FFCB05] text-[#1B4F9C] rounded-lg hover:bg-yellow-400 transition shadow-sm" aria-label="Perfil">
-              👤
-            </Link>
-            <button onClick={handleLogout} className="p-2 bg-red-50 text-[#EE1515] border border-red-200 rounded-lg hover:bg-red-100 transition shadow-sm" aria-label="Sair">
-              ✕
-            </button>
-          </div>
+        <div className="hidden items-center gap-2 lg:flex">
+          <Link href="/achievements" className="site-utility-link" aria-label="Conquistas" title="Conquistas">★</Link>
+          <Link href="/profile" className="site-profile" aria-label="Abrir perfil">
+            <UserAvatar user={user} alt="Perfil" size={34} className="h-9 w-9 rounded-full object-cover" />
+            <span className="max-w-24 truncate text-sm font-bold">{user.displayName?.split(" ")[0] || user.email?.split("@")[0]}</span>
+          </Link>
+          <button onClick={handleLogout} className="site-logout" aria-label="Sair da conta" title="Sair da conta">↗</button>
         </div>
 
-        {/* 📱 BOTÃO HAMBÚRGUER MOBILE */}
-        <button
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="sm:hidden p-2 text-2xl text-[#1E1E1E] hover:text-[#2A75BB] focus:outline-none"
-          aria-label="Abrir menu"
-        >
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="site-menu-button lg:hidden" aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"} aria-expanded={isMenuOpen}>
           {isMenuOpen ? "✕" : "☰"}
         </button>
       </div>
-
-      {/* 📱 MENU MOBILE */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="sm:hidden border-b border-[#D9D9D9] bg-[#FFFFFF] px-4 pt-2 pb-6 space-y-2 overflow-hidden shadow-xl"
-          >
-            <div className="flex flex-col gap-2 pt-2">
-              <Link href="/" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <span>🏠</span> <span>Início</span>
-              </Link>
-              <Link href="/pokedex" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/pokedex" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <PokedexIcon className="w-5 h-5" /> <span>Pokédex</span>
-              </Link>
-              <Link href="/academy" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/academy" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <span>🎓</span> <span>Academia</span>
-              </Link>
-              <Link href="/gofest" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/gofest" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <span>⚡</span> <span>GOFEST</span>
-              </Link>
-              <Link href="/review" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/review" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <span>📚</span> <span>Revisão</span>
-              </Link>
-              <Link href="/achievements" onClick={closeMenu} className={`px-4 py-3 rounded-xl text-base font-bold transition flex items-center gap-3 ${pathname === "/achievements" ? "bg-[#EE1515] text-[#FFFFFF]" : "text-[#1E1E1E] hover:bg-[#F5F5F5]"}`}>
-                <span>🏆</span> <span>Conquistas</span>
-              </Link>
-              <Link href="/game" onClick={closeMenu} className="mt-2 w-full py-3.5 bg-[#FFCB05] text-[#1B4F9C] font-button font-bold text-center rounded-xl text-base shadow-md block border border-[#1B4F9C]/10">
-                ⚡ Jogar Agora
-              </Link>
-
-              {/* ⭐ ÁREA DO USUÁRIO MOBILE */}
-              <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <UserAvatar user={user} alt="Perfil" size={40} className="w-10 h-10 rounded-full border-2 border-[#1B4F9C] object-cover bg-white" />
-                  <div className="flex flex-col">
-                    <span className="text-[10px] text-gray-500 uppercase font-bold leading-none">Treinador</span>
-                    <span className="text-sm font-black text-[#1B4F9C] leading-tight">{user.displayName?.split(' ')[0] || user.email?.split('@')[0]}</span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Link href="/profile" onClick={closeMenu} className="p-2.5 bg-[#FFCB05] text-[#1B4F9C] rounded-xl font-bold shadow-sm">👤</Link>
-                  <button onClick={handleLogout} className="p-2.5 bg-red-50 text-[#EE1515] border border-red-200 rounded-xl font-bold shadow-sm">✕</button>
-                </div>
+          <motion.nav initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.22 }} className="site-mobile-menu lg:hidden" aria-label="Navegação móvel">
+            <div className="mx-auto grid max-w-7xl gap-2 px-4 pb-5 pt-2 sm:px-6">
+              {destinations.map((item) => (
+                <Link key={item.href} href={item.href} onClick={closeMenu} aria-current={active(item.href) ? "page" : undefined} className={`site-mobile-link ${active(item.href) ? "is-active" : ""}`}>
+                  <span>{item.index}</span><b aria-hidden="true">{item.icon}</b>{item.label}<i aria-hidden="true">↗</i>
+                </Link>
+              ))}
+              <div className="mt-2 flex items-center justify-between border-t border-white/15 pt-4">
+                <Link href="/profile" onClick={closeMenu} className="site-profile"><UserAvatar user={user} alt="Perfil" size={34} className="h-9 w-9 rounded-full object-cover" /><span className="text-sm font-bold">Meu perfil</span></Link>
+                <Link href="/achievements" onClick={closeMenu} className="site-utility-link" aria-label="Conquistas">★</Link>
+                <button onClick={handleLogout} className="site-logout px-4" aria-label="Sair da conta">Sair ↗</button>
               </div>
             </div>
-          </motion.div>
+          </motion.nav>
         )}
       </AnimatePresence>
     </header>

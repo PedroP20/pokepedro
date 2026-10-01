@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { Region, OrderType, GameStatus, REGION_RANGES } from "@/types/pokemon";
 import { useLearningStore } from "./useLearningStore";
-import { useSavedGameStore } from "./useSavedGameStore";
+import { useSavedGameStore, type SavedGameSession } from "./useSavedGameStore";
 import { checkTypingMatch } from "@/lib/stringUtils";
 import { TypeQuizQuestion, shuffleTypes } from "@/lib/typeQuiz";
 import { ATTACK_EFFECTIVENESS } from "@/lib/typeEffectiveness";
@@ -68,6 +68,7 @@ export interface GameState {
   typeFoundAnswers: string[];
   typeQuizAllQuestions: TypeQuizQuestion[];
   typeStandardOptions: string[];
+  typeQuestionAnswered: boolean;
   lastGameConfig: GameConfig | null;
 
   startGame: (region: Region, order: OrderType, mediaStyle: MediaStyle, mode?: GameMode, answerMode?: AnswerMode, isPersistent?: boolean, isMultiplayer?: boolean, multiplayerType?: MultiplayerType, playerCount?: number, customIds?: number[]) => void;
@@ -77,6 +78,7 @@ export interface GameState {
   toggleSilhouetteMode: () => void;
   restartCurrentGame: () => void;
   resetGame: () => void;
+  resumeGame: (session: SavedGameSession) => void;
   startTypeQuiz: (mode: 'TYPE_STANDARD' | 'TYPE_HARD', questions: TypeQuizQuestion[], isPersistent: boolean, preserveOrder?: boolean) => void;
   completeTypeQuestion: (isCorrect: boolean) => void;
   nextTypeQuestion: () => void;
@@ -125,6 +127,9 @@ const triggerSavedGameUpdate = (state: GameState) => {
       multiplayerType: state.multiplayerType, players: state.players,
       currentPlayerIndex: state.currentPlayerIndex, learningPhase: state.learningPhase,
       currentTypeQuestion: state.currentTypeQuestion, remainingTypeQuestions: state.remainingTypeQuestions, typeFoundAnswers: state.typeFoundAnswers,
+      selectedOptionId: state.selectedOptionId, isPartialMatch: state.isPartialMatch, currentOptionIds: state.currentOptionIds,
+      typeQuestionAnswered: state.typeQuestionAnswered, typeStandardOptions: state.typeStandardOptions,
+      lastGameConfig: state.lastGameConfig, typeQuizAllQuestions: state.typeQuizAllQuestions,
     });
   }
 };
@@ -135,7 +140,30 @@ export const useGameStore = create<GameState>((set, get) => ({
   currentOptionIds: [], selectedOptionId: null, isPartialMatch: false, score: 0,
   totalAnswered: 0, streak: 0, totalInRegion: 0, remainingIds: [], currentStartTime: 0,
   sessionStartTime: 0, sessionEndTime: 0, isPersistent: false, isMultiplayer: false,
-  multiplayerType: 'FFA', players: [], currentPlayerIndex: 0, learningPhase: 1, currentTypeQuestion: null, remainingTypeQuestions: [], typeFoundAnswers: [], typeQuizAllQuestions: [], typeStandardOptions: [], lastGameConfig: null,
+  multiplayerType: 'FFA', players: [], currentPlayerIndex: 0, learningPhase: 1, currentTypeQuestion: null, remainingTypeQuestions: [], typeFoundAnswers: [], typeQuizAllQuestions: [], typeStandardOptions: [], typeQuestionAnswered: false, lastGameConfig: null,
+
+  resumeGame: (session) => {
+    const typeMode = session.mode === 'TYPE_STANDARD' || session.mode === 'TYPE_HARD';
+    const remaining = [...session.remainingIds];
+    const question = session.currentTypeQuestion ?? null;
+    const config = session.lastGameConfig ?? { region: session.region, order: session.order, mediaStyle: session.mediaStyle, mode: session.mode, answerMode: session.answerMode, isPersistent: true, isMultiplayer: session.isMultiplayer, multiplayerType: session.multiplayerType, playerCount: session.players.length, customIds: [...new Set([...(session.currentCorrectId ? [session.currentCorrectId] : []), ...remaining])] };
+    set({
+      status: 'PLAYING', gameMode: session.mode, answerMode: session.answerMode, mediaStyle: session.mediaStyle,
+      region: session.region, order: session.order, remainingIds: remaining, currentCorrectId: session.currentCorrectId,
+      currentOptionIds: typeMode ? [] : session.currentOptionIds?.includes(session.currentCorrectId!) ? session.currentOptionIds : generateOptions(session.currentCorrectId!, config.customIds ?? remaining),
+      selectedOptionId: session.selectedOptionId ?? null, isPartialMatch: session.isPartialMatch ?? false,
+      score: session.score, totalAnswered: session.totalAnswered, streak: session.streak, totalInRegion: session.totalInRegion,
+      currentStartTime: Date.now(), sessionStartTime: session.sessionStartTime, sessionEndTime: 0, isPersistent: true,
+      isSilhouetteMode: session.mediaStyle === 'SILHOUETTE', isMultiplayer: session.isMultiplayer, multiplayerType: session.multiplayerType,
+      players: session.players.map(player => ({ ...player })), currentPlayerIndex: session.currentPlayerIndex, learningPhase: session.learningPhase,
+      currentTypeQuestion: typeMode ? question : null, remainingTypeQuestions: session.remainingTypeQuestions ?? [],
+      typeFoundAnswers: session.typeFoundAnswers ?? [], typeQuestionAnswered: session.typeQuestionAnswered ?? (session.mode === 'TYPE_HARD' && !!question && session.typeFoundAnswers?.length === question.effectiveTypes.length),
+      typeStandardOptions: session.typeStandardOptions ?? generateTypeOptions(question),
+      typeQuizAllQuestions: session.typeQuizAllQuestions ?? (question ? [question, ...(session.remainingTypeQuestions ?? [])] : []),
+      lastGameConfig: typeMode ? null : config,
+    });
+    triggerSavedGameUpdate(get());
+  },
 
   startGame: (region, order, mediaStyle, mode = 'NORMAL', answerMode = 'OPTIONS', isPersistent = false, isMultiplayer = false, multiplayerType = 'FFA', playerCount = 2, customIds) => {
     let idsToPlay: number[] = [];
@@ -176,6 +204,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       streak: 0, totalInRegion, remainingIds: remaining, currentStartTime: now, sessionStartTime: now,
       sessionEndTime: 0, isPersistent, isMultiplayer, multiplayerType, players, currentPlayerIndex: 0,
       learningPhase: 1, lastGameConfig: { region, order, mediaStyle, mode, answerMode, isPersistent, isMultiplayer, multiplayerType, playerCount, customIds },
+      currentTypeQuestion: null, remainingTypeQuestions: [], typeFoundAnswers: [], typeQuizAllQuestions: [], typeStandardOptions: [], typeQuestionAnswered: false,
     };
 
     set(newState);
@@ -187,7 +216,7 @@ export const useGameStore = create<GameState>((set, get) => ({
     const now = Date.now();
     if (isPersistent) useSavedGameStore.getState().clearSavedGame();
     set({
-      status: "PLAYING", gameMode: mode, answerMode: mode === "TYPE_STANDARD" ? "OPTIONS" : "TYPING", mediaStyle: "IMAGE",
+      status: queue.length ? "PLAYING" : "FINISHED", gameMode: mode, answerMode: mode === "TYPE_STANDARD" ? "OPTIONS" : "TYPING", mediaStyle: "IMAGE", typeQuestionAnswered: false,
       region: "ALL", order: "RANDOM", isSilhouetteMode: false, currentCorrectId: null, currentOptionIds: [], selectedOptionId: null,
       score: 0, totalAnswered: 0, streak: 0, totalInRegion: queue.length, remainingIds: [], currentTypeQuestion: queue[0] || null, typeFoundAnswers: [], typeStandardOptions: generateTypeOptions(queue[0]),
       remainingTypeQuestions: queue.slice(1), typeQuizAllQuestions: questions, currentStartTime: now, sessionStartTime: now, sessionEndTime: 0, isPersistent,
@@ -198,8 +227,8 @@ export const useGameStore = create<GameState>((set, get) => ({
 
   completeTypeQuestion: (isCorrect) => {
     const state = get();
-    if (!state.currentTypeQuestion || state.status !== "PLAYING") return;
-    set({ score: isCorrect ? state.score + 1 : state.score, totalAnswered: state.totalAnswered + 1, streak: isCorrect ? state.streak + 1 : 0 });
+    if (!state.currentTypeQuestion || state.status !== "PLAYING" || state.typeQuestionAnswered) return;
+    set({ typeQuestionAnswered: true, score: isCorrect ? state.score + 1 : state.score, totalAnswered: state.totalAnswered + 1, streak: isCorrect ? state.streak + 1 : 0 });
     useAchievementStore.getState().recordTypeAnswer(isCorrect);
     triggerSavedGameUpdate(get());
   },
@@ -211,7 +240,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       set({ status: "FINISHED", sessionEndTime: Date.now(), currentTypeQuestion: null, typeFoundAnswers: [], typeStandardOptions: [] });
       return;
     }
-    set({ currentTypeQuestion: state.remainingTypeQuestions[0], remainingTypeQuestions: state.remainingTypeQuestions.slice(1), typeFoundAnswers: [], typeStandardOptions: generateTypeOptions(state.remainingTypeQuestions[0]), currentStartTime: Date.now() });
+    set({ currentTypeQuestion: state.remainingTypeQuestions[0], remainingTypeQuestions: state.remainingTypeQuestions.slice(1), typeFoundAnswers: [], typeQuestionAnswered: false, typeStandardOptions: generateTypeOptions(state.remainingTypeQuestions[0]), currentStartTime: Date.now() });
     triggerSavedGameUpdate(get());
   },
 
@@ -238,7 +267,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       newRemaining.splice(insertIndex, 0, state.currentCorrectId);
     }
 
-    const updatedPlayers = [...state.players];
+    const updatedPlayers = state.players.map(player => ({ ...player }));
     if (state.isMultiplayer && isCorrect && updatedPlayers[state.currentPlayerIndex]) updatedPlayers[state.currentPlayerIndex].score += 1;
 
     set({
@@ -268,7 +297,7 @@ export const useGameStore = create<GameState>((set, get) => ({
       newRemaining.splice(insertIndex, 0, state.currentCorrectId);
     }
 
-    const updatedPlayers = [...state.players];
+    const updatedPlayers = state.players.map(player => ({ ...player }));
     if (state.isMultiplayer && isSuccess && updatedPlayers[state.currentPlayerIndex]) updatedPlayers[state.currentPlayerIndex].score += 1;
 
     set({

@@ -4,12 +4,10 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 const TOUR_STEPS = [
-  { icon: "🏠", title: "Início", description: "Configure seu desafio: escolha região, filtros, tipo de mídia e como quer responder." },
+  { icon: "✦", title: "Eventos", description: "Acompanhe os eventos de Pokémon GO, explore as categorias e prepare suas capturas." },
   { icon: "📖", title: "Pokédex", description: "Explore os Pokémon das nove gerações, com filtros por região e tipo." },
-  { icon: "🎓", title: "Academia", description: "Entenda vantagens, fraquezas e os melhores tipos para cada batalha." },
-  { icon: "⚡", title: "GOFEST", description: "Acompanhe o calendário do evento, marque capturas e consulte estratégias de reide." },
-  { icon: "📚", title: "Revisão", description: "Treine os Pokémon que você errou ou marcou como difíceis." },
-  { icon: "🎮", title: "Jogar Agora", description: "Comece uma partida com as configurações escolhidas e acompanhe seu progresso." },
+  { icon: "⚔", title: "Combate", description: "Entenda vantagens, fraquezas e os melhores tipos para cada batalha." },
+  { icon: "🎮", title: "Jogar", description: "Configure a partida e abra Revisar meus erros para treinar os Pokémon que precisam de atenção." },
 ];
 
 const storageKey = (userId: string) => `pokepedro-home-tour-hidden:${userId}`;

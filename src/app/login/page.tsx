@@ -7,10 +7,12 @@ import { signInWithPopup } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
+import { googleLoginError } from "@/lib/authErrors";
 
 export default function LoginPage() {
   const router = useRouter();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { user, isLoading } = useAuthStore();
 
   // Se já estiver logado, joga para a página inicial automaticamente!
@@ -22,17 +24,19 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     if (!auth || !googleProvider) {
-      alert(firebaseConfigurationError || "A Firebase não está disponível neste ambiente.");
+      setLoginError(firebaseConfigurationError || "A Firebase não está disponível neste ambiente.");
       return;
     }
 
+    setLoginError(null);
     setIsLoggingIn(true);
     try {
       await signInWithPopup(auth, googleProvider);
       // O useEffect acima vai detectar o login e fazer o redirecionamento
     } catch (error) {
       console.error("Erro no login:", error);
-      alert("⚠️ Erro ao conectar com o Google. Feche o aviso e tente novamente.");
+      setLoginError(googleLoginError(error));
+    } finally {
       setIsLoggingIn(false);
     }
   };
@@ -88,6 +92,7 @@ export default function LoginPage() {
               )}
             </button>
             {firebaseConfigurationError && <p className="mt-3 text-xs font-bold text-red-600">{firebaseConfigurationError}</p>}
+            {loginError && <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{loginError}</p>}
           </div>
         </div>
       </div>

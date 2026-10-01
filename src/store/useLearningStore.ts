@@ -4,6 +4,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { db } from "@/lib/firebase";
 import { doc, setDoc, getDocs, collection } from "firebase/firestore";
 import { useAuthStore } from "./useAuthStore";
+let syncGeneration = 0;
 
 export interface PokemonStats {
   id: number;
@@ -120,6 +121,7 @@ export const useLearningStore = create<LearningState>()(
 
       syncFromFirebase: async (uid: string) => {
         if (!db) return;
+        const generation = ++syncGeneration;
         try {
           const querySnapshot = await getDocs(collection(db, "users", uid, "mastery"));
           const cloudStats: Record<number, PokemonStats> = {};
@@ -127,13 +129,13 @@ export const useLearningStore = create<LearningState>()(
             const data = docSnap.data() as PokemonStats;
             cloudStats[data.id] = data;
           });
-          set({ stats: cloudStats });
+          if (generation === syncGeneration) set({ stats: cloudStats });
         } catch (e) {
           console.error("Erro ao sincronizar do Firebase:", e);
         }
       },
 
-      clearLearningData: () => set({ stats: {} }),
+      clearLearningData: () => { syncGeneration++; set({ stats: {} }); },
     }),
     {
       name: 'pokepedro-learning-v3',

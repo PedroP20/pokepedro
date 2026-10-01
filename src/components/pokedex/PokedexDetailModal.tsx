@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchPokemonDetails, fetchPokemonFormData } from "@/queries/pokeApi";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,14 +59,20 @@ export default function PokedexDetailModal({
   const [isShiny, setIsShiny] = useState(false);
   const [selectedFormId, setSelectedFormId] = useState<number | null>(null);
   const [is3DOpen, setIs3DOpen] = useState(false);
+  useEffect(() => {
+    if (pokemonId === null) return;
+    const handleKey = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [pokemonId, onClose]);
 
-  const { data: details, isLoading } = useQuery({
+  const { data: details, isLoading, isError, refetch } = useQuery({
     queryKey: ["pokemonDetails", pokemonId],
     queryFn: () => fetchPokemonDetails(pokemonId!),
     enabled: pokemonId !== null,
   });
 
-  const { data: selectedFormData, isLoading: isSelectedFormLoading } = useQuery({
+  const { data: selectedFormData, isLoading: isSelectedFormLoading, isError: isFormError } = useQuery({
     queryKey: ["pokemonForm", selectedFormId],
     queryFn: () => fetchPokemonFormData(selectedFormId!),
     enabled: selectedFormId !== null,
@@ -74,6 +80,7 @@ export default function PokedexDetailModal({
   });
 
   if (pokemonId === null) return null;
+  const navigationId = details?.speciesId ?? pokemonId;
 
   const activeVariety = details?.varieties.find((v) => v.id === selectedFormId);
   const activeData = selectedFormId && selectedFormData ? selectedFormData : details;
@@ -135,10 +142,11 @@ export default function PokedexDetailModal({
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="relative z-10 w-full max-w-md bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[94vh]"
         >
-          {isLoading || !details ? (
+          {isError ? <div className="space-y-4 p-8 text-center" role="alert"><h2>Não foi possível carregar este Pokémon</h2><p>Verifique sua conexão e tente novamente.</p><button onClick={() => void refetch()} className="rounded-xl bg-[#1B4F9C] p-3 text-white">Tentar novamente</button><button onClick={onClose} className="ml-3 rounded-xl border p-3">Fechar</button></div> : isLoading || !details ? (
             <div className="p-12 text-center space-y-4">
               <div className="w-12 h-12 border-4 border-[#EE1515] border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-sm font-bold text-[#1E1E1E]/60">Carregando dados da Pokédex...</p>
+              <button onClick={onClose} className="rounded-xl border p-3">Fechar</button>
             </div>
           ) : (
             <>
@@ -159,19 +167,19 @@ export default function PokedexDetailModal({
                 {/* SETAS DE NAVEGAÇÃO FLUTUANTES (< e >) */}
                 <div className="absolute inset-x-4 top-1/2 -translate-y-1/2 flex justify-between items-center z-20 pointer-events-none">
                   <button
-                    onClick={() => { setSelectedFormId(null); setIsShiny(false); onNavigate(pokemonId - 1); }}
-                    disabled={pokemonId <= minId}
+                    onClick={() => { setSelectedFormId(null); setIsShiny(false); onNavigate(navigationId - 1); }}
+                    disabled={navigationId <= minId}
                     className={`w-10 h-10 rounded-full bg-[#FFFFFF]/90 hover:bg-[#FFFFFF] text-[#1B4F9C] font-black text-lg flex items-center justify-center shadow-lg transition pointer-events-auto ${
-                      pokemonId <= minId ? "opacity-20 cursor-not-allowed" : "hover:scale-110 active:scale-95"
+                      navigationId <= minId ? "opacity-20 cursor-not-allowed" : "hover:scale-110 active:scale-95"
                     }`}
                   >
                     ❮
                   </button>
                   <button
-                    onClick={() => { setSelectedFormId(null); setIsShiny(false); onNavigate(pokemonId + 1); }}
-                    disabled={pokemonId >= maxId}
+                    onClick={() => { setSelectedFormId(null); setIsShiny(false); onNavigate(navigationId + 1); }}
+                    disabled={navigationId >= maxId}
                     className={`w-10 h-10 rounded-full bg-[#FFFFFF]/90 hover:bg-[#FFFFFF] text-[#1B4F9C] font-black text-lg flex items-center justify-center shadow-lg transition pointer-events-auto ${
-                      pokemonId >= maxId ? "opacity-20 cursor-not-allowed" : "hover:scale-110 active:scale-95"
+                      navigationId >= maxId ? "opacity-20 cursor-not-allowed" : "hover:scale-110 active:scale-95"
                     }`}
                   >
                     ❯
@@ -186,7 +194,7 @@ export default function PokedexDetailModal({
                   transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   className="relative w-48 h-48 sm:w-52 sm:h-52 z-10 -mb-6 mt-2 drop-shadow-[0_15px_15px_rgba(0,0,0,0.4)]"
                 >
-                  {isSelectedFormLoading ? <div className="h-full w-full border-4 border-white/70 border-t-transparent rounded-full animate-spin" /> : <PokemonArtwork key={displayArtwork} src={displayArtwork} alt={displayName || details.name} />}
+                  {isFormError ? <p className="text-center text-sm text-white">Não foi possível carregar esta forma. Selecione outra forma para continuar.</p> : isSelectedFormLoading ? <div className="h-full w-full border-4 border-white/70 border-t-transparent rounded-full animate-spin" /> : <PokemonArtwork key={displayArtwork} src={displayArtwork} alt={displayName || details.name} />}
                 </motion.div>
               </div>
 
@@ -393,7 +401,7 @@ export default function PokedexDetailModal({
             onClose={() => setIsEvoModalOpen(false)}
             evolutions={details.evolutions}
             evolutionTree={details.evolutionTree}
-            currentId={details.id}
+            currentId={details.speciesId ?? details.id}
             onNavigate={onNavigate}
           />
         )}

@@ -55,6 +55,7 @@ export interface PokemonVariety {
 }
 
 export interface PokemonDetails {
+  speciesId?: number;
   id: number;
   name: string;
   spriteUrl: string;

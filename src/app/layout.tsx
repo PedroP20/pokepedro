@@ -9,7 +9,7 @@ import AchievementNotifier from "@/components/AchievementNotifier";
 export const metadata: Metadata = {
   title: "PokéPedro - Mestre da Pokédex",
   description: "Treine sua memória com silhuetas, modo digitação e repetição inteligente SRS!",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon.png",
     shortcut: "/icon.png",

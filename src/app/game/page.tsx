@@ -26,7 +26,7 @@ export default function GamePage() {
   const [showComparison, setShowComparison] = useState(false);
   const [typedInput, setTypedInput] = useState("");
 
-  const { data: correctPokemon, isLoading: isLoadingCorrect } = useQuery({
+  const { data: correctPokemon, isLoading: isLoadingCorrect, isError: isCorrectError, refetch: retryCorrect } = useQuery({
     queryKey: ["pokemon", currentCorrectId], queryFn: () => fetchPokemonDetails(currentCorrectId!),
     enabled: currentCorrectId !== null && status !== "FINISHED",
   });
@@ -41,6 +41,8 @@ export default function GamePage() {
   const isMarkedDifficult = useLearningStore((state) => currentCorrectId ? state.stats[currentCorrectId]?.isMarkedDifficult : false);
   const toggleDifficultyMark = useLearningStore((state) => state.toggleDifficultyMark);
 
+  if (status === "IDLE") return <main className="mx-auto flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center"><h1 className="text-2xl text-[#1B4F9C]">Nenhuma partida em andamento</h1><p>Comece um desafio ou continue sua partida salva em Jogar.</p><Link href="/play" className="rounded-xl bg-[#1B4F9C] px-5 py-3 font-bold text-white">Ir para Jogar</Link></main>;
+  if (isCorrectError || optionsQueries.some(query => query.isError)) return <main className="mx-auto flex flex-1 flex-col items-center justify-center gap-4 p-6 text-center"><h1 className="text-2xl text-[#1B4F9C]">Não foi possível carregar o desafio</h1><p>Verifique sua conexão e tente novamente.</p><button onClick={() => { void retryCorrect(); optionsQueries.forEach(query => { if (query.isError) void query.refetch(); }); }} className="rounded-xl bg-[#1B4F9C] px-5 py-3 text-white">Tentar novamente</button><Link href="/play">Voltar ao início</Link></main>;
   if (status === "FINISHED") return <GameCompletionScreen />;
   if (gameMode === "TYPE_STANDARD" || gameMode === "TYPE_HARD") return <TypeQuizGame />;
 
@@ -61,7 +63,7 @@ export default function GamePage() {
     e.preventDefault();
     if (isRevealed || !typedInput.trim() || !correctPokemon) return;
     answerByTyping(typedInput, correctPokemon.name);
-    if (selectedOptionId === -1) setShowComparison(true);
+    if (useGameStore.getState().selectedOptionId === -1) setShowComparison(true);
   };
 
   const handleNext = () => {
@@ -73,7 +75,7 @@ export default function GamePage() {
   const guessedOption = optionsQueries.map((q) => q.data).find((o) => o && o.id === selectedOptionId) as { id: number; name: string } | undefined;
   const currentPlayer = players[currentPlayerIndex];
 
-  if (status === "IDLE" || currentCorrectId === null || isLoadingCorrect || !correctPokemon) {
+  if (currentCorrectId === null || isLoadingCorrect || !correctPokemon) {
     return (
       <main className="flex-1 flex flex-col items-center justify-center p-6 space-y-4 font-body my-auto">
         <div className="w-12 h-12 border-4 border-[#1B4F9C] border-t-transparent rounded-full animate-spin" />
@@ -113,7 +115,7 @@ export default function GamePage() {
               {isSilhouetteMode ? "👤 Silhueta ON" : "🖼️ Normal"}
             </button>
           )}
-          <Link href="/" className="px-3 py-1.5 rounded-xl bg-red-50 text-[#EE1515] hover:bg-red-100 border border-red-200 font-button font-bold text-xs transition">Sair ✕</Link>
+          <Link href="/play" className="px-3 py-1.5 rounded-xl bg-red-50 text-[#EE1515] hover:bg-red-100 border border-red-200 font-button font-bold text-xs transition">Sair ✕</Link>
         </div>
       </header>
 
@@ -154,7 +156,7 @@ export default function GamePage() {
           )
         ) : !isCorrectAnswer && showComparison ? (
           <div className="w-full bg-white border-2 border-red-500/40 rounded-3xl p-5 sm:p-6 shadow-xl flex flex-col items-center space-y-5 animate-fade-in font-card">
-            <div className="text-center space-y-1"><span className="px-3 py-1 bg-red-100 text-[#EE1515] font-button font-black text-[11px] rounded-full uppercase tracking-wider border border-red-200">⚠️ Erro (Ele voltará depois)</span><h3 className="text-xl sm:text-2xl font-heading font-black text-[#1E1E1E]">Compare as Diferenças!</h3></div>
+            <div className="text-center space-y-1"><span className="px-3 py-1 bg-red-100 text-[#EE1515] font-button font-black text-[11px] rounded-full uppercase tracking-wider border border-red-200">⚠️ Erro {gameMode === "ADVANCED" ? "(Ele voltará depois)" : ""}</span><h3 className="text-xl sm:text-2xl font-heading font-black text-[#1E1E1E]">Compare as Diferenças!</h3></div>
             <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
               <div className="flex flex-col items-center p-3 sm:p-4 bg-red-50/70 border-2 border-red-500 rounded-2xl text-center"><span className="text-[11px] font-black text-[#EE1515] mb-1.5">❌ Sua resposta:</span>{answerMode === 'OPTIONS' ? (<><div className="relative w-24 h-24 sm:w-32 sm:h-32"><Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${selectedOptionId}.png`} alt="Erro" fill sizes="128px" className="object-contain" unoptimized /></div><span className="font-heading font-black text-xs sm:text-sm capitalize mt-2 truncate w-full">{guessedOption?.name || `#${selectedOptionId}`}</span></>) : <div className="h-24 sm:h-32 flex items-center justify-center"><span className="text-lg sm:text-2xl font-black text-red-600 underline uppercase">{typedInput}</span></div>}</div>
               <div className="flex flex-col items-center p-3 sm:p-4 bg-green-50/70 border-2 border-green-500 rounded-2xl text-center"><span className="text-[11px] font-black text-green-700 mb-1.5">✅ O correto era:</span><div className="relative w-24 h-24 sm:w-32 sm:h-32"><Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${currentCorrectId}.png`} alt="Certo" fill sizes="128px" className="object-contain" unoptimized /></div><span className="font-heading font-black text-xs sm:text-sm capitalize mt-2 truncate w-full">{correctPokemon.name}</span></div>

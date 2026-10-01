@@ -3,6 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { ACHIEVEMENTS, AchievementDefinition, regionForPokemon } from "@/lib/achievements";
 import { db } from "@/lib/firebase";
+let syncGeneration = 0;
 
 export interface AchievementProgress {
   startedAt: number;
@@ -74,17 +75,19 @@ export const useAchievementStore = create<AchievementState>()(persist((set, get)
     dismissNotification: () => set((state) => ({ notificationQueue: state.notificationQueue.slice(1) })),
     syncFromFirebase: async (uid) => {
       if (!db) return;
+      const generation = ++syncGeneration;
       const ref = doc(db, "users", uid, "achievements", "progress");
       try {
         const snapshot = await getDoc(ref);
+        if (generation !== syncGeneration) return;
         if (snapshot.exists()) set({ progress: snapshot.data() as AchievementProgress, notificationQueue: [], isSynced: true });
         else {
           await setDoc(ref, get().progress);
-          set({ isSynced: true });
+          if (generation === syncGeneration) set({ isSynced: true });
         }
       } catch (error) { console.error("Erro ao sincronizar conquistas:", error); }
     },
-    clearLocalProgress: () => set({ progress: freshProgress(), notificationQueue: [], isSynced: false }),
+    clearLocalProgress: () => { syncGeneration++; set({ progress: freshProgress(), notificationQueue: [], isSynced: false }); },
   };
 }, { name: "pokepedro-achievements-v1", storage: createJSONStorage(() => localStorage), partialize: (state) => ({ progress: state.progress }) }));
 

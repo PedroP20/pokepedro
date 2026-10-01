@@ -56,13 +56,14 @@ export default function PokedexFilterBar({
     (filters.evolutionStatus !== "ALL" ? 1 : 0);
 
   return (
-    <div className="w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md space-y-3 sm:space-y-4 font-navbar">
+    <div className="pokedex-filters w-full bg-[#FFFFFF] border border-[#D9D9D9] rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md space-y-3 sm:space-y-4 font-navbar">
+      <div className="filter-heading"><div><span className="filter-kicker">ENCONTRE SEU POKÉMON</span><h2>Busca e filtros</h2></div><span className="filter-result-count">{totalResults} resultados</span></div>
       {/* Linha Principal de Busca */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-4">
         <div className="relative flex-1">
           <input
             type="text"
-            placeholder="🔍 Pesquisar por Nome ou Nº (ex: Charizard, 6)..."
+            placeholder="Pesquisar nome ou número da Pokédex…"
             value={filters.searchTerm}
             onChange={(e) => onChange({ ...filters, searchTerm: e.target.value })}
             className="w-full px-4 py-2.5 bg-[#F5F5F5] border border-[#D9D9D9] rounded-xl text-xs sm:text-sm font-bold text-[#1E1E1E] placeholder-[#1E1E1E]/40 focus:outline-none focus:border-[#2A75BB] transition shadow-inner font-body"
@@ -150,7 +151,7 @@ export default function PokedexFilterBar({
                   </span>
                 )}
               </div>
-              <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto custom-scrollbar p-1">
+              <div className="filter-type-grid flex flex-wrap gap-1.5 max-h-36 overflow-y-auto custom-scrollbar p-1">
                 {ALL_TYPES.map((type) => {
                   const isSelected = filters.selectedTypes.includes(type);
                   return (

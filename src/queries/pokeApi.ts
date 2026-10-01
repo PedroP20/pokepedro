@@ -76,7 +76,7 @@ export async function fetchIdsByType(typeNamePt: string): Promise<number[]> {
   const enType = TYPE_MAP_EN[typeNamePt];
   if (!enType) return [];
   const res = await fetch(`${BASE_URL}/type/${enType}`);
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error(`Erro ao carregar Pokémon do tipo ${typeNamePt}`);
   const data = await res.json();
   return data.pokemon.map((p: { pokemon: { url: string } }) => getIdFromUrl(p.pokemon.url));
 }
@@ -148,14 +148,12 @@ export async function fetchPokemonOption(id: number): Promise<PokemonOption> {
 }
 
 export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
-  const [pokemonRes, speciesRes] = await Promise.all([
-    fetch(`${BASE_URL}/pokemon/${id}`),
-    fetch(`${BASE_URL}/pokemon-species/${id}`),
-  ]);
-
-  if (!pokemonRes.ok || !speciesRes.ok) throw new Error(`Erro ao buscar detalhes do Pokémon ${id}`);
-
+  const pokemonRes = await fetch(`${BASE_URL}/pokemon/${id}`);
+  if (!pokemonRes.ok) throw new Error(`Erro ao buscar detalhes do Pokémon ${id}`);
   const pokemonData = await pokemonRes.json();
+  // Alternate forms have their own Pokémon ID but share the base species.
+  const speciesRes = await fetch(pokemonData.species.url);
+  if (!speciesRes.ok) throw new Error(`Erro ao buscar espécie do Pokémon ${id}`);
   const speciesData = await speciesRes.json();
 
   let evolutions: EvolutionNode[] = [];
@@ -167,7 +165,7 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
       const evoData = await evoRes.json();
       evolutions = parseEvolutionChain(evoData.chain);
       evolutionTree = parseEvolutionTree(evoData.chain);
-      canEvolve = speciesCanEvolve(evoData.chain, id);
+      canEvolve = speciesCanEvolve(evoData.chain, speciesData.id);
     }
   }
 
@@ -196,6 +194,7 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
 
   return {
     id: pokemonData.id,
+    speciesId: speciesData.id,
     name: capitalize(pokemonData.name),
     spriteUrl: pokemonData.sprites.front_default || "",
     artworkUrl: pokemonData.sprites.other["official-artwork"].front_default || pokemonData.sprites.front_default,

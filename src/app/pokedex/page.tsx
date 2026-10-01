@@ -36,7 +36,7 @@ function PokemonGridItem({ id, name, onSelect }: { id: number; name: string; onS
   return (
     <button
       onClick={onSelect}
-      className="flex flex-col items-center bg-[#FFFFFF] hover:bg-[#F5F5F5] border border-[#D9D9D9] hover:border-[#2A75BB] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition duration-200 group relative min-h-[115px] sm:min-h-[125px] justify-between shadow-sm font-card"
+      className="pokedex-card flex flex-col items-center bg-[#FFFFFF] hover:bg-[#F5F5F5] border border-[#D9D9D9] hover:border-[#2A75BB] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition duration-200 group relative min-h-[115px] sm:min-h-[125px] justify-between shadow-sm font-card"
     >
       <span className="absolute top-1.5 left-2 text-[10px] sm:text-xs font-stats font-bold text-[#1E1E1E]/40 group-hover:text-[#2A75BB] transition">
         #{String(id).padStart(4, "0")}
@@ -65,7 +65,7 @@ export default function PokedexPage() {
   const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
 
   // 1. CARREGA A LISTA MESTRE DOS 1025 POKÉMON (Nome e ID)
-  const { data: masterList = [], isLoading: isMasterLoading } = useQuery({
+  const { data: masterList = [], isLoading: isMasterLoading, isError: isMasterError, refetch: retryMaster } = useQuery({
     queryKey: ["pokemonMasterList"],
     queryFn: fetchPokemonMasterList,
     staleTime: Infinity,
@@ -140,12 +140,12 @@ export default function PokedexPage() {
   }, [detailQueries, filteredList, filters.evolutionStatus, filters.sortBy, isDetailsLoading, needsDetails]);
 
   return (
-    <main className="flex-1 flex flex-col items-center p-3 sm:p-8 max-w-6xl mx-auto w-full space-y-4 sm:space-y-6 font-navbar">
+    <main className="experience-page pokedex-page flex-1 flex flex-col items-center p-3 sm:p-8 max-w-6xl mx-auto w-full space-y-4 sm:space-y-6 font-navbar">
       {/* Cabeçalho Único */}
-      <div className="w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#D9D9D9] pb-4 sm:pb-6">
+      <div className="experience-hero pokedex-hero w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#D9D9D9] pb-4 sm:pb-6">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#1B4F9C] flex items-center gap-2 font-heading">
-            <span>📖</span> Pokédex Unificada
+            <span>◉</span> Explore a Pokédex
           </h1>
           <p className="text-xs sm:text-sm text-[#1E1E1E]/70 font-medium mt-0.5 font-body">
             Explore todas as 9 gerações, consulte status, evoluções e filtre por tipos em PT-BR.
@@ -183,7 +183,7 @@ export default function PokedexPage() {
       />
 
       {/* Grid de Exibição */}
-      {isMasterLoading || isDetailsLoading ? (
+      {isMasterError || typeQueries.some(query => query.isError) || detailQueries.some(query => query.isError) ? <div role="alert" className="w-full rounded-2xl border bg-white p-8 text-center"><h2>Não foi possível carregar a Pokédex</h2><p className="my-3">Verifique sua conexão e tente novamente.</p><button className="rounded-xl bg-[#1B4F9C] p-3 text-white" onClick={() => { void retryMaster(); [...typeQueries, ...detailQueries].forEach(query => { if (query.isError) void query.refetch(); }); }}>Tentar novamente</button></div> : isMasterLoading || isDetailsLoading || typeQueries.some(query => query.isLoading) ? (
         <div className="p-12 text-center space-y-3 bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl w-full">
           <div className="w-12 h-12 border-4 border-[#EE1515] border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-xs sm:text-sm font-bold text-[#1E1E1E]/60">{isDetailsLoading ? "Aplicando filtros avançados da Pokédex..." : "Sincronizando catálogo de 1025 Pokémon..."}</p>
@@ -221,8 +221,8 @@ export default function PokedexPage() {
         pokemonId={selectedPokemonId}
         onClose={() => setSelectedPokemonId(null)}
         onNavigate={(newId) => setSelectedPokemonId(newId)}
-        minId={displayList[0]?.id || 1}
-        maxId={displayList[displayList.length - 1]?.id || 1025}
+        minId={1}
+        maxId={1025}
       />
     </main>
   );

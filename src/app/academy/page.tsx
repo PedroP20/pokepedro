@@ -61,12 +61,12 @@ export default function AcademyPage() {
   const defenseResults = calculateDefenseMultipliers(defenseTypes);
 
   return (
-    <main className="flex-1 flex flex-col items-center p-3 sm:p-6 max-w-5xl mx-auto w-full space-y-6 font-navbar">
+    <main className="experience-page combat-page flex-1 flex flex-col items-center p-3 sm:p-6 max-w-5xl mx-auto w-full space-y-6 font-navbar">
       {/* 🌟 CABEÇALHO COMPACTO E LIMPO */}
-      <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#FFFFFF] p-4 sm:p-6 rounded-3xl border border-[#D9D9D9] shadow-sm">
+      <div className="experience-hero combat-hero w-full flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#FFFFFF] p-4 sm:p-6 rounded-3xl border border-[#D9D9D9] shadow-sm">
         <div className="text-center sm:text-left">
           <h1 className="text-2xl sm:text-3xl font-black text-[#1B4F9C] flex items-center justify-center sm:justify-start gap-2 font-heading">
-            <span>🎓</span> Academia de Batalha
+            <span>⚔</span> Central de Combate
           </h1>
           <p className="text-xs sm:text-sm text-[#1E1E1E]/70 font-medium font-body mt-0.5">
             Consulte vantagens, monte tipagens e treine seu conhecimento em desafios rápidos.

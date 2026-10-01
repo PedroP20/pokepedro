@@ -23,7 +23,7 @@ export default function AchievementNotifier() {
   }, [queuedId, dismiss]);
 
   useEffect(() => {
-    if (user && db && isSynced) void setDoc(doc(db, "users", user.uid, "achievements", "progress"), progress);
+    if (user && db && isSynced) void setDoc(doc(db, "users", user.uid, "achievements", "progress"), progress).catch(error => console.error("Erro ao salvar conquistas:", error));
   }, [progress, user, isSynced]);
 
   return <AnimatePresence>{achievement && <motion.aside initial={{ opacity: 0, x: 40, y: 10 }} animate={{ opacity: 1, x: 0, y: 0 }} exit={{ opacity: 0, x: 40 }} className="fixed right-3 top-3 z-[100] w-[calc(100%-1.5rem)] max-w-sm overflow-hidden rounded-2xl border border-[#FFCB05]/70 bg-[#1B4F9C] p-1 shadow-2xl">
