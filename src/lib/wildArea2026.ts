@@ -220,3 +220,40 @@ export const ALL_WILD_AREA_KEYS = [...new Set([
   ...Object.values(INCREDIBLE).flat(),
   ...INCENSE_ALL, ...INCENSE_TICKET, ...INCENSE_TICKET_INCREDIBLE, ...EGGS_10KM,
 ])];
+
+export type Boss = { key: string; kind: string; detail: string; note?: string };
+
+/** Roteiro de cada dia: o que muda de sábado para domingo. */
+export const DAY_PLAN: Record<DayKey, { headline: string; mood: string; bosses: Boss[] }> = {
+  sat: {
+    headline: "Dialga Dinamax",
+    mood: "Dia do Tempo",
+    bosses: [
+      { key: "dialga-dynamax", kind: "Batalha Max", detail: "Dinamax · estreia no GO", note: "Só no sábado" },
+      { key: "duraludon-gmax", kind: "Batalha Max", detail: "Gigamax · 6 estrelas · estreia", note: "Nos dois dias" },
+      { key: "zekrom", kind: "Reide 5★", detail: "Lendário" },
+      { key: "kyurem-white", kind: "Reide 5★", detail: "Lendário", note: "Dá Energia de Fusão · conhece Glaciar" },
+      { key: "machamp-jacket", kind: "Reide 3★", detail: "Traje exclusivo", note: "Conhece Golpe de Caratê" },
+    ],
+  },
+  sun: {
+    headline: "Palkia Dinamax",
+    mood: "Dia do Espaço",
+    bosses: [
+      { key: "palkia-dynamax", kind: "Batalha Max", detail: "Dinamax · estreia no GO", note: "Só no domingo" },
+      { key: "duraludon-gmax", kind: "Batalha Max", detail: "Gigamax · 6 estrelas · estreia", note: "Nos dois dias" },
+      { key: "reshiram", kind: "Reide 5★", detail: "Lendário" },
+      { key: "kyurem-black", kind: "Reide 5★", detail: "Lendário", note: "Dá Energia de Fusão · conhece Glaciar" },
+      { key: "machamp-jacket", kind: "Reide 3★", detail: "Traje exclusivo", note: "Conhece Golpe de Caratê" },
+    ],
+  },
+};
+
+export const FEATURED_MOVE_BY_KEY: Record<string, string> = Object.fromEntries(FEATURED_MOVES);
+
+/** Tudo o que dá para pegar em um dia específico. */
+export const dayKeys = (day: DayKey) => [...new Set([
+  ...DAY_PLAN[day].bosses.map(b => b.key),
+  ...WILD_SPAWNS.steel.keys, ...WILD_SPAWNS.dragon.keys,
+  ...INCREDIBLE[day], ...INCENSE_ALL, ...INCENSE_TICKET, ...INCENSE_TICKET_INCREDIBLE, ...EGGS_10KM,
+])];
