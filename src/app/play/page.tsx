@@ -1,302 +1,137 @@
-// src/app/play/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
-import { useGameStore, GameMode, AnswerMode, MediaStyle, MultiplayerType } from "@/store/useGameStore";
-import { useSavedGameStore } from "@/store/useSavedGameStore";
-import { useLearningStore } from "@/store/useLearningStore"; // ⭐ IMPORT NOVO
-import { Region, OrderType, REGION_RANGES } from "@/types/pokemon";
-import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useGameStore, type GameMode, type AnswerMode, type MediaStyle, type MultiplayerType } from "@/store/useGameStore";
+import { useSavedGameStore } from "@/store/useSavedGameStore";
+import { useLearningStore } from "@/store/useLearningStore";
+import { type Region, type OrderType, REGION_RANGES } from "@/types/pokemon";
 import { generateFilteredQueue } from "@/lib/pokemonFilters";
-import HomeTour from "@/components/HomeTour";
 import { fetchTypeQuizQuestions } from "@/lib/typeQuiz";
+import { POKEMON_TYPES } from "@/lib/typeEffectiveness";
+import { typeStyle } from "@/components/ui/TypeBadge";
+import GameGlyph, { type GameGlyphName } from "@/components/game/GameGlyph";
+import "@/components/game/arena.css";
 
-const REGIONS_LIST = [
-  { id: "ALL", name: "Todas as Regiões", total: "1025", mascotId: 25, badgeBg: "from-blue-600 to-indigo-700" },
-  { id: "KANTO", name: "Kanto (1ª Gen)", total: "151", mascotId: 6, badgeBg: "from-red-500 to-orange-600" },
-  { id: "JOHTO", name: "Johto (2ª Gen)", total: "100", mascotId: 249, badgeBg: "from-amber-400 to-yellow-600" },
-  { id: "HOENN", name: "Hoenn (3ª Gen)", total: "135", mascotId: 384, badgeBg: "from-emerald-500 to-green-700" },
-  { id: "SINNOH", name: "Sinnoh (4ª Gen)", total: "107", mascotId: 448, badgeBg: "from-purple-500 to-indigo-700" },
-  { id: "UNOVA", name: "Unova (5ª Gen)", total: "156", mascotId: 571, badgeBg: "from-slate-600 to-slate-800" },
-  { id: "KALOS", name: "Kalos (6ª Gen)", total: "72", mascotId: 658, badgeBg: "from-blue-500 to-cyan-600" },
-  { id: "ALOLA", name: "Alola (7ª Gen)", total: "88", mascotId: 778, badgeBg: "from-orange-400 to-pink-500" },
-  { id: "GALAR", name: "Galar (8ª Gen)", total: "89", mascotId: 815, badgeBg: "from-rose-500 to-red-600" },
-  { id: "HISUI", name: "Hisui (Lendas Arceus)", total: "7", mascotId: 905, badgeBg: "from-stone-500 to-amber-700" },
-  { id: "PALDEA", name: "Paldea (9ª Gen)", total: "120", mascotId: 908, badgeBg: "from-violet-500 to-purple-600" },
+const regions: { id: Region; name: string; mascot: number }[] = [
+  { id: "ALL", name: "Todas as regiões", mascot: 25 }, { id: "KANTO", name: "Kanto", mascot: 6 },
+  { id: "JOHTO", name: "Johto", mascot: 249 }, { id: "HOENN", name: "Hoenn", mascot: 384 },
+  { id: "SINNOH", name: "Sinnoh", mascot: 448 }, { id: "UNOVA", name: "Unova", mascot: 571 },
+  { id: "KALOS", name: "Kalos", mascot: 658 }, { id: "ALOLA", name: "Alola", mascot: 778 },
+  { id: "GALAR", name: "Galar", mascot: 815 }, { id: "HISUI", name: "Hisui", mascot: 905 },
+  { id: "PALDEA", name: "Paldea", mascot: 908 },
+];
+type LobbyMode = GameMode | "VERSUS";
+const modes: { id: LobbyMode; name: string; tag: string; description: string; icon: GameGlyphName; color: string }[] = [
+  { id: "NORMAL", name: "Clássico", tag: "SEU PRÓXIMO RECORDE", description: "Reconheça Pokémon e construa sua sequência de acertos.", icon: "target", color: "blue" },
+  { id: "ADVANCED", name: "Aprender", tag: "UM PASSO DE CADA VEZ", description: "Memorize, escolha e digite. Três etapas para evoluir.", icon: "learn", color: "green" },
+  { id: "VERSUS", name: "Versus", tag: "DESAFIE SEUS AMIGOS", description: "Divida a tela. Dispute por turnos, sozinho ou em duplas.", icon: "versus", color: "red" },
+  { id: "TYPE_STANDARD", name: "Tipos: Rápido", tag: "PENSE NO SEU ATAQUE", description: "Escolha um tipo supereficaz entre quatro alternativas.", icon: "bolt", color: "yellow" },
+  { id: "TYPE_HARD", name: "Tipos: Mestre", tag: "DOMINE CADA FRAQUEZA", description: "Sem alternativas: descubra e digite todos os tipos eficazes.", icon: "crown", color: "purple" },
 ];
 
-const TYPES_LIST = [
-  { name: "Normal", en: "normal", bg: "bg-[#A8A77A]" },
-  { name: "Fogo", en: "fire", bg: "bg-[#EE8130]" },
-  { name: "Água", en: "water", bg: "bg-[#6390F0]" },
-  { name: "Planta", en: "grass", bg: "bg-[#7AC74C]" },
-  { name: "Elétrico", en: "electric", bg: "bg-[#F7D02C]" },
-  { name: "Gelo", en: "ice", bg: "bg-[#96D9D6]" },
-  { name: "Lutador", en: "fighting", bg: "bg-[#C22E28]" },
-  { name: "Veneno", en: "poison", bg: "bg-[#A33EA1]" },
-  { name: "Terra", en: "ground", bg: "bg-[#E2BF65]" },
-  { name: "Voador", en: "flying", bg: "bg-[#A98FF3]" },
-  { name: "Psíquico", en: "psychic", bg: "bg-[#F95587]" },
-  { name: "Inseto", en: "bug", bg: "bg-[#A6B91A]" },
-  { name: "Pedra", en: "rock", bg: "bg-[#B6A136]" },
-  { name: "Fantasma", en: "ghost", bg: "bg-[#735797]" },
-  { name: "Dragão", en: "dragon", bg: "bg-[#6F35FC]" },
-  { name: "Sombrio", en: "dark", bg: "bg-[#705746]" },
-  { name: "Aço", en: "steel", bg: "bg-[#B7B7CE]" },
-  { name: "Fada", en: "fairy", bg: "bg-[#D685AD]" },
-];
+function Choice({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return <button type="button" className={`lobby-choice ${active ? "is-selected" : ""}`} aria-pressed={active} onClick={onClick}>{children}{active && <GameGlyph name="check" />}</button>;
+}
 
-export default function Home() {
+export default function PlayPage() {
   const router = useRouter();
-  const { user, isLoading } = useAuthStore();
-  const startGame = useGameStore((state) => state.startGame);
-  const startTypeQuiz = useGameStore((state) => state.startTypeQuiz);
+  const { user, isLoading, isSyncing } = useAuthStore();
   const { savedSession, clearSavedGame } = useSavedGameStore();
-
-  const [selectedMode, setSelectedMode] = useState<GameMode>("NORMAL");
-  const [mediaStyle, setMediaStyle] = useState<MediaStyle>('IMAGE');
-  const [selectedAnswerMode, setSelectedAnswerMode] = useState<AnswerMode>("OPTIONS");
-  const [sessionSaveMode, setSessionSaveMode] = useState<'NORMAL' | 'SAVED'>('NORMAL');
-
-  const [isMultiplayer, setIsMultiplayer] = useState(false);
-  const [multiplayerType, setMultiplayerType] = useState<MultiplayerType>('FFA');
+  const [mode, setMode] = useState<LobbyMode>("NORMAL");
+  const [mediaStyle, setMediaStyle] = useState<MediaStyle>("IMAGE");
+  const [answerMode, setAnswerMode] = useState<AnswerMode>("OPTIONS");
+  const [persistent, setPersistent] = useState(false);
+  const [multiplayerType, setMultiplayerType] = useState<MultiplayerType>("FFA");
   const [playerCount, setPlayerCount] = useState(2);
-
-  const [selectedRegion, setSelectedRegion] = useState<Region>("ALL");
-  const [selectedOrder, setSelectedOrder] = useState<OrderType>("RANDOM");
+  const [region, setRegion] = useState<Region>("ALL");
+  const [order, setOrder] = useState<OrderType>("RANDOM");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-
-  const [onlyLegendaries, setOnlyLegendaries] = useState(false);
-  const [onlyMythicals, setOnlyMythicals] = useState(false);
-  const [onlyUltraBeasts, setOnlyUltraBeasts] = useState(false);
-  const [onlyParadox, setOnlyParadox] = useState(false);
-  const [onlyDifficult, setOnlyDifficult] = useState(false); // ⭐ NOVO ESTADO
-
-  const [isLoadingQueue, setIsLoadingQueue] = useState(false);
-  const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [isMounted, setIsMounted] = useState(false);
-  const isTypeQuiz = selectedMode === "TYPE_STANDARD" || selectedMode === "TYPE_HARD";
+  const [categories, setCategories] = useState<string[]>([]);
+  const [starting, setStarting] = useState(false);
+  const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const typeQuiz = mode === "TYPE_STANDARD" || mode === "TYPE_HARD";
+  const selectedMode = modes.find(item => item.id === mode)!;
+  const selectedRegion = regions.find(item => item.id === region)!;
+  const [min, max] = REGION_RANGES[region];
+  const filtered = selectedTypes.length > 0 || categories.length > 0;
 
   useEffect(() => {
-    const timer = setTimeout(() => { setIsMounted(true); }, 0);
-    if (!isLoading && !user) router.push("/login");
+    const timer = setTimeout(() => setMounted(true), 0);
+    if (!isLoading && !user) router.replace("/login");
     return () => clearTimeout(timer);
   }, [user, isLoading, router]);
 
-  const toggleType = (typeName: string) => setSelectedTypes((prev) => prev.includes(typeName) ? prev.filter((t) => t !== typeName) : [...prev, typeName]);
-
-  // Limpar os filtros zera o novo botão também
-  const clearFilters = () => {
-    setSelectedTypes([]); setOnlyLegendaries(false); setOnlyMythicals(false);
-    setOnlyUltraBeasts(false); setOnlyParadox(false); setOnlyDifficult(false);
+  const toggle = (value: string, selected: string[], setSelected: (value: string[]) => void) => {
+    setSelected(selected.includes(value) ? selected.filter(item => item !== value) : [...selected, value]);
+    setError("");
   };
-
-  const handleStartGame = async () => {
-    setIsLoadingQueue(true);
+  async function start() {
+    if (starting || isSyncing) return;
+    setStarting(true); setError("");
     try {
-      if (isTypeQuiz) {
+      const game = useGameStore.getState();
+      if (typeQuiz) {
         const questions = await fetchTypeQuizQuestions();
-        startTypeQuiz(selectedMode, questions, sessionSaveMode === "SAVED");
-        router.push("/game");
-        return;
+        if (!questions.length) throw new Error("empty-quiz");
+        game.startTypeQuiz(mode, questions, persistent);
+      } else {
+        let ids = await generateFilteredQueue({ region, selectedTypes, onlyLegendaries: categories.includes("Lendários"), onlyMythicals: categories.includes("Míticos"), onlyUltraBeasts: categories.includes("Ultra Beasts"), onlyParadox: categories.includes("Paradox") }, Array.from({ length: max - min + 1 }, (_, index) => min + index));
+        if (categories.includes("Minhas dificuldades")) {
+          const difficult = new Set(useLearningStore.getState().getMarkedDifficultPokemonIds());
+          ids = ids.filter(id => difficult.has(id));
+        }
+        if (!ids.length) { setError("Nenhum Pokémon combina com esses filtros. Ajuste a região ou remova um filtro para começar."); return; }
+        game.startGame(region, order, mediaStyle, mode === "VERSUS" ? "NORMAL" : mode, answerMode, persistent, mode === "VERSUS", multiplayerType, playerCount, ids);
       }
-      const [min, max] = REGION_RANGES[selectedRegion] || [1, 1025];
-      const allRegionIds = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-
-      let filteredIds = await generateFilteredQueue({
-        region: selectedRegion, selectedTypes, onlyLegendaries, onlyMythicals, onlyUltraBeasts, onlyParadox,
-      }, allRegionIds);
-
-      // ⭐ A MÁGICA: Se o filtro estiver ligado, cruzamos os Pokémon filtrados com os que você marcou!
-      if (onlyDifficult) {
-        const markedIds = useLearningStore.getState().getMarkedDifficultPokemonIds();
-        filteredIds = filteredIds.filter(id => markedIds.includes(id));
-      }
-
-      if (filteredIds.length === 0) {
-        alert("⚠️ Nenhum Pokémon encontrado! Tente desmarcar alguns filtros ou marque alguns Pokémon como dificuldade primeiro.");
-        setIsLoadingQueue(false);
-        return;
-      }
-
-      const isPersistent = sessionSaveMode === 'SAVED';
-      startGame(selectedRegion, selectedOrder, mediaStyle, selectedMode, selectedAnswerMode, isPersistent, isMultiplayer, multiplayerType, playerCount, filteredIds);
       router.push("/game");
-    } catch {
-      alert("Não foi possível montar a lista de Pokémon. Verifique sua conexão e tente novamente.");
-    } finally {
-      setIsLoadingQueue(false);
-    }
-  };
-
-  const handleContinueSavedGame = () => {
-    if (!savedSession) return;
-    useGameStore.getState().resumeGame(savedSession);
-    router.push("/game");
-  };
-  if (isLoading || !user) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-[#F5F5F5]">
-        <div className="w-12 h-12 border-4 border-[#1B4F9C] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-button font-black text-[#1B4F9C] animate-pulse uppercase tracking-widest">Acessando Central...</p>
-      </div>
-    );
+    } catch { setError("Não foi possível preparar o desafio. Confira sua conexão e tente novamente."); }
+    finally { setStarting(false); }
+  }
+  function resume() {
+    if (!savedSession || isSyncing || starting) return;
+    useGameStore.getState().resumeGame(savedSession); router.push("/game");
   }
 
-  return (
-    <main className="experience-page play-page flex-1 flex flex-col items-center justify-start p-3 sm:p-6 max-w-6xl mx-auto w-full font-body relative">
+  if (isLoading || !user) return <main className="lobby-loading"><span className="game-ball is-spinning" aria-hidden="true" /><p role="status">Preparando seu lobby…</p></main>;
 
-      {/* 🌟 HERO SECTION ESPAÇOSA */}
-      <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="experience-hero play-hero text-center space-y-2 my-2 sm:my-4 w-full">
-        <div className="flex items-center justify-center gap-2">
-          <span className="inline-block px-3.5 py-1 rounded-full bg-[#2A75BB]/10 border border-[#2A75BB]/30 text-[#1B4F9C] font-button font-extrabold text-xs uppercase tracking-widest shadow-sm">⚡ Treinamento Oficial</span>
-          <button onClick={() => setShowHowToPlay(true)} className="px-3.5 py-1 rounded-full bg-[#FFCB05] text-[#1B4F9C] font-button font-black text-xs uppercase shadow hover:scale-105 transition">❓ Como Jogar</button>
+  return <main className="play-lobby">
+    <div className="lobby-wrap">
+      <header className="lobby-hero">
+        <div><p className="game-eyebrow"><span /> CENTRAL DE JOGOS · POKÉCLUB</p><h1>É hora de <em>evoluir.</em></h1><p>Seu conhecimento, suas regras. Monte um desafio e entre na arena.</p><div className="lobby-hero-links"><a href="#lobby-modes">Escolha seu desafio <GameGlyph name="arrow" /></a><Link href="/play/review"><GameGlyph name="learn" /> Revisar meu aprendizado</Link></div></div>
+        <div className="lobby-hero-art" aria-hidden="true"><span className="lobby-play-word">PLAY</span><div className="lobby-hero-ball"><span className="game-ball" /></div><span className="lobby-hero-tag">TREINADOR, É A SUA VEZ!</span><i /><i /><i /></div>
+      </header>
+      {mounted && savedSession && <section className="lobby-resume" aria-label="Partida salva"><span className="lobby-resume-icon"><GameGlyph name="play" /></span><div><p>SUA JORNADA CONTINUA</p><h2>Tem um desafio esperando por você.</h2><span>{savedSession.score} acertos · {savedSession.mode.startsWith("TYPE") ? "Desafio de tipos" : savedSession.region === "ALL" ? "Todas as regiões" : savedSession.region}</span></div><div><button onClick={resume} disabled={isSyncing || starting}>Continuar partida <GameGlyph name="arrow" /></button><button className="lobby-discard" onClick={clearSavedGame} disabled={starting}>Descartar partida salva</button></div></section>}
+      <div className="lobby-layout">
+        <div className="lobby-config">
+          <section className="lobby-section" id="lobby-modes">
+            <div className="lobby-section-heading"><span>01</span><div><h2>Qual é o seu desafio?</h2><p>Escolha como você quer jogar hoje.</p></div><span className="lobby-step-tag">5 MODOS</span></div>
+            <div className="lobby-modes" role="group" aria-label="Modo de jogo">{modes.map(item => <button key={item.id} onClick={() => { setMode(item.id); setError(""); }} aria-pressed={mode === item.id} className={`lobby-mode-card lobby-color-${item.color} ${mode === item.id ? "is-selected" : ""}`}><div className="lobby-mode-top"><span className="lobby-mode-icon"><GameGlyph name={item.icon} /></span><span className="lobby-selection-dot">{mode === item.id && <GameGlyph name="check" />}</span></div><small>{item.tag}</small><h3>{item.name}</h3><p>{item.description}</p></button>)}</div>
+            {mode === "VERSUS" && <div className="lobby-versus-settings"><div className="lobby-setting"><h3>Formato da disputa</h3><div className="lobby-choice-row"><Choice active={multiplayerType === "FFA"} onClick={() => setMultiplayerType("FFA")}>Cada um por si</Choice><Choice active={multiplayerType === "TEAMS"} onClick={() => { setMultiplayerType("TEAMS"); setPlayerCount(Math.min(playerCount, 5)); }}>Duplas</Choice></div></div><label className="lobby-range">{multiplayerType === "FFA" ? "Treinadores" : "Duplas"}<b>{playerCount}</b><input type="range" min={2} max={multiplayerType === "FFA" ? 10 : 5} value={playerCount} onChange={event => setPlayerCount(Number(event.target.value))} /></label><p>Todos jogam por turnos no mesmo dispositivo.</p></div>}
+          </section>
+          {!typeQuiz ? <section className="lobby-section"><div className="lobby-section-heading"><span>02</span><div><h2>Escolha seu destino</h2><p>De Kanto a Paldea. Ou o mundo inteiro.</p></div></div><div className="lobby-regions" role="group" aria-label="Região dos Pokémon">{regions.map((item, index) => <button key={item.id} className={region === item.id ? "is-selected" : ""} aria-pressed={region === item.id} onClick={() => { setRegion(item.id); setError(""); }}><small>{index === 0 ? "MUNDO" : `${String(index).padStart(2, "0")} / REGIÃO`}</small><span>{item.name}</span>{region === item.id && <GameGlyph name="check" />}</button>)}</div></section> : <section className="lobby-type-explainer"><span><GameGlyph name={selectedMode.icon} /></span><div><h2>O ataque certo muda tudo.</h2><p>{mode === "TYPE_HARD" ? "Digite todos os tipos supereficazes contra a combinação apresentada. Cada acerto revela uma nova fraqueza." : "Observe os tipos do adversário e escolha uma das quatro alternativas de ataque. Uma resposta supereficaz já garante o acerto."}</p><small>Combinações de tipos de Pokémon reais. Sem filtros de região ou imagem.</small></div></section>}
+          <section className="lobby-section"><div className="lobby-section-heading"><span>{typeQuiz ? "02" : "03"}</span><div><h2>Deixe do seu jeito</h2><p>Uma partida que combina com seu ritmo.</p></div></div><div className="lobby-preferences">
+            {!typeQuiz && mode !== "ADVANCED" && <><div className="lobby-setting"><h3>Como reconhecer</h3><div className="lobby-choice-row">{([{ id: "IMAGE", label: "Imagem", icon: "image" }, { id: "SILHOUETTE", label: "Silhueta", icon: "target" }, { id: "AUDIO", label: "Som", icon: "sound" }] as const).map(item => <Choice key={item.id} active={mediaStyle === item.id} onClick={() => setMediaStyle(item.id)}><GameGlyph name={item.icon} />{item.label}</Choice>)}</div></div><div className="lobby-setting"><h3>Como responder</h3><div className="lobby-choice-row"><Choice active={answerMode === "OPTIONS"} onClick={() => setAnswerMode("OPTIONS")}>Alternativas</Choice><Choice active={answerMode === "TYPING"} onClick={() => setAnswerMode("TYPING")}><GameGlyph name="keyboard" />Digitação</Choice></div></div></>}
+            {mode === "ADVANCED" && <div className="lobby-learn-steps"><span><b>1</b> Memorize</span><GameGlyph name="arrow" /><span><b>2</b> Escolha</span><GameGlyph name="arrow" /><span><b>3</b> Digite</span></div>}
+            {!typeQuiz && <div className="lobby-setting"><h3>Ordem dos Pokémon</h3><div className="lobby-choice-row"><Choice active={order === "RANDOM"} onClick={() => setOrder("RANDOM")}>Aleatória</Choice><Choice active={order === "POKEDEX"} onClick={() => setOrder("POKEDEX")}>Ordem da Pokédex</Choice></div></div>}
+            <div className="lobby-setting"><h3>Progresso da partida</h3><div className="lobby-choice-row"><Choice active={!persistent} onClick={() => setPersistent(false)}>Partida rápida</Choice><Choice active={persistent} onClick={() => setPersistent(true)}>Salvar e continuar depois</Choice></div><p>{persistent ? "Você pode sair e retomar de onde parou." : "Para jogar agora, sem salvar esta partida."}</p></div>
+          </div></section>
+          {!typeQuiz && <details className="lobby-filters"><summary><span><GameGlyph name="flag" /> Personalizar os Pokémon <small>{filtered ? `${selectedTypes.length + categories.length} filtros ativos` : "Filtros opcionais"}</small></span><span className="lobby-details-plus" aria-hidden="true">+</span></summary><div className="lobby-filters-body"><div className="lobby-filter-heading"><h3>Categorias especiais</h3>{filtered && <button onClick={() => { setSelectedTypes([]); setCategories([]); setError(""); }}>Limpar filtros</button>}</div><div className="lobby-choice-row">{["Lendários", "Míticos", "Ultra Beasts", "Paradox", "Minhas dificuldades"].map(item => <Choice key={item} active={categories.includes(item)} onClick={() => toggle(item, categories, setCategories)}>{item}</Choice>)}</div><h3>Tipos de Pokémon</h3><div className="lobby-type-filters">{Object.entries(POKEMON_TYPES).map(([name, info]) => <button key={name} style={typeStyle(name)} aria-pressed={selectedTypes.includes(name)} className={selectedTypes.includes(name) ? "is-selected" : ""} onClick={() => toggle(name, selectedTypes, setSelectedTypes)}><span aria-hidden="true">{info.icon}</span>{name}{selectedTypes.includes(name) && <GameGlyph name="check" />}</button>)}</div><p>Tipos selecionados aceitam qualquer um deles. Categorias e região precisam combinar entre si.</p></div></details>}
+          <details className="lobby-guide"><summary>Primeira vez na arena? <span>Como jogar <GameGlyph name="arrow" /></span></summary><div><p><b>Clássico:</b> identifique o Pokémon pela imagem, silhueta ou som. Responda escolhendo uma alternativa ou digitando o nome.</p><p><b>Aprender:</b> conheça a ficha, reconheça o Pokémon e depois digite seu nome. Os erros voltam à fila para você treinar.</p><p><b>Versus:</b> cada treinador ou dupla responde na sua vez. Quem acumular mais acertos vence.</p><p><b>Tipos:</b> escolha um ataque supereficaz no Rápido ou encontre todas as fraquezas no Mestre.</p><p>Marque Pokémon difíceis durante o jogo para revisá-los depois. Em partidas salvas, seu progresso fica disponível no lobby.</p></div></details>
         </div>
-        <h1 className="text-4xl sm:text-6xl font-heading font-black text-[#1B4F9C]">Sua próxima <span className="text-[#EE1515] drop-shadow-sm">aventura</span> começa aqui.</h1>
-        <p className="experience-hero-subtitle">Monte um desafio com a sua cara, acompanhe seu progresso e domine a Pokédex.</p>
-      </motion.div>
-
-      <Link href="/play/review" className="review-entry group mb-5 flex w-full max-w-3xl items-center gap-4 rounded-3xl p-4 sm:p-5">
-        <span className="review-entry-icon" aria-hidden="true">↺</span>
-        <span className="min-w-0 flex-1"><strong className="block font-heading text-lg">Revisar meus erros</strong><small className="block text-sm">Retome os Pokémon que precisam de mais treino.</small></span>
-        <span className="review-entry-arrow" aria-hidden="true">↗</span>
-      </Link>
-
-      {/* 💾 BANNER DE JOGO SALVO EM ABERTO */}
-      <AnimatePresence>
-        {isMounted && savedSession && (
-          <motion.div initial={{ opacity: 0, y: -10, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="w-full max-w-3xl bg-white border-4 border-green-500 rounded-3xl p-5 my-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 font-stats">
-            <div className="flex items-center gap-3.5"><span className="text-4xl">💾</span><div><span className="px-2.5 py-0.5 bg-green-100 text-green-800 font-button font-black text-[10px] rounded-full uppercase tracking-wider border border-green-200">Partida em Aberto</span><h3 className="text-lg font-black text-[#1E1E1E] mt-1">Continuar Desafio Salvo?</h3><p className="text-xs text-gray-500">Progresso: <b>{savedSession.score} / {savedSession.totalInRegion}</b> • <b>{savedSession.mode === "TYPE_STANDARD" || savedSession.mode === "TYPE_HARD" ? "Desafio de Tipos" : REGIONS_LIST.find(r=>r.id===savedSession.region)?.name}</b></p></div></div>
-            <div className="flex gap-2.5 w-full sm:w-auto"><button onClick={handleContinueSavedGame} className="flex-1 sm:flex-none px-6 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white font-button font-black text-sm rounded-xl shadow-md transition">▶️ CONTINUAR</button><button onClick={clearSavedGame} className="px-4 py-3 bg-red-50 text-[#EE1515] font-button font-black text-xs rounded-xl border border-red-200">✕ Encerrar</button></div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="play-config w-full max-w-3xl bg-[#FFFFFF] border-2 border-[#1B4F9C]/20 rounded-3xl shadow-2xl overflow-hidden font-card mt-2">
-        <div className="bg-gradient-to-r from-[#1B4F9C] via-[#2A75BB] to-[#1B4F9C] px-6 py-4 flex items-center justify-between text-[#FFFFFF] shadow-md">
-          <div className="flex items-center gap-2.5"><span className="text-2xl">◉</span><h2 className="text-base sm:text-lg font-heading font-black tracking-wide uppercase">Configure sua partida</h2></div>
-          <span className="text-xs font-stats font-bold bg-[#FFCB05] text-[#1B4F9C] px-3 py-1 rounded-full shadow-sm">SEU DESAFIO</span>
-        </div>
-
-        <div className="p-4 sm:p-8 space-y-7">
-
-          {/* 1. CONFIGURAÇÃO DE COFRE */}
-          <div className="space-y-3">
-            <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>💾</span> <span>1. Configurar partida:</span></label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              <button onClick={() => setSessionSaveMode("NORMAL")} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm ${sessionSaveMode === "NORMAL" ? "bg-[#2A75BB]/10 border-[#2A75BB] ring-2 ring-[#2A75BB]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="text-base font-button font-black text-[#1E1E1E] flex items-center gap-2"><span>🎯</span> Partida Rápida</span><p className="text-xs text-[#1E1E1E]/60 mt-1 font-body">Partida normal sem progresso salvo.</p></button>
-              <button onClick={() => setSessionSaveMode("SAVED")} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${sessionSaveMode === "SAVED" ? "bg-green-100/60 border-green-600 ring-2 ring-green-600/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-green-600 text-white font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">PERSISTENTE ⭐</span><span className="text-base font-button font-black text-green-800 flex items-center gap-2"><span>💾</span> Partida Salva</span><p className="text-xs text-[#1E1E1E]/60 mt-1 font-body">Salva sua partida e permite continuar mais tarde!</p></button>
-            </div>
-          </div>
-
-          {/* 2. MODO DE TREINAMENTO */}
-          <div className="space-y-3 pt-3 border-t border-[#D9D9D9]/60">
-            <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>🕹️</span> <span>2. Modo de Jogo:</span></label>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              <button onClick={() => { setSelectedMode("NORMAL"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm ${selectedMode === "NORMAL" && !isMultiplayer ? "bg-[#2A75BB]/10 border-[#2A75BB] ring-2 ring-[#2A75BB]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="text-base font-button font-black text-[#1E1E1E] flex items-center gap-1.5"><span>🎲</span> Modo Clássico</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Modo normal de partida.</p></button>
-              <button onClick={() => { setSelectedMode("ADVANCED"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "ADVANCED" && !isMultiplayer ? "bg-[#EE1515]/10 border-[#EE1515] ring-2 ring-[#EE1515]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#FFCB05] text-[#1B4F9C] font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Aprender ⭐</span><span className="text-base font-button font-black text-[#EE1515] flex items-center gap-1.5"><span>🧠</span> Aprender</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Modo para aprender a pokédex.</p></button>
-              <button onClick={() => setIsMultiplayer(true)} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm ${isMultiplayer ? "bg-purple-100 border-purple-600 ring-2 ring-purple-600/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="text-base font-button font-black text-purple-950 flex items-center gap-1.5"><span>⚔️</span> Modo Versus</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Disputa de turnos em 1v1 ou 2v2!</p></button>
-              <button onClick={() => { setSelectedMode("TYPE_STANDARD"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "TYPE_STANDARD" ? "bg-[#FFCB05]/20 border-[#FFCB05] ring-2 ring-[#FFCB05]/30" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#FFCB05] text-[#1B4F9C] font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Novo</span><span className="text-base font-button font-black text-[#1B4F9C] flex items-center gap-1.5"><span>⚡</span> Tipos: Rápido</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Encontre uma fraqueza por vez.</p></button>
-              <button onClick={() => { setSelectedMode("TYPE_HARD"); setIsMultiplayer(false); }} className={`p-4 rounded-2xl border-2 text-left transition flex flex-col justify-between shadow-sm relative overflow-hidden ${selectedMode === "TYPE_HARD" ? "bg-[#EE1515]/10 border-[#EE1515] ring-2 ring-[#EE1515]/20" : "bg-[#F5F5F5] border-[#D9D9D9] hover:bg-[#FFFFFF]"}`}><span className="absolute top-0 right-0 bg-[#EE1515] text-white font-stats font-black text-[9px] px-2 py-0.5 rounded-bl uppercase">Desafio</span><span className="text-base font-button font-black text-[#EE1515] flex items-center gap-1.5"><span>🧠</span> Tipos: Mestre</span><p className="text-xs text-[#1E1E1E]/60 mt-1.5 font-body">Descubra todas as fraquezas.</p></button>
-            </div>
-            {isTypeQuiz && <div className="rounded-2xl border-2 border-[#FFCB05] bg-yellow-50 p-3 text-xs font-body font-semibold text-[#1B4F9C]">⚡ Os desafios de tipos usam combinações que existem em Pokémon reais. As opções de região, mídia e filtros abaixo não se aplicam e foram bloqueadas.</div>}
-            {isMultiplayer && (
-              <div className="p-4 bg-purple-50 rounded-2xl border-2 border-purple-300 space-y-3 animate-fade-in font-stats mt-2">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2"><span className="text-xs font-black text-purple-900 uppercase">⚔️ Formato da Arena:</span><div className="flex gap-1.5 bg-white p-1 rounded-xl border border-purple-200"><button onClick={() => setMultiplayerType('FFA')} className={`px-4 py-1.5 rounded-lg text-xs font-bold ${multiplayerType === 'FFA' ? 'bg-purple-600 text-white shadow' : 'text-gray-600'}`}>1v1 (Até 10 Jogadores)</button><button onClick={() => setMultiplayerType('TEAMS')} className={`px-4 py-1.5 rounded-lg text-xs font-bold ${multiplayerType === 'TEAMS' ? 'bg-purple-600 text-white shadow' : 'text-gray-600'}`}>2v2 (Até 5 Duplas)</button></div></div>
-                <div className="flex items-center justify-between text-xs font-bold text-gray-700"><span>Quantidade de {multiplayerType === 'FFA' ? 'Treinadores' : 'Duplas'}: <b className="text-purple-900 text-sm">{playerCount}</b></span><input type="range" min="2" max={multiplayerType === 'FFA' ? 10 : 5} value={playerCount} onChange={(e) => setPlayerCount(Number(e.target.value))} className="w-40 sm:w-56 accent-purple-600 cursor-pointer" /></div>
-              </div>
-            )}
-          </div>
-
-          {/* 3. SELEÇÃO DE REGIÃO */}
-          <div className={`space-y-3 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
-            <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>📍</span> <span>3. Escolha a Região (Deslize para os lados):</span></label>
-            <div className="flex flex-row items-stretch gap-3 overflow-x-auto pb-3 pt-1 custom-scrollbar snap-x">
-              {REGIONS_LIST.map((reg) => {
-                const isSelected = selectedRegion === reg.id;
-                return (
-                  <button key={reg.id} onClick={() => setSelectedRegion(reg.id as Region)} className={`shrink-0 min-w-[150px] sm:min-w-[170px] snap-start relative group overflow-hidden rounded-2xl p-3.5 text-left transition flex flex-col justify-between border-2 ${isSelected ? `bg-gradient-to-br ${reg.badgeBg} text-[#FFFFFF] border-transparent shadow-lg scale-102 ring-2 ring-[#FFCB05]` : "bg-[#F5F5F5] text-[#1E1E1E] border-[#D9D9D9] hover:border-[#2A75BB] shadow-sm"}`}>
-                    <div className="z-10 flex flex-col space-y-1 mb-6"><span className="text-sm font-button font-black leading-tight">{reg.name}</span><span className={`text-[10px] font-stats font-bold px-2 py-0.5 rounded w-fit ${isSelected ? "bg-black/30 text-[#FFCB05]" : "bg-[#D9D9D9]/70 text-[#1E1E1E]/80"}`}>{reg.total} PKMN</span></div>
-                    <div className="absolute bottom-1 right-1 w-16 h-16 group-hover:scale-110 transition-transform"><Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${reg.mascotId}.png`} alt={reg.name} fill sizes="64px" className="object-contain drop-shadow-md" unoptimized /></div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4. FILTROS COM BOTÃO DE DIFICULDADE */}
-          <div className={`space-y-3 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
-            <div className="flex items-center justify-between"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] flex items-center gap-1.5"><span>🔥</span> <span>4. Escolher por tipo e Raridade:</span></label>{(selectedTypes.length > 0 || onlyLegendaries || onlyMythicals || onlyUltraBeasts || onlyParadox || onlyDifficult) && <button onClick={clearFilters} className="text-xs text-[#EE1515] font-button font-black hover:underline bg-red-50 px-2.5 py-1 rounded border border-red-200">Limpar ✕</button>}</div>
-
-            <div className="flex flex-wrap gap-2">
-              <button onClick={() => setOnlyLegendaries(!onlyLegendaries)} className={`px-3.5 py-1.5 rounded-xl border text-xs font-button font-bold transition ${onlyLegendaries ? "bg-[#FFCB05] border-[#1E1E1E] font-black shadow" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}>👑 Lendários</button>
-              <button onClick={() => setOnlyMythicals(!onlyMythicals)} className={`px-3.5 py-1.5 rounded-xl border text-xs font-button font-bold transition ${onlyMythicals ? "bg-purple-600 text-white font-black shadow" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}>✨ Míticos</button>
-              <button onClick={() => setOnlyUltraBeasts(!onlyUltraBeasts)} className={`px-3.5 py-1.5 rounded-xl border text-xs font-button font-bold transition ${onlyUltraBeasts ? "bg-cyan-600 text-white font-black shadow" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}>🌌 Ultra Beasts</button>
-              <button onClick={() => setOnlyParadox(!onlyParadox)} className={`px-3.5 py-1.5 rounded-xl border text-xs font-button font-bold transition ${onlyParadox ? "bg-rose-600 text-white font-black shadow" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}>⏳ Paradox</button>
-
-              {/* ⭐ NOVO BOTÃO: JOGAR SÓ DIFICULDADES */}
-              <button onClick={() => setOnlyDifficult(!onlyDifficult)} className={`px-3.5 py-1.5 rounded-xl border text-xs font-button font-bold transition relative overflow-hidden ${onlyDifficult ? "bg-red-600 text-white font-black shadow-md border-transparent" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}>
-                ⚠️ Minhas Dificuldades
-              </button>
-            </div>
-
-            <div className="flex flex-row items-center gap-2.5 overflow-x-auto pb-3 pt-1 custom-scrollbar snap-x">
-              {TYPES_LIST.map((type) => {
-                const isSelected = selectedTypes.includes(type.name);
-                return (
-                  <button key={type.name} onClick={() => toggleType(type.name)} className={`shrink-0 min-w-[120px] sm:min-w-[135px] snap-start p-2.5 rounded-2xl border-2 flex items-center justify-between gap-2 transition shadow-sm group ${isSelected ? `${type.bg} border-transparent text-white font-black scale-102 ring-2 ring-[#FFCB05]` : "bg-[#F5F5F5] border-[#D9D9D9] text-gray-700 hover:bg-white font-bold hover:border-gray-400"}`}>
-                    <span className="text-xs font-button">{type.name}</span>
-                    <div className="relative w-8 h-8 shrink-0 flex items-center justify-center rounded-full drop-shadow-sm group-hover:scale-110 transition-transform"><Image src={`https://raw.githubusercontent.com/duiker101/pokemon-type-svg-icons/master/icons/${type.en}.svg`} alt={type.name} fill className="object-contain" unoptimized /></div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 5. ESTILO E ORDEM */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
-            <div className="space-y-2"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">🎨 5. Estilo do Pokémon:</label><div className="grid grid-cols-3 gap-2"><button onClick={() => setMediaStyle('IMAGE')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'IMAGE' ? "bg-[#1B4F9C] border-[#1B4F9C] text-white font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>🖼️</span> <span>Foto Normal</span></button><button onClick={() => setMediaStyle('SILHOUETTE')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'SILHOUETTE' ? "bg-purple-800 border-purple-600 text-white font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>👤</span> <span>Silhueta</span></button><button onClick={() => setMediaStyle('AUDIO')} className={`py-3 px-2 rounded-xl border-2 text-xs font-button font-bold transition flex flex-col items-center justify-center gap-1 shadow-sm ${mediaStyle === 'AUDIO' ? "bg-[#FFCB05] border-yellow-500 text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-gray-700 hover:bg-white"}`}><span>🔊</span> <span>Som (Grito)</span></button></div></div>
-            <div className="space-y-2"><label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">🔀 Ordem do Pokémon:</label><div className="grid grid-cols-2 gap-2"><button onClick={() => setSelectedOrder("RANDOM")} className={`py-3.5 px-3 rounded-xl border-2 text-xs font-button font-bold transition flex items-center justify-center gap-1.5 shadow-sm ${selectedOrder === "RANDOM" ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🎲</span> Aleatória</button><button onClick={() => setSelectedOrder("POKEDEX")} className={`py-3.5 px-3 rounded-xl border-2 text-xs font-button font-bold transition flex items-center justify-center gap-1.5 shadow-sm ${selectedOrder === "POKEDEX" ? "bg-[#FFCB05] border-[#1B4F9C] text-[#1B4F9C] font-black" : "bg-[#F5F5F5] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🔢</span> Numérica</button></div></div>
-          </div>
-
-          {/* 6. RESPOSTA */}
-          <div className={`space-y-2 pt-3 border-t border-[#D9D9D9]/60 ${isTypeQuiz ? "pointer-events-none opacity-40" : ""}`} aria-disabled={isTypeQuiz}>
-            <label className="text-xs sm:text-sm font-button font-extrabold uppercase tracking-wider text-[#1B4F9C] block">✍️ 6. Modo de Resposta:</label>
-            <div className="grid grid-cols-2 gap-3"><button onClick={() => setSelectedAnswerMode("OPTIONS")} className={`py-3.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-button font-bold transition flex items-center justify-center gap-2 shadow-sm ${selectedAnswerMode === "OPTIONS" ? "bg-[#1B4F9C] border-[#1B4F9C] text-white font-black" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}><span>🔘</span> <span>Alternativas</span></button><button onClick={() => setSelectedAnswerMode("TYPING")} className={`py-3.5 px-4 rounded-xl border-2 text-xs sm:text-sm font-button font-bold transition flex items-center justify-center gap-2 shadow-sm ${selectedAnswerMode === "TYPING" ? "bg-[#EE1515] border-[#EE1515] text-white font-black" : "bg-[#F5F5F5] border-[#D9D9D9] text-[#1E1E1E]/70 hover:bg-white"}`}><span>⌨️</span> <span>Digitar</span></button></div>
-          </div>
-
-          {/* 🚀 BOTÃO INICIAR */}
-          <div className="pt-3">
-            <button onClick={handleStartGame} disabled={isLoadingQueue} className={`w-full py-5 bg-gradient-to-r ${sessionSaveMode === 'SAVED' ? 'from-green-600 via-emerald-600 to-green-600' : 'from-[#EE1515] via-[#cc1010] to-[#EE1515]'} hover:from-[#ff1f1f] text-white font-button font-black text-lg sm:text-xl rounded-2xl shadow-xl flex items-center justify-center gap-3 border-2 border-[#FFCB05]/40 transition active:scale-99 ${isLoadingQueue ? "opacity-75 cursor-not-allowed" : ""}`}>
-              {isLoadingQueue ? <span>{isTypeQuiz ? "PREPARANDO DESAFIO DE TIPOS..." : "GERANDO POKÉDEX..."}</span> : <><span>🚀</span><span>{isTypeQuiz ? (sessionSaveMode === 'SAVED' ? "INICIAR DESAFIO DE TIPOS SALVO" : "INICIAR DESAFIO DE TIPOS") : isMultiplayer ? "INICIAR DISPUTA NA ARENA" : sessionSaveMode === 'SAVED' ? "INICIAR NOVO GAME SALVO" : "INICIAR PARTIDA RÁPIDA"}</span><span>⚡</span></>}
-            </button>
-          </div>
-
-        </div>
+        <aside className="lobby-ticket" id="lobby-ticket" aria-label="Resumo da partida">
+          <div className="lobby-ticket-top"><span>SEU PRÓXIMO DESAFIO</span><span className="lobby-ticket-chip">{typeQuiz ? "TIPOS" : "POKÉMON"}</span></div>
+          <div className="lobby-ticket-art"><div className="lobby-ticket-orbit" /><span className="lobby-ticket-number" aria-hidden="true">{typeQuiz ? "×2" : String(selectedRegion.mascot).padStart(3, "0")}</span><Image key={typeQuiz ? "types" : selectedRegion.mascot} src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${typeQuiz ? 448 : selectedRegion.mascot}.png`} alt="" fill sizes="(max-width: 850px) 280px, 330px" className="lobby-mascot" priority unoptimized /></div>
+          <div className="lobby-ticket-content"><p className="game-eyebrow">{typeQuiz ? "ESTRATÉGIA EM AÇÃO" : selectedRegion.name.toUpperCase()}</p><h2>{selectedMode.name}</h2><p>{selectedMode.description}</p><dl><div><dt>Desafio</dt><dd>{typeQuiz ? mode === "TYPE_HARD" ? "Todas as fraquezas" : "Ataque supereficaz" : mode === "ADVANCED" ? "3 etapas de aprendizado" : `${mediaStyle === "AUDIO" ? "Som" : mediaStyle === "SILHOUETTE" ? "Silhueta" : "Imagem"} + ${answerMode === "TYPING" ? "digitação" : "alternativas"}`}</dd></div>{!typeQuiz && <div><dt>{filtered ? "Seleção" : "Pokémon na região"}</dt><dd>{filtered ? "Filtros personalizados" : `${max - min + 1} Pokémon`}</dd></div>}{mode === "VERSUS" && <div><dt>Na disputa</dt><dd>{playerCount} {multiplayerType === "TEAMS" ? "duplas" : "treinadores"}</dd></div>}<div><dt>Progresso</dt><dd>{persistent ? "Salvo para continuar" : "Partida rápida"}</dd></div></dl>
+          <button className={`lobby-launch ${starting ? "is-loading" : ""}`} disabled={starting || isSyncing} onClick={() => void start()}><span className="lobby-launch-icon"><GameGlyph name={starting ? "target" : "play"} /></span><span>{starting ? "Preparando arena…" : isSyncing ? "Sincronizando…" : "Iniciar partida"}<small>{starting ? "SEU DESAFIO ESTÁ CHEGANDO" : "VAMOS NESSA, TREINADOR"}</small></span><GameGlyph name="arrow" /></button>
+          {isSyncing && <p className="lobby-launch-note" role="status">Carregando seu progresso salvo. Só um instante.</p>}{error && <p className="lobby-error" role="alert">{error}</p>}<p className="lobby-ticket-foot"><span />Tudo pronto para o próximo nível.</p></div>
+        </aside>
       </div>
-
-      {/* ❓ MODAL COMO JOGAR */}
-      <AnimatePresence>
-        {showHowToPlay && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-            <button className="absolute inset-0" onClick={() => setShowHowToPlay(false)} aria-label="Fechar instruções" />
-            <motion.section initial={{ scale: 0.94, y: 12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.94, y: 12 }} className="relative z-10 w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
-              <button onClick={() => setShowHowToPlay(false)} className="absolute right-4 top-4 rounded-full bg-[#F5F5F5] px-2.5 py-1 font-black text-[#1E1E1E]" aria-label="Fechar">✕</button>
-              <h2 className="font-heading text-2xl font-black text-[#1B4F9C]">Como jogar</h2>
-              <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-[#1E1E1E]/75">
-                <li>Escolha o modo, a região e os filtros desejados.</li>
-                <li>Defina se prefere imagem, silhueta ou o grito do Pokémon.</li>
-                <li>Inicie a partida e acerte o maior número de Pokémon possível.</li>
-              </ol>
-            </motion.section>
-          </motion.div>
-        )}
-      </AnimatePresence>
-      <HomeTour userId={user.uid} />
-    </main>
-  );
+    </div>
+    <div className="lobby-mobile-dock"><a href="#lobby-ticket"><small>SEU DESAFIO</small><strong>{selectedMode.name}</strong><span>Ver resumo</span></a><button disabled={starting || isSyncing} onClick={() => void start()}><GameGlyph name={starting ? "target" : "play"} />{starting ? "Preparando…" : isSyncing ? "Sincronizando…" : "Iniciar partida"}</button>{error && <p>{error}</p>}</div>
+  </main>;
 }

@@ -1,4 +1,4 @@
-import { fetchIdsByType } from "@/queries/pokeApi";
+import { fetchPokemonMasterList } from "@/queries/pokeApi";
 import { calculateDefenseMultipliers, POKEMON_TYPES } from "@/lib/typeEffectiveness";
 
 export interface TypeQuizQuestion {
@@ -17,8 +17,8 @@ export function getEffectiveTypes(defendingTypes: string[]) {
 // Deriva pares exclusivamente das espécies existentes na Pokédex, sem inventar
 // combinações teóricas que não existem em nenhum Pokémon.
 export async function fetchTypeQuizQuestions(): Promise<TypeQuizQuestion[]> {
-  const idsByType = await Promise.all(typeNames.map((type) => fetchIdsByType(type)));
-  const idSets = idsByType.map((ids) => new Set(ids.filter((id) => id >= 1 && id <= 1025)));
+  const catalog = await fetchPokemonMasterList();
+  const idSets = typeNames.map(type => new Set(catalog.filter(pokemon => pokemon.types.includes(type)).map(pokemon => pokemon.id)));
   const questions: TypeQuizQuestion[] = typeNames.map((type) => ({
     key: type,
     defendingTypes: [type],

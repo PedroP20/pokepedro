@@ -1,0 +1,2381 @@
+{
+  "checkedAt": "2026-10-08T00:37:25.737Z",
+  "months": [
+    "october-2026",
+    "november-2026"
+  ],
+  "events": [
+    {
+      "id": "official-calendar-147",
+      "name": "Thundurus Reides Sombrosos",
+      "categoryId": "shadow",
+      "summary": "Reides Sombrosos. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 4,
+        "name": "Reides Sombrosos"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-09-09T00:00",
+            "end": "2026-10-07T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 642,
+          "name": "Thundurus",
+          "types": [
+            "Elétrico",
+            "Voador"
+          ],
+          "dexNumber": 642
+        }
+      ],
+      "imageId": 642,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20260703_pgo_eventcalendar_shadowraids_1024x576_nologo.jpg",
+          "alt": "Thundurus Reides Sombrosos"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm642.fINCARNATE_85344b30296fd98a1bc6de1a03eb30628f0ef0cdb8ad27faa8f93c4d5c3db767.png",
+          "alt": "Thundurus"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-152",
+      "name": "Dinamax Sobble Batalhas Max",
+      "categoryId": "max",
+      "summary": "Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 2,
+        "name": "Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-09-28T00:00",
+            "end": "2026-10-05T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 816,
+          "name": "Sobble",
+          "types": [
+            "Água"
+          ],
+          "dexNumber": 816
+        }
+      ],
+      "imageId": 816,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Dinamax Sobble Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm816_32c9c1ba09d590cec42c6c9eac698e89e9f86f7e62e659786ac344f53649cdb6.png",
+          "alt": "Sobble"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-120",
+      "name": "Festival da Colheita: Pomar de Applin",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-harvest-festival-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-09-29T10:00",
+            "end": "2026-10-05T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Harvest_Festival_2026_v4-1024x512-nologo.jpg",
+          "alt": "Festival da Colheita: Pomar de Applin"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/harvest-festival-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-156",
+      "name": "Xerneas Reides de cinco estrelas",
+      "categoryId": "five-star",
+      "summary": "Reides de Cinco Estrelas. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 5,
+        "name": "Reides de cinco estrelas"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-09-30T00:00",
+            "end": "2026-10-07T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 716,
+          "name": "Xerneas",
+          "types": [
+            "Fada"
+          ],
+          "dexNumber": 716
+        }
+      ],
+      "imageId": 716,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Xerneas Reides de cinco estrelas"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm716_52f527cba5273a4ef9773b85b41eb2124c61ce6cb35b609e5597c39870c27cef.png",
+          "alt": "Xerneas"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-161",
+      "name": "Mega Victreebel Megarreides",
+      "categoryId": "mega",
+      "summary": "Megarreides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 3,
+        "name": "Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-09-30T00:00",
+            "end": "2026-10-07T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 71,
+          "name": "Mega Victreebel",
+          "dexNumber": 71
+        }
+      ],
+      "imageId": 71,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Mega Victreebel Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm71.fMEGA_077c43fa421717cbcf68f3365986960fb7e1e246e736c5b6d51f5d2111fcf565.png",
+          "alt": "Mega Victreebel"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-193",
+      "name": "Quinta de Batalhas GO",
+      "categoryId": "go-battle",
+      "summary": "Quinta de Batalhas GO. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 24,
+        "name": "Quinta de Batalhas GO"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-01T00:00",
+            "end": "2026-10-02T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GO_Battle_Thursday_v2_1024x576-nologo.jpg",
+          "alt": "Quinta de Batalhas GO"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-171",
+      "name": "Seedot Horas de Holofote",
+      "categoryId": "spotlight",
+      "summary": "Hora de Holofote. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 22,
+        "name": "Horas de Holofote"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-01T18:00",
+            "end": "2026-10-01T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 273,
+          "name": "Seedot",
+          "types": [
+            "Planta"
+          ],
+          "dexNumber": 273
+        }
+      ],
+      "imageId": 273,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/generic_pgo_logo.png",
+          "alt": "Seedot Horas de Holofote"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm273_10e9dddca6bf3133f630c8e13b985959befda2c0cb44b9cf09fac4495d74bbae.png",
+          "alt": "Seedot"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-184",
+      "name": "Sexta da Amizade",
+      "categoryId": "friendship",
+      "summary": "Sexta da Amizade. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 25,
+        "name": "Sexta da Amizade"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-02T00:00",
+            "end": "2026-10-03T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Friendship_Fridays_v2-1024x576-nologo.jpg",
+          "alt": "Sexta da Amizade"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-121",
+      "name": "Festival da Colheita: A Invasão",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-harvest-festival-tgr-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-02T00:00",
+            "end": "2026-10-05T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_TGR_Takeover_Harvest_Festival_2026_v3-1024x512-nologo.jpg",
+          "alt": "Festival da Colheita: A Invasão"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/harvest-festival-tgr-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-162",
+      "name": "Cinderace Dia de Batalhas Max",
+      "categoryId": "max-day",
+      "summary": "Dia de Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-gigantamax-cinderace-max-battle-day-2026"
+      ],
+      "officialTopic": {
+        "id": 16,
+        "name": "Dia de Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-03T14:00",
+            "end": "2026-10-03T17:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 815,
+          "name": "Cinderace",
+          "types": [
+            "Fogo"
+          ],
+          "dexNumber": 815
+        }
+      ],
+      "imageId": 815,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GMAX_Cinderance_Max-Battle_v2-1024x576.jpg",
+          "alt": "Cinderace Dia de Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm815_dd0147ef137d8ac9ebea31e9deb65a261f56e3d5f42906a1c4bea96d7343a224.png",
+          "alt": "Cinderace"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/gigantamax-cinderace-max-battle-day-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-198",
+      "name": "Domingo de Paisagens",
+      "categoryId": "scenery",
+      "summary": "Domingo de Paisagens. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 26,
+        "name": "Domingo de Paisagens"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-04T00:00",
+            "end": "2026-10-05T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/NIN_PGO_Mateo-Key-Art_1024x576_nologo.png",
+          "alt": "Domingo de Paisagens"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-163",
+      "name": "Semana Mundial do Espaço 2026",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-world-space-week-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-04T00:00",
+            "end": "2026-10-11T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Space_Week_Collab_Event_v1-1024x576.jpg",
+          "alt": "Semana Mundial do Espaço 2026"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/world-space-week-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-203",
+      "name": "Dinamax Sizzlipede Batalhas Max",
+      "categoryId": "max",
+      "summary": "Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 2,
+        "name": "Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-05T00:00",
+            "end": "2026-10-12T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 850,
+          "name": "Sizzlipede",
+          "types": [
+            "Fogo",
+            "Inseto"
+          ],
+          "dexNumber": 850
+        }
+      ],
+      "imageId": 850,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Dinamax Sizzlipede Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm850_b7b25a8d950719d21d5759f95825ce6bdfe1b0100a0db8ff37380101ba140bf0.png",
+          "alt": "Sizzlipede"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-176",
+      "name": "Segunda Max",
+      "categoryId": "max-monday",
+      "summary": "Segunda Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 19,
+        "name": "Segunda Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-05T06:00",
+            "end": "2026-10-05T21:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 850,
+          "name": "Sizzlipede",
+          "types": [
+            "Fogo",
+            "Inseto"
+          ],
+          "dexNumber": 850
+        }
+      ],
+      "imageId": 850,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Segunda Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm850_b7b25a8d950719d21d5759f95825ce6bdfe1b0100a0db8ff37380101ba140bf0.png",
+          "alt": "Sizzlipede"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-189",
+      "name": "Terça de Vitrine",
+      "categoryId": "showcase",
+      "summary": "Terça de Vitrine. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 23,
+        "name": "Terça de Vitrine"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-06T10:00",
+            "end": "2026-10-06T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250105_pgo_pokestop_showcase_1920x1080.jpg",
+          "alt": "Terça de Vitrine"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-207",
+      "name": "Yveltal Reides de cinco estrelas",
+      "categoryId": "five-star",
+      "summary": "Reides de Cinco Estrelas. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 5,
+        "name": "Reides de cinco estrelas"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-07T00:00",
+            "end": "2026-10-14T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 717,
+          "name": "Yveltal",
+          "types": [
+            "Sombrio",
+            "Voador"
+          ],
+          "dexNumber": 717
+        }
+      ],
+      "imageId": 717,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Yveltal Reides de cinco estrelas"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm717_faba851a5f92facf208c685591e15610c5e0a08108fca6c957cd1fdf14558976.png",
+          "alt": "Yveltal"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-211",
+      "name": "Mega Blastoise Megarreides",
+      "categoryId": "mega",
+      "summary": "Megarreides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 3,
+        "name": "Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-07T00:00",
+            "end": "2026-10-14T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 9,
+          "name": "Mega Blastoise",
+          "dexNumber": 9
+        }
+      ],
+      "imageId": 9,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Mega Blastoise Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm9.fMEGA_720f3ba4e7ed36bd927f344cd098b27eebe8b3f632c0898f07c1d4281a2dde29.png",
+          "alt": "Mega Blastoise"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-202",
+      "name": "Landorus Reides Sombrosos",
+      "categoryId": "shadow",
+      "summary": "Reides Sombrosos. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 4,
+        "name": "Reides Sombrosos"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-07T00:00",
+            "end": "2026-11-04T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 645,
+          "name": "Landorus",
+          "types": [
+            "Terrestre",
+            "Voador"
+          ],
+          "dexNumber": 645
+        }
+      ],
+      "imageId": 645,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20260703_pgo_eventcalendar_shadowraids_1024x576_nologo.jpg",
+          "alt": "Landorus Reides Sombrosos"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm645.fINCARNATE_6497bc47cf41a1df0931f232b76ccf1c508460b4db37f6353f72a26b700b67e5.png",
+          "alt": "Landorus"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/november-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-180",
+      "name": "Yveltal hora de Reides",
+      "categoryId": "raid-hour",
+      "summary": "Hora de Reides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 21,
+        "name": "hora de Reides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-07T18:00",
+            "end": "2026-10-07T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 717,
+          "name": "Yveltal",
+          "types": [
+            "Sombrio",
+            "Voador"
+          ],
+          "dexNumber": 717
+        }
+      ],
+      "imageId": 717,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Yveltal hora de Reides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm717_faba851a5f92facf208c685591e15610c5e0a08108fca6c957cd1fdf14558976.png",
+          "alt": "Yveltal"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-194",
+      "name": "Quinta de Batalhas GO",
+      "categoryId": "go-battle",
+      "summary": "Quinta de Batalhas GO. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 24,
+        "name": "Quinta de Batalhas GO"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-08T00:00",
+            "end": "2026-10-09T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GO_Battle_Thursday_v2_1024x576-nologo.jpg",
+          "alt": "Quinta de Batalhas GO"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-172",
+      "name": "Elgyem Horas de Holofote",
+      "categoryId": "spotlight",
+      "summary": "Hora de Holofote. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 22,
+        "name": "Horas de Holofote"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-08T18:00",
+            "end": "2026-10-08T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 605,
+          "name": "Elgyem",
+          "types": [
+            "Psíquico"
+          ],
+          "dexNumber": 605
+        }
+      ],
+      "imageId": 605,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/generic_pgo_logo.png",
+          "alt": "Elgyem Horas de Holofote"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm605_76760b65204dfcc7fe5244035996b3b6d4ee5c64e4359841273ec4e0acdc1a6b.png",
+          "alt": "Elgyem"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-185",
+      "name": "Sexta da Amizade",
+      "categoryId": "friendship",
+      "summary": "Sexta da Amizade. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 25,
+        "name": "Sexta da Amizade"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-09T00:00",
+            "end": "2026-10-10T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Friendship_Fridays_v2-1024x576-nologo.jpg",
+          "alt": "Sexta da Amizade"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-164",
+      "name": "outubro Dia Comunitário",
+      "categoryId": "community",
+      "summary": "Dia Comunitário. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-communityday-october-2026-zorua"
+      ],
+      "officialTopic": {
+        "id": 6,
+        "name": "Dia Comunitário"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-10T14:00",
+            "end": "2026-10-10T17:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 570,
+          "name": "Zorua",
+          "types": [
+            "Sombrio"
+          ],
+          "dexNumber": 570
+        }
+      ],
+      "imageId": 570,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO_MCS_CD_KeyArt_Zorua_v3-1024x576-nologo.jpg",
+          "alt": "outubro Dia Comunitário"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm570_cfc97c48d084e6620e6501500aa5bce2f170a30361120bb835aee1315263071c.png",
+          "alt": "Zorua"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/communityday-october-2026-zorua",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-199",
+      "name": "Domingo de Paisagens",
+      "categoryId": "scenery",
+      "summary": "Domingo de Paisagens. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 26,
+        "name": "Domingo de Paisagens"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-11T00:00",
+            "end": "2026-10-12T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/NIN_PGO_Mateo-Key-Art_1024x576_nologo.png",
+          "alt": "Domingo de Paisagens"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-204",
+      "name": "Dinamax Rookidee Batalhas Max",
+      "categoryId": "max",
+      "summary": "Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 2,
+        "name": "Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-12T00:00",
+            "end": "2026-10-19T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 821,
+          "name": "Rookidee",
+          "types": [
+            "Voador"
+          ],
+          "dexNumber": 821
+        }
+      ],
+      "imageId": 821,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Dinamax Rookidee Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm821_88eb1593db97300baea89174e7f644b2e4024426f64fd3176e7b59785a874d04.png",
+          "alt": "Rookidee"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-177",
+      "name": "Segunda Max",
+      "categoryId": "max-monday",
+      "summary": "Segunda Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 19,
+        "name": "Segunda Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-12T06:00",
+            "end": "2026-10-12T21:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 821,
+          "name": "Rookidee",
+          "types": [
+            "Voador"
+          ],
+          "dexNumber": 821
+        }
+      ],
+      "imageId": 821,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Segunda Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm821_88eb1593db97300baea89174e7f644b2e4024426f64fd3176e7b59785a874d04.png",
+          "alt": "Rookidee"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-190",
+      "name": "Terça de Vitrine",
+      "categoryId": "showcase",
+      "summary": "Terça de Vitrine. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 23,
+        "name": "Terça de Vitrine"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-13T10:00",
+            "end": "2026-10-13T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250105_pgo_pokestop_showcase_1920x1080.jpg",
+          "alt": "Terça de Vitrine"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-165",
+      "name": "Maratona das Folhas: Caminhada Companheira",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-fall-marathon-buddy-trek-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-13T10:00",
+            "end": "2026-10-19T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Fall_Marathon_Buddy_Trek_v3-1024x576.jpg",
+          "alt": "Maratona das Folhas: Caminhada Companheira"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/fall-marathon-buddy-trek-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-208",
+      "name": "Dialga Reides de cinco estrelas",
+      "categoryId": "five-star",
+      "summary": "Reides de Cinco Estrelas. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 5,
+        "name": "Reides de cinco estrelas"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-14T00:00",
+            "end": "2026-10-21T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 483,
+          "name": "Dialga",
+          "types": [
+            "Aço",
+            "Dragão"
+          ],
+          "dexNumber": 483
+        }
+      ],
+      "imageId": 483,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Dialga Reides de cinco estrelas"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm483_6891dded9d428079cd6d82a050a72b28795b46b97fecd7602e96bad0d4ed7d62.png",
+          "alt": "Dialga"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-212",
+      "name": "Mega Dragonite Megarreides",
+      "categoryId": "mega",
+      "summary": "Megarreides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 3,
+        "name": "Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-14T00:00",
+            "end": "2026-10-21T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 149,
+          "name": "Mega Dragonite",
+          "dexNumber": 149
+        }
+      ],
+      "imageId": 149,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Mega Dragonite Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm149.fMEGA_1e6f12db6f6ed6eb1ca0e26cc97b02ff1fa061eac1c6038781feb2bf4c118ab8.png",
+          "alt": "Mega Dragonite"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-181",
+      "name": "Dialga hora de Reides",
+      "categoryId": "raid-hour",
+      "summary": "Hora de Reides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 21,
+        "name": "hora de Reides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-14T18:00",
+            "end": "2026-10-14T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 483,
+          "name": "Dialga",
+          "types": [
+            "Aço",
+            "Dragão"
+          ],
+          "dexNumber": 483
+        }
+      ],
+      "imageId": 483,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Dialga hora de Reides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm483_6891dded9d428079cd6d82a050a72b28795b46b97fecd7602e96bad0d4ed7d62.png",
+          "alt": "Dialga"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-195",
+      "name": "Quinta de Batalhas GO",
+      "categoryId": "go-battle",
+      "summary": "Quinta de Batalhas GO. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 24,
+        "name": "Quinta de Batalhas GO"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-15T00:00",
+            "end": "2026-10-16T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GO_Battle_Thursday_v2_1024x576-nologo.jpg",
+          "alt": "Quinta de Batalhas GO"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-173",
+      "name": "Stufful Horas de Holofote",
+      "categoryId": "spotlight",
+      "summary": "Hora de Holofote. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 22,
+        "name": "Horas de Holofote"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-15T18:00",
+            "end": "2026-10-15T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 759,
+          "name": "Stufful",
+          "types": [
+            "Normal",
+            "Lutador"
+          ],
+          "dexNumber": 759
+        }
+      ],
+      "imageId": 759,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/generic_pgo_logo.png",
+          "alt": "Stufful Horas de Holofote"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm759_bb1f3dd8bda9c1e39cc6882d0de3834f1a678c14dccd6ffc8feaec7f04b879a3.png",
+          "alt": "Stufful"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-186",
+      "name": "Sexta da Amizade",
+      "categoryId": "friendship",
+      "summary": "Sexta da Amizade. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 25,
+        "name": "Sexta da Amizade"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-16T00:00",
+            "end": "2026-10-17T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Friendship_Fridays_v2-1024x576-nologo.jpg",
+          "alt": "Sexta da Amizade"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-166",
+      "name": "Sandile Dia de chocar",
+      "categoryId": "hatch",
+      "summary": "Dias de chocar. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-sandile-hatch-day-2026"
+      ],
+      "officialTopic": {
+        "id": 9,
+        "name": "Dia de chocar"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-17T11:00",
+            "end": "2026-10-17T17:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 551,
+          "name": "Sandile",
+          "types": [
+            "Terrestre",
+            "Sombrio"
+          ],
+          "dexNumber": 551
+        }
+      ],
+      "imageId": 551,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Sandile_Hatch_Day_v1-1024x576%20No%20Logo.png",
+          "alt": "Sandile Dia de chocar"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm551_947f8b557d62e0e21a584f46f422051654dc3f5f5a5dc10bb002ba8939102525.png",
+          "alt": "Sandile"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongolive.com/pt-BR/news/sandile-hatch-day-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-200",
+      "name": "Domingo de Paisagens",
+      "categoryId": "scenery",
+      "summary": "Domingo de Paisagens. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 26,
+        "name": "Domingo de Paisagens"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-18T00:00",
+            "end": "2026-10-19T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/NIN_PGO_Mateo-Key-Art_1024x576_nologo.png",
+          "alt": "Domingo de Paisagens"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-205",
+      "name": "Dinamax Sneasel Batalhas Max",
+      "categoryId": "max",
+      "summary": "Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 2,
+        "name": "Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-19T00:00",
+            "end": "2026-10-26T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 215,
+          "name": "Sneasel",
+          "types": [
+            "Sombrio",
+            "Gelo"
+          ],
+          "dexNumber": 215
+        }
+      ],
+      "imageId": 215,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Dinamax Sneasel Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm215_32511e2316abcc6dc1c6b46396165c80268797aa717d5a4940c55ecbc8af2e10.png",
+          "alt": "Sneasel"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-178",
+      "name": "Segunda Max",
+      "categoryId": "max-monday",
+      "summary": "Segunda Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 19,
+        "name": "Segunda Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-19T06:00",
+            "end": "2026-10-19T21:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 215,
+          "name": "Sneasel",
+          "types": [
+            "Sombrio",
+            "Gelo"
+          ],
+          "dexNumber": 215
+        }
+      ],
+      "imageId": 215,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Segunda Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm215_32511e2316abcc6dc1c6b46396165c80268797aa717d5a4940c55ecbc8af2e10.png",
+          "alt": "Sneasel"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-191",
+      "name": "Terça de Vitrine",
+      "categoryId": "showcase",
+      "summary": "Terça de Vitrine. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 23,
+        "name": "Terça de Vitrine"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-20T10:00",
+            "end": "2026-10-20T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250105_pgo_pokestop_showcase_1920x1080.jpg",
+          "alt": "Terça de Vitrine"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-209",
+      "name": "Palkia Reides de cinco estrelas",
+      "categoryId": "five-star",
+      "summary": "Reides de Cinco Estrelas. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 5,
+        "name": "Reides de cinco estrelas"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-21T00:00",
+            "end": "2026-10-28T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 484,
+          "name": "Palkia",
+          "types": [
+            "Água",
+            "Dragão"
+          ],
+          "dexNumber": 484
+        }
+      ],
+      "imageId": 484,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Palkia Reides de cinco estrelas"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm484_457c2b14187eb15510da33f7f8c5e53cbb24b8f5f617ce8f7888dea87d955376.png",
+          "alt": "Palkia"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-213",
+      "name": "Mega Charizard X, Mega Charizard Y Megarreides",
+      "categoryId": "mega",
+      "summary": "Megarreides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 3,
+        "name": "Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-21T00:00",
+            "end": "2026-10-28T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 6,
+          "name": "Mega Charizard X",
+          "dexNumber": 6
+        },
+        {
+          "id": 6,
+          "name": "Mega Charizard Y",
+          "dexNumber": 6
+        }
+      ],
+      "imageId": 6,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Mega Charizard X, Mega Charizard Y Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm6.fMEGA_X_245ed0fdc3c168ce983d3d2e1ee2e2ecaddba8288dfa64e892324d692f042d5a.png",
+          "alt": "Mega Charizard X"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm6.fMEGA_Y_b7a4b4cc7c80203895be2778681774546447e12e87a731fb2369c05ee33c8754.png",
+          "alt": "Mega Charizard Y"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-182",
+      "name": "Palkia hora de Reides",
+      "categoryId": "raid-hour",
+      "summary": "Hora de Reides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 21,
+        "name": "hora de Reides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-21T18:00",
+            "end": "2026-10-21T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 484,
+          "name": "Palkia",
+          "types": [
+            "Água",
+            "Dragão"
+          ],
+          "dexNumber": 484
+        }
+      ],
+      "imageId": 484,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Palkia hora de Reides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm484_457c2b14187eb15510da33f7f8c5e53cbb24b8f5f617ce8f7888dea87d955376.png",
+          "alt": "Palkia"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-196",
+      "name": "Quinta de Batalhas GO",
+      "categoryId": "go-battle",
+      "summary": "Quinta de Batalhas GO. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 24,
+        "name": "Quinta de Batalhas GO"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-22T00:00",
+            "end": "2026-10-23T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GO_Battle_Thursday_v2_1024x576-nologo.jpg",
+          "alt": "Quinta de Batalhas GO"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-174",
+      "name": "Morelull Horas de Holofote",
+      "categoryId": "spotlight",
+      "summary": "Hora de Holofote. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 22,
+        "name": "Horas de Holofote"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-22T18:00",
+            "end": "2026-10-22T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 755,
+          "name": "Morelull",
+          "types": [
+            "Planta",
+            "Fada"
+          ],
+          "dexNumber": 755
+        }
+      ],
+      "imageId": 755,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/generic_pgo_logo.png",
+          "alt": "Morelull Horas de Holofote"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm755_e7b46d78921677ad73995ae53ba48360a1c0919405e6d0bc096e48de4544f097.png",
+          "alt": "Morelull"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-187",
+      "name": "Sexta da Amizade",
+      "categoryId": "friendship",
+      "summary": "Sexta da Amizade. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 25,
+        "name": "Sexta da Amizade"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-23T00:00",
+            "end": "2026-10-24T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Friendship_Fridays_v2-1024x576-nologo.jpg",
+          "alt": "Sexta da Amizade"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-167",
+      "name": "Dia de Batalhas Max: Azelf, Mesprit e Uxie Dinamax",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-dynamax-uxie-mesprit-azelf-max-battle-day-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-24T14:00",
+            "end": "2026-10-24T17:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Lake_Guardians_Max_Battle_Day_v1-1025x576.jpg",
+          "alt": "Dia de Batalhas Max: Azelf, Mesprit e Uxie Dinamax"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/dynamax-uxie-mesprit-azelf-max-battle-day-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-201",
+      "name": "Domingo de Paisagens",
+      "categoryId": "scenery",
+      "summary": "Domingo de Paisagens. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 26,
+        "name": "Domingo de Paisagens"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-25T00:00",
+            "end": "2026-10-26T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/NIN_PGO_Mateo-Key-Art_1024x576_nologo.png",
+          "alt": "Domingo de Paisagens"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-206",
+      "name": "Dinamax Sableye Batalhas Max",
+      "categoryId": "max",
+      "summary": "Batalhas Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 2,
+        "name": "Batalhas Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-26T00:00",
+            "end": "2026-11-02T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 302,
+          "name": "Sableye",
+          "types": [
+            "Sombrio",
+            "Fantasma"
+          ],
+          "dexNumber": 302
+        }
+      ],
+      "imageId": 302,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Dinamax Sableye Batalhas Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm302_8d7be70c53afc2ec4b7bd3436c8c2ee81411b6ed5476e32d1264abea394896e1.png",
+          "alt": "Sableye"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/november-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-179",
+      "name": "Segunda Max",
+      "categoryId": "max-monday",
+      "summary": "Segunda Max. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 19,
+        "name": "Segunda Max"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-26T06:00",
+            "end": "2026-10-26T21:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 302,
+          "name": "Sableye",
+          "types": [
+            "Sombrio",
+            "Fantasma"
+          ],
+          "dexNumber": 302
+        }
+      ],
+      "imageId": 302,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250109_pgo_maxmondays_1920x1080_nologo.jpg",
+          "alt": "Segunda Max"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm302_8d7be70c53afc2ec4b7bd3436c8c2ee81411b6ed5476e32d1264abea394896e1.png",
+          "alt": "Sableye"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-168",
+      "name": "Dia das Bruxas Parte I",
+      "categoryId": "general",
+      "summary": "Eventos. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-halloween-part-1-2026"
+      ],
+      "officialTopic": {
+        "id": 1,
+        "name": "Custom"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-27T00:00",
+            "end": "2026-11-02T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/halloween-part-1-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-192",
+      "name": "Terça de Vitrine",
+      "categoryId": "showcase",
+      "summary": "Terça de Vitrine. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 23,
+        "name": "Terça de Vitrine"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-27T10:00",
+            "end": "2026-10-27T20:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/20250105_pgo_pokestop_showcase_1920x1080.jpg",
+          "alt": "Terça de Vitrine"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-210",
+      "name": "Giratina Reides de cinco estrelas",
+      "categoryId": "five-star",
+      "summary": "Reides de Cinco Estrelas. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 5,
+        "name": "Reides de cinco estrelas"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-28T00:00",
+            "end": "2026-11-04T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 487,
+          "name": "Giratina",
+          "types": [
+            "Fantasma",
+            "Dragão"
+          ],
+          "dexNumber": 487
+        }
+      ],
+      "imageId": 487,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Giratina Reides de cinco estrelas"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm487.fALTERED_d77f870be06e397352e194405a8dd642ae6ef38533c000a6e46360633c39378d.png",
+          "alt": "Giratina"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/november-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-214",
+      "name": "Mega Sableye Megarreides",
+      "categoryId": "mega",
+      "summary": "Megarreides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 3,
+        "name": "Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-28T00:00",
+            "end": "2026-11-04T00:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 302,
+          "name": "Mega Sableye",
+          "dexNumber": 302
+        }
+      ],
+      "imageId": 302,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Mega Sableye Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm302.fMEGA_8b5983e4793337e764bd5c0a906bbde99232a7536d0e962260a3fea6fca6d368.png",
+          "alt": "Mega Sableye"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/november-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-183",
+      "name": "Giratina hora de Reides",
+      "categoryId": "raid-hour",
+      "summary": "Hora de Reides. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 21,
+        "name": "hora de Reides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-28T18:00",
+            "end": "2026-10-28T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 487,
+          "name": "Giratina",
+          "types": [
+            "Fantasma",
+            "Dragão"
+          ],
+          "dexNumber": 487
+        }
+      ],
+      "imageId": 487,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_2026_Raid_Day_v1_1024x576_nologo.jpg",
+          "alt": "Giratina hora de Reides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm487.fALTERED_d77f870be06e397352e194405a8dd642ae6ef38533c000a6e46360633c39378d.png",
+          "alt": "Giratina"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-197",
+      "name": "Quinta de Batalhas GO",
+      "categoryId": "go-battle",
+      "summary": "Quinta de Batalhas GO. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 24,
+        "name": "Quinta de Batalhas GO"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-29T00:00",
+            "end": "2026-10-30T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_GO_Battle_Thursday_v2_1024x576-nologo.jpg",
+          "alt": "Quinta de Batalhas GO"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-175",
+      "name": "Gastly Horas de Holofote",
+      "categoryId": "spotlight",
+      "summary": "Hora de Holofote. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 22,
+        "name": "Horas de Holofote"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-29T18:00",
+            "end": "2026-10-29T19:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 92,
+          "name": "Gastly",
+          "types": [
+            "Fantasma",
+            "Venenoso"
+          ],
+          "dexNumber": 92
+        }
+      ],
+      "imageId": 92,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/generic_pgo_logo.png",
+          "alt": "Gastly Horas de Holofote"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm92_1e13f4d93119a9d9744414ab9e060483cf5792c7ec5519cf2b6b0cfe84d6a7a7.png",
+          "alt": "Gastly"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-188",
+      "name": "Sexta da Amizade",
+      "categoryId": "friendship",
+      "summary": "Sexta da Amizade. Confira a programação confirmada no calendário oficial.",
+      "officialTopic": {
+        "id": 25,
+        "name": "Sexta da Amizade"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-30T00:00",
+            "end": "2026-10-31T00:00"
+          }
+        ]
+      },
+      "featured": [],
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Friendship_Fridays_v2-1024x576-nologo.jpg",
+          "alt": "Sexta da Amizade"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/events/october-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    },
+    {
+      "id": "official-calendar-169",
+      "name": "Chandelure Dia de Super Megarreides",
+      "categoryId": "super-mega",
+      "summary": "Dia de Super Megarreides. Confira a programação confirmada no calendário oficial.",
+      "aliases": [
+        "official-chandelure-super-mega-raid-day-2026"
+      ],
+      "officialTopic": {
+        "id": 13,
+        "name": "Dia de Super Megarreides"
+      },
+      "schedule": {
+        "mode": "local",
+        "windows": [
+          {
+            "start": "2026-10-31T14:00",
+            "end": "2026-10-31T17:00"
+          }
+        ]
+      },
+      "featured": [
+        {
+          "id": 609,
+          "name": "Chandelure",
+          "types": [
+            "Fantasma",
+            "Fogo"
+          ],
+          "dexNumber": 609
+        }
+      ],
+      "imageId": 609,
+      "images": [
+        {
+          "url": "https://assets.pgo.gamesite.scopelyexplore.com/events/key-art/PGO-MCS_Chandelure_Super_Mega_Raid_Day_v3_1024x576.jpg",
+          "alt": "Chandelure Dia de Super Megarreides"
+        },
+        {
+          "url": "https://storage.googleapis.com/pgorelease-assets/Campfire/PokemonIcons/pm609_0b4a74688c33391182dbd7c95d9b6747baf10db4c2914c5318e444269386cce2.png",
+          "alt": "Chandelure"
+        }
+      ],
+      "source": {
+        "name": "Pokémon GO",
+        "url": "https://pokemongo.com/pt-BR/news/chandelure-super-mega-raid-day-2026",
+        "kind": "calendar",
+        "checkedAt": "2026-10-08T00:37:25.737Z"
+      }
+    }
+  ]
+}

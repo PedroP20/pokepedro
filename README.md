@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PokéClub 2.0
 
-## Getting Started
+Clube Pokémon com Pokédex, análise de tipos, treinos, conquistas, perfil e agenda de Pokémon GO. Construído com Next.js, React, TanStack Query, Zustand e Firebase.
 
-First, run the development server:
+## Desenvolvimento
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra http://localhost:3000. As variáveis do Firebase estão descritas em `.env.example`; configure sua cópia em `.env.local` para habilitar a conta Google e o progresso na nuvem.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Validação
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+npm run lint
+npx tsc --noEmit
+npm run build
+```
 
-## Learn More
+## Catálogo da Pokédex
 
-To learn more about Next.js, take a look at the following resources:
+O arquivo versionado `public/data/pokemon.json` contém as 1.025 espécies, nomes, tipos, altura, peso e possibilidade de evolução. A abertura da Pokédex, os filtros, a seleção no Combate e os desafios de tipos usam esse catálogo local. Descrições, formas e famílias evolutivas são consultadas na PokéAPI quando uma ficha é aberta; imagens dos cards carregam por página.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Para atualizar os dados e as ilustrações locais do início:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run catalog:update
+```
 
-## Deploy on Vercel
+Esse comando precisa de internet e usa os CSVs oficiais do [repositório da PokéAPI](https://github.com/PokeAPI/pokeapi/tree/master/data/v2/csv) e as imagens do [repositório de sprites](https://github.com/PokeAPI/sprites). O build normal usa os arquivos existentes e não executa a atualização.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Identidade e comportamento
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Início com boas-vindas, atalhos e sugestões de treino.
+- Navegação imediata, menu mobile com diálogo nativo, foco e fechamento por Escape.
+- Pokédex paginada com imagens centralizadas e filtros locais.
+- Combate com seleção de espécie ou tipos, defesa, ataque e guia.
+- Perfil com passe de treinador, estatísticas, maestria e conquistas reais.
+- Login, treinos, revisão e eventos com a identidade azul, vermelha e amarela do clube.
+- Layouts adaptados a desktop e mobile, com respeito à preferência de movimento reduzido.
+
+Os identificadores antigos do armazenamento local foram preservados para manter a compatibilidade com o progresso e as partidas salvas. A autenticação libera a interface antes da sincronização; o início de partidas aguarda o progresso da nuvem.
+
+Projeto de fãs. Pokémon e seus personagens pertencem aos respectivos criadores.
+
+## Agenda automática
+
+A central de eventos importa os anúncios públicos oficiais do Pokémon GO, incluindo categorias, datas, informações e imagens com crédito à fonte. Eventos encerrados saem da agenda após sete dias. Há cache de uma hora, atualização ao abrir a tela e cron diário configurado para Vercel. A rotina agendada precisa de `CRON_SECRET` privado e deploy; o calendário oficial autenticado tem cobertura limitada aos anúncios públicos.
+
+Use `npm run events:update` para atualizar o snapshot inicial. Consulte [a documentação de eventos](docs/events.md) para a configuração e os limites da fonte.

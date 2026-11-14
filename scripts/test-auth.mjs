@@ -59,7 +59,8 @@ assert.equal(learning.getState().stats[25].timesCorrect, 1, 'login restores save
 
 holdRead = true;
 const pendingLogin = onAuthChange({ uid: 'trainer-a' });
-assert.equal(auth.getState().isLoading, true, 'home waits for initial cloud synchronization');
+assert.equal(auth.getState().isLoading, false, 'navigation does not wait for cloud synchronization');
+assert.equal(auth.getState().isSyncing, true, 'progress sync is tracked separately');
 await auth.getState().logout();
 holdRead = false;
 releaseRead();

@@ -1,229 +1,41 @@
 "use client";
-
-import { useState, useMemo } from "react";
-import { PokedexFilters, Region, REGION_RANGES } from "@/types/pokemon";
-import { fetchPokemonMasterList, fetchIdsByType } from "@/queries/pokeApi";
-import { useQuery, useQueries } from "@tanstack/react-query";
-import { fetchPokemonDetails } from "@/queries/pokeApi";
-import Image from "next/image";
-import PokedexFilterBar from "@/components/pokedex/PokedexFilterBar";
-import PokedexDetailModal from "@/components/pokedex/PokedexDetailModal";
-
-const DEFAULT_FILTERS: PokedexFilters = {
-  searchTerm: "",
-  region: "ALL",
-  selectedTypes: [],
-  sortBy: "ID",
-  evolutionStatus: "ALL",
-};
-
-const REGION_TABS: { id: Region; label: string }[] = [
-  { id: "KANTO", label: "🔴 Kanto" },
-  { id: "JOHTO", label: "🟡 Johto" },
-  { id: "HOENN", label: "🟢 Hoenn" },
-  { id: "SINNOH", label: "🟣 Sinnoh" },
-  { id: "UNOVA", label: "⚪ Unova" },
-  { id: "KALOS", label: "🔵 Kalos" },
-  { id: "ALOLA", label: "🟠 Alola" },
-  { id: "GALAR", label: "🟤 Galar" },
-  { id: "HISUI", label: "🪨 Hisui" },
-  { id: "PALDEA", label: "🟣 Paldea" },
-];
-
-function PokemonGridItem({ id, name, onSelect }: { id: number; name: string; onSelect: () => void }) {
-  const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${id}.png`;
-
-  return (
-    <button
-      onClick={onSelect}
-      className="pokedex-card flex flex-col items-center bg-[#FFFFFF] hover:bg-[#F5F5F5] border border-[#D9D9D9] hover:border-[#2A75BB] p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition duration-200 group relative min-h-[115px] sm:min-h-[125px] justify-between shadow-sm font-card"
-    >
-      <span className="absolute top-1.5 left-2 text-[10px] sm:text-xs font-stats font-bold text-[#1E1E1E]/40 group-hover:text-[#2A75BB] transition">
-        #{String(id).padStart(4, "0")}
-      </span>
-
-      <div className="relative w-14 h-14 sm:w-16 sm:h-16 my-1.5">
-        <Image
-          src={spriteUrl}
-          alt={`Pokémon ${name}`}
-          fill
-          sizes="64px"
-          className="object-contain group-hover:scale-110 transition-transform drop-shadow-sm"
-          unoptimized
-        />
-      </div>
-
-      <span className="text-xs sm:text-sm font-extrabold text-[#1E1E1E] group-hover:text-[#1B4F9C] transition truncate w-full text-center font-button">
-        {name}
-      </span>
-    </button>
-  );
+import { useDeferredValue, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import { fetchPokemonMasterList } from '@/queries/pokeApi';
+import { filterCatalog } from '@/lib/catalogFilters';
+import type { PokedexFilters, PokemonCatalogEntry, Region } from '@/types/pokemon';
+import PokedexFilterBar from '@/components/pokedex/PokedexFilterBar';
+import TypeBadge, { typeStyle } from '@/components/ui/TypeBadge';
+import ClubIcon from '@/components/ui/ClubIcon';
+const PokedexDetailModal = dynamic(() => import('@/components/pokedex/PokedexDetailModal'), { ssr: false });
+const defaults: PokedexFilters = { searchTerm: '', region: 'ALL', selectedTypes: [], sortBy: 'ID', evolutionStatus: 'ALL' };
+const regions: { id: Region; label: string }[] = [{ id: 'ALL', label: 'Todas' }, ...['KANTO','JOHTO','HOENN','SINNOH','UNOVA','KALOS','ALOLA','GALAR','HISUI','PALDEA'].map(id => ({ id: id as Region, label: id.charAt(0) + id.slice(1).toLowerCase() }))];
+function PokemonCard({ pokemon, onSelect, eager }: { pokemon: PokemonCatalogEntry; onSelect: () => void; eager: boolean }) {
+  const [failed, setFailed] = useState(false);
+  return <button className="dex-card" style={typeStyle(pokemon.types[0])} onClick={onSelect} aria-label={`Ver ${pokemon.name}, número ${pokemon.id}`}>
+    <div className="dex-card-top"><span>#{String(pokemon.id).padStart(4, '0')}</span><span className="dex-card-plus">↗</span></div>
+    <div className="dex-card-stage"><span className="dex-card-orbit"/>{failed ? <span className="dex-art-fallback"><ClubIcon name="dex" size={48}/></span> : <Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemon.id}.png`} alt={pokemon.name} fill sizes="(max-width: 600px) 140px, 180px" className="dex-card-art" unoptimized loading={eager ? 'eager' : 'lazy'} onError={() => setFailed(true)}/>}</div>
+    <div className="dex-card-info"><h3>{pokemon.name}</h3><div>{pokemon.types.map(type => <TypeBadge key={type} type={type}/>)}</div></div>
+  </button>;
 }
-
 export default function PokedexPage() {
-  const [filters, setFilters] = useState<PokedexFilters>(DEFAULT_FILTERS);
-  const [selectedPokemonId, setSelectedPokemonId] = useState<number | null>(null);
-
-  // 1. CARREGA A LISTA MESTRE DOS 1025 POKÉMON (Nome e ID)
-  const { data: masterList = [], isLoading: isMasterLoading, isError: isMasterError, refetch: retryMaster } = useQuery({
-    queryKey: ["pokemonMasterList"],
-    queryFn: fetchPokemonMasterList,
-    staleTime: Infinity,
-  });
-
-  // 2. CARREGA AS LISTAS DOS TIPOS SELECIONADOS NO FILTRO (Para interseção inteligente)
-  const typeQueries = useQueries({
-    queries: filters.selectedTypes.map((typePt) => ({
-      queryKey: ["idsByType", typePt],
-      queryFn: () => fetchIdsByType(typePt),
-      staleTime: Infinity,
-    })),
-  });
-
-  // 🧠 O CÉREBRO DA FILTRAGEM AUTOMATIZADA EM TEMPO REAL!
-  const filteredList = useMemo(() => {
-    if (masterList.length === 0) return [];
-
-    let list = [...masterList];
-
-    // A. Filtro por Região
-    if (filters.region !== "ALL") {
-      const [min, max] = REGION_RANGES[filters.region];
-      list = list.filter((p) => p.id >= min && p.id <= max);
-    }
-
-    // B. Filtro Combinado de Tipos (Interseção de até 2 tipos)
-    if (filters.selectedTypes.length > 0) {
-      const validIdsSets = typeQueries.map((q) => new Set(q.data || []));
-      // Filtra apenas os IDs que estão em TODAS as listas de tipos selecionados
-      list = list.filter((p) => validIdsSets.every((set) => set.has(p.id)));
-    }
-
-    // C. Filtro de Pesquisa (Nome ou Nº)
-    if (filters.searchTerm) {
-      const term = filters.searchTerm.toLowerCase().trim();
-      list = list.filter(
-        (p) => p.name.toLowerCase().includes(term) || String(p.id) === term
-      );
-    }
-
-    return list;
-  }, [masterList, filters, typeQueries]);
-
-  const needsDetails = filters.sortBy !== "ID" || filters.evolutionStatus !== "ALL";
-  const detailQueries = useQueries({
-    queries: needsDetails
-      ? filteredList.map((pokemon) => ({
-          queryKey: ["pokedexFilterDetails", pokemon.id],
-          queryFn: () => fetchPokemonDetails(pokemon.id),
-          staleTime: Infinity,
-        }))
-      : [],
-  });
-
-  const isDetailsLoading = needsDetails && detailQueries.some((query) => query.isLoading);
-  const displayList = useMemo(() => {
-    if (!needsDetails || isDetailsLoading) return filteredList;
-
-    const detailsById = new Map(detailQueries.map((query) => [query.data?.id, query.data]));
-    let list = filteredList.filter((pokemon) => {
-      const details = detailsById.get(pokemon.id);
-      if (!details) return false;
-      return filters.evolutionStatus === "ALL"
-        || (filters.evolutionStatus === "HAS_EVOLUTION" ? details.canEvolve : !details.canEvolve);
-    });
-
-    const direction = filters.sortBy.endsWith("DESC") ? -1 : 1;
-    if (filters.sortBy.startsWith("HEIGHT")) list = [...list].sort((a, b) => ((detailsById.get(a.id)?.height || 0) - (detailsById.get(b.id)?.height || 0)) * direction);
-    if (filters.sortBy.startsWith("WEIGHT")) list = [...list].sort((a, b) => ((detailsById.get(a.id)?.weight || 0) - (detailsById.get(b.id)?.weight || 0)) * direction);
-    return list;
-  }, [detailQueries, filteredList, filters.evolutionStatus, filters.sortBy, isDetailsLoading, needsDetails]);
-
-  return (
-    <main className="experience-page pokedex-page flex-1 flex flex-col items-center p-3 sm:p-8 max-w-6xl mx-auto w-full space-y-4 sm:space-y-6 font-navbar">
-      {/* Cabeçalho Único */}
-      <div className="experience-hero pokedex-hero w-full flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-b border-[#D9D9D9] pb-4 sm:pb-6">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#1B4F9C] flex items-center gap-2 font-heading">
-            <span>◉</span> Explore a Pokédex
-          </h1>
-          <p className="text-xs sm:text-sm text-[#1E1E1E]/70 font-medium mt-0.5 font-body">
-            Explore todas as 9 gerações, consulte status, evoluções e filtre por tipos em PT-BR.
-          </p>
-        </div>
-
-        <span className="text-xs font-stats font-bold px-3 py-1.5 bg-[#2A75BB]/10 text-[#2A75BB] rounded-full border border-[#2A75BB]/30 self-start sm:self-center">
-          {displayList.length} Pokémon exibidos
-        </span>
-      </div>
-
-      {/* Abas Rápida de Região */}
-      <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto w-full pb-2 no-scrollbar">
-        {REGION_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setFilters({ ...filters, region: tab.id })}
-            className={`px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-[11px] sm:text-xs font-black whitespace-nowrap transition shrink-0 font-button ${
-              filters.region === tab.id
-                ? "bg-[#EE1515] text-[#FFFFFF] shadow-md shadow-[#EE1515]/20 scale-102"
-                : "bg-[#FFFFFF] border border-[#D9D9D9] text-[#1E1E1E]/70 hover:text-[#1E1E1E] hover:bg-[#F5F5F5]"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* BARRA DE FILTROS AVANÇADOS */}
-      <PokedexFilterBar
-        filters={filters}
-        onChange={(newFilters) => setFilters(newFilters)}
-        onReset={() => setFilters(DEFAULT_FILTERS)}
-        totalResults={displayList.length}
-      />
-
-      {/* Grid de Exibição */}
-      {isMasterError || typeQueries.some(query => query.isError) || detailQueries.some(query => query.isError) ? <div role="alert" className="w-full rounded-2xl border bg-white p-8 text-center"><h2>Não foi possível carregar a Pokédex</h2><p className="my-3">Verifique sua conexão e tente novamente.</p><button className="rounded-xl bg-[#1B4F9C] p-3 text-white" onClick={() => { void retryMaster(); [...typeQueries, ...detailQueries].forEach(query => { if (query.isError) void query.refetch(); }); }}>Tentar novamente</button></div> : isMasterLoading || isDetailsLoading || typeQueries.some(query => query.isLoading) ? (
-        <div className="p-12 text-center space-y-3 bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl w-full">
-          <div className="w-12 h-12 border-4 border-[#EE1515] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs sm:text-sm font-bold text-[#1E1E1E]/60">{isDetailsLoading ? "Aplicando filtros avançados da Pokédex..." : "Sincronizando catálogo de 1025 Pokémon..."}</p>
-        </div>
-      ) : displayList.length === 0 ? (
-        <div className="bg-[#FFFFFF] border border-[#D9D9D9] rounded-3xl p-12 text-center space-y-3 w-full">
-          <span className="text-4xl">🔍</span>
-          <h3 className="text-lg font-black text-[#1E1E1E] font-heading">Nenhum Pokémon compatível</h3>
-          <p className="text-xs sm:text-sm text-[#1E1E1E]/60 font-medium font-body">
-            Não encontramos nenhum Pokémon com essa combinação de nome ou tipo.
-          </p>
-          <button
-            onClick={() => setFilters(DEFAULT_FILTERS)}
-            className="px-4 py-2 bg-[#EE1515] text-[#FFFFFF] font-button font-bold rounded-xl text-xs shadow-sm"
-          >
-            Limpar Filtros 🔄
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2.5 sm:gap-3 w-full">
-          {displayList.map((poke) => (
-            <PokemonGridItem
-              key={poke.id}
-              id={poke.id}
-              name={poke.name}
-              onSelect={() => setSelectedPokemonId(poke.id)}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* MODAL COM OS ÍCONES INTERATIVOS DE SHINY E MEGA! */}
-      <PokedexDetailModal
-        key={selectedPokemonId}
-        pokemonId={selectedPokemonId}
-        onClose={() => setSelectedPokemonId(null)}
-        onNavigate={(newId) => setSelectedPokemonId(newId)}
-        minId={1}
-        maxId={1025}
-      />
-    </main>
-  );
+  const [filters, setFilters] = useState<PokedexFilters>(defaults);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [page, setPage] = useState(1);
+  const deferredFilters = useDeferredValue(filters);
+  const { data: catalog = [], isPending, isError, refetch } = useQuery({ queryKey: ['pokemonMasterList'], queryFn: fetchPokemonMasterList, staleTime: Infinity });
+  const list = filterCatalog(catalog, deferredFilters);
+  const perPage = 48;
+  const pages = Math.max(1, Math.ceil(list.length / perPage));
+  const change = (value: PokedexFilters) => { setFilters(value); setPage(1); };
+  return <main id="main-content" className="club-page dex-page">
+    <header className="page-intro"><div><span className="eyebrow"><ClubIcon name="dex" size={16}/> ARQUIVO POKÉMON</span><h1>Descobertas<br className="sm:hidden"/> sem limites<span>.</span></h1><p>De Bulbasaur a Pecharunt. Encontre seu favorito e conheça cada detalhe.</p></div><div className="intro-stat"><strong>1.025</strong><span>ESPÉCIES · 9 GERAÇÕES</span></div></header>
+    <nav className="region-tabs" aria-label="Regiões da Pokédex">{regions.map(region => <button key={region.id} onClick={() => change({ ...filters, region: region.id })} aria-pressed={filters.region === region.id} className={filters.region === region.id ? 'is-active' : ''}>{region.label}</button>)}</nav>
+    <PokedexFilterBar filters={filters} onChange={change} onReset={() => change(defaults)} totalResults={list.length}/>
+    <div className="dex-results-heading"><span><b>{list.length}</b> Pokémon encontrados</span><span>Toque em um card para explorar <ClubIcon name="arrow" size={16}/></span></div>
+    {isError ? <section className="club-empty" role="alert"><ClubIcon name="dex" size={40}/><h2>O catálogo não carregou.</h2><p>Tente novamente para continuar explorando.</p><button className="club-button blue" onClick={() => void refetch()}>Tentar novamente</button></section> : isPending ? <div className="dex-grid" aria-label="Carregando Pokédex" aria-busy="true">{Array.from({ length: 12 }, (_, i) => <div key={i} className="dex-skeleton"/>)}</div> : list.length === 0 ? <section className="club-empty"><ClubIcon name="search" size={40}/><h2>Nenhum Pokémon por aqui.</h2><p>Experimente outro nome, região ou combinação de tipos.</p><button className="club-button red" onClick={() => change(defaults)}>Limpar filtros</button></section> : <><section className="dex-grid" aria-label="Pokémon encontrados" aria-busy={deferredFilters !== filters}>{list.slice((page - 1) * perPage, page * perPage).map((pokemon, index) => <PokemonCard key={pokemon.id} pokemon={pokemon} eager={index < 10} onSelect={() => setSelected(pokemon.id)}/>)}</section><nav className="dex-pagination" aria-label="Páginas da Pokédex"><button disabled={page === 1} onClick={() => { setPage(v => v - 1); document.querySelector('.pokedex-filters')?.scrollIntoView({ block: 'start' }); }}>← Anterior</button><span>Página <b>{page}</b> de {pages}</span><button disabled={page >= pages} onClick={() => { setPage(v => v + 1); document.querySelector('.pokedex-filters')?.scrollIntoView({ block: 'start' }); }}>Próxima →</button></nav></>}
+    {selected !== null && <PokedexDetailModal key={selected} pokemonId={selected} onClose={() => setSelected(null)} onNavigate={setSelected} minId={1} maxId={1025}/>}
+  </main>;
 }

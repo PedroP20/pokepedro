@@ -34,6 +34,13 @@ export interface PokemonOption {
   name: string;
 }
 
+export interface PokemonCatalogEntry extends PokemonOption {
+  types: string[];
+  height: number;
+  weight: number;
+  canEvolve: boolean;
+}
+
 export interface EvolutionNode {
   id: number;
   name: string;
@@ -74,6 +81,8 @@ export interface PokemonDetails {
   canEvolve: boolean;
   varieties: PokemonVariety[]; // 👈 Lista de formas (Mega, G-Max, Alola, etc.)
   hasGenderDifferences: boolean; // 👈 Diferença Macho/Fêmea
+  femaleSpriteUrl?: string;
+  femaleShinySpriteUrl?: string;
 }
 
 // ⚙️ ESTRUTURA DOS FILTROS DEFINITIVOS

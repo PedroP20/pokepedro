@@ -51,3 +51,50 @@
 @media (hover: hover) { .event-designed-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px color-mix(in srgb, var(--event-accent) 16%, transparent); border-color: var(--event-accent); }.event-designed-card:hover .event-card-pokemon { transform: translateY(-5px) rotate(-4deg) scale(1.04); }.event-designed-card:hover .event-card-footer strong span { transform: translate(2px, -2px); }.event-pokemon-tile:hover { transform: translateY(-3px); box-shadow: 0 8px 20px #172b4510; } }
 @media (max-width: 700px) { .event-designed-link { grid-template-columns: 1fr; }.event-card-stage { min-height: 155px; border-right: 0; border-bottom: 1px solid color-mix(in srgb, var(--event-accent), white 85%); }.event-card-pokemon { width: 145px; height: 145px; }.event-stage-orbit { width: 185px; height: 185px; }.event-art-multiple { flex-wrap: nowrap; }.event-art-multiple .event-card-pokemon, .event-art-multiple .event-card-pokemon:first-child { width: 30%; max-width: 120px; height: 130px; margin: 0; }.event-stage-category { font-size: 8px; left: 14px; top: 12px; }.event-card-copy { padding: 20px; }.event-card-kicker { padding-right: 0; }.event-detail-hero { grid-template-columns: 1fr; }.event-detail-art { grid-column: 1; grid-row: 1; padding: 10px; min-height: 190px; }.event-detail-art .event-card-pokemon { width: 190px; height: 190px; }.event-detail-intro { grid-column: 1; grid-row: 2; padding: 0 22px 24px; }.event-detail-art .event-art-multiple .event-card-pokemon, .event-detail-art .event-art-multiple .event-card-pokemon:first-child { width: 31%; height: 145px; margin: 0; }.event-info-grid { grid-template-columns: 1fr; }.event-info-section { padding: 20px; }.event-schedule-panel { padding: 20px; }.event-roster { grid-template-columns: 1fr; }.event-detail-nav { margin-right: -4px; }.event-pokemon-tile { padding: 16px; } }
 @media (prefers-reduced-motion: reduce) { .event-designed-card, .event-card-pokemon, .event-card-footer strong span, .event-pokemon-tile { transition: none !important; transform: none !important; } }
+
+/* PokéClub 2.0: editorial agenda and category grid */
+.events-shell{max-width:1220px;padding:40px 32px 65px;gap:28px;animation:page-arrive .35s both}
+.events-hero{background:#edf3fb;border:1px solid #dfe8f4;color:#193653;box-shadow:none;border-radius:25px;padding:35px 40px;min-height:285px}
+.events-hero-copy{max-width:65%}.events-eyebrow{color:#6381a5;font-size:8px;letter-spacing:1.6px}
+.events-hero h1{font-size:46px;letter-spacing:-1.5px;margin:18px 0;line-height:1.08;max-width:420px}
+.events-hero h1>span{color:#e95050}.events-hero p{font-size:15px;color:#6d84a0}.events-hero .events-hero-description{font-size:11px;color:#7f94af}
+.events-hero-stats{margin-top:22px;gap:8px}.events-hero-stats span{background:white;border:1px solid #dce6f3;border-radius:50px;color:#8a9bb0;font-size:10px;padding:7px 13px}.events-hero-stats b{color:#193653}
+.events-orbit{background:#ffdf75;border:20px solid #ffe9a3;width:250px;height:250px;right:48px;top:23px}
+.events-hero-art{width:235px;height:235px;right:54px;bottom:18px}
+.event-section-title h2{font-size:26px;color:#193653}.event-section-title p,.event-section-title>span{font-size:10px;color:#95a3b4}
+.event-timezone{font-size:10px;color:#899aaf}.event-tools{border-color:#e4e8ed;padding:22px;border-radius:19px}
+.event-filter-row{gap:8px}.event-chip{border-radius:50px;min-height:36px;font-size:10px;padding:8px 15px}.event-chip.selected{background:#193653;border-color:#193653}
+.event-search{background:#f7f9fb;border:1px solid #e4e8ed}.event-search input{font-size:12px}
+.event-wallet{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px;padding:5px 0}
+.event-wallet-card,.event-wallet-card:last-child{margin:0;padding:24px;min-height:300px;border:1px solid color-mix(in srgb,var(--card-color) 25%,white);border-radius:20px;background:color-mix(in srgb,var(--card-color) 6%,white);box-shadow:none;color:#193653;animation:none;transform:none}
+.event-wallet-card::after{border-color:color-mix(in srgb,var(--card-color) 5%,transparent);width:170px;height:170px;right:-40px;top:120px;border-width:20px}
+.event-wallet-icon{color:var(--card-color);background:white;border:1px solid color-mix(in srgb,var(--card-color) 15%,white);width:43px;height:43px;border-radius:13px;font-size:20px}
+.event-wallet-number{color:#a0adbb;letter-spacing:1px;font-size:8px}
+.event-wallet-card h3{color:var(--card-color);max-width:100%;font-size:24px;margin-top:24px;position:relative;z-index:2}
+.event-wallet-description{font-size:10px;color:#7b8ca3;max-width:78%;line-height:1.8;margin:9px 0 25px}
+.event-wallet-meta{display:flex;flex-direction:column;align-items:flex-start;gap:5px;font-size:9px;position:relative;z-index:2;max-width:80%}
+.event-wallet-meta span{color:#7a8da7;background:#ffffffb0;border:1px solid #ffffff;padding:6px 9px}
+.event-wallet-art{width:112px;height:112px;top:auto;bottom:15px;right:10px;opacity:.75;filter:drop-shadow(0 10px 10px #19365313)}
+.event-designed-card{border-radius:21px;box-shadow:none}.event-card-copy h3{letter-spacing:-.5px;font-size:25px}.event-card-summary{font-size:12px}
+.event-calendar{border-radius:20px;padding:25px}
+@media(hover:hover){.event-wallet-card:hover{transform:translateY(-5px);box-shadow:0 15px 25px #19365312}}
+@media(max-width:950px){.event-wallet{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){
+.events-shell{padding:24px 16px 40px;gap:22px}.events-hero{padding:27px 23px;min-height:300px}.events-hero-copy{max-width:92%}.events-eyebrow{font-size:7px;letter-spacing:1px}.events-hero h1{font-size:35px;max-width:245px;position:relative;z-index:2}.events-hero p{font-size:12px}.events-hero .events-hero-description{font-size:10px;max-width:220px}.events-orbit{height:145px;width:145px;border-width:10px;right:-25px;top:120px;opacity:.5}.events-hero-art{width:150px;height:150px;bottom:35px;right:-30px;opacity:.35}
+.events-hero-stats span{font-size:9px;padding:6px 10px}.event-timezone{font-size:8px;line-height:1.7}.event-section-title h2{font-size:24px}.event-tools{padding:16px}
+.event-wallet{gap:11px;grid-template-columns:repeat(2,minmax(0,1fr))}.event-wallet-card,.event-wallet-card:last-child{padding:18px 15px;min-height:295px;border-radius:17px}
+.event-wallet-card h3{font-size:20px;max-width:100%;margin-top:17px}.event-wallet-description{max-width:100%;font-size:9px;line-height:1.8}
+.event-wallet-meta{font-size:8px;max-width:100%;gap:6px}.event-wallet-meta span{padding:5px 7px}.event-wallet-art{width:85px;height:85px;bottom:-12px;right:-12px;opacity:.18}.event-wallet-number{font-size:7px}
+.event-wallet-card::after{display:none}.event-wallet-icon{width:35px;height:35px;font-size:16px;border-radius:11px}.event-card-copy h3{font-size:23px}
+}
+
+/* Official event media and source status */
+.event-source-panel{padding:18px 22px;border:1px solid #dbe6f2;border-radius:17px;background:#f5f9ff;color:#52687f;font-size:12px;line-height:1.7}
+.event-source-heading{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;color:#193653}.event-source-heading>span:last-child{margin-left:auto;font-size:10px;color:#667b91}.event-source-dot{width:8px;height:8px;flex-shrink:0;border-radius:50%;background:#25846b}.event-source-dot.is-offline{background:#b88527}.event-source-dot.is-syncing{animation:source-pulse 1s ease-in-out infinite;background:#2462a3}
+.event-source-panel p{margin-top:8px}.event-source-links{display:flex;flex-wrap:wrap;gap:10px 20px;margin-top:9px;font-weight:800;color:#1b4f9c}.event-source-links a:hover,.event-source-links button:hover{text-decoration:underline}.event-source-links a,.event-source-links button{padding:4px 0;min-height:32px}.event-source-links button{cursor:pointer}
+.event-official-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.event-card-stage:has(.event-official-cover){min-height:230px;background:#193653}.event-detail-art:has(.event-official-cover){min-height:280px}.event-art-hidden{visibility:hidden}.event-stage-category{z-index:1;background:#ffffffec;padding:5px 8px;border-radius:6px}.event-card-stage:has(.event-official-cover) .event-stage-spark{display:none}
+.event-image-unavailable{display:flex;flex-direction:column;gap:10px;align-items:center;justify-content:center;background:#edf3fc;color:#657c97;font-size:12px;min-height:180px}.event-image-unavailable>span:first-child{font-size:40px}
+.event-image-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:16px}.event-image-gallery a{display:grid;place-items:center;border:1px solid #e1e8f0;border-radius:17px;background:white;padding:10px;overflow:hidden}.event-image-gallery img{width:100%;height:auto;max-height:420px;object-fit:contain}
+@keyframes source-pulse{50%{opacity:.35}}
+@media(max-width:700px){.event-source-panel{padding:16px}.event-source-heading>span:last-child{margin-left:0;width:100%;font-size:10px}.event-card-stage:has(.event-official-cover){aspect-ratio:16/9;min-height:0}.event-detail-art:has(.event-official-cover){aspect-ratio:16/9;min-height:0}}
+@media(prefers-reduced-motion:reduce){.event-source-dot.is-syncing{animation:none}}

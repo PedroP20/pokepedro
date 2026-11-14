@@ -1,7 +1,7 @@
 // src/lib/pokemonFilters.ts
 import { Region, REGION_RANGES } from "@/types/pokemon";
 import { LEGENDARY_IDS, MYTHICAL_IDS, ULTRA_BEAST_IDS, PARADOX_IDS } from "./pokemonConstants";
-import { fetchIdsByType } from "@/queries/pokeApi";
+import { fetchPokemonMasterList } from "@/queries/pokeApi";
 
 export interface FilterOptions {
   region: Region;
@@ -23,10 +23,9 @@ export async function generateFilteredQueue(options: FilterOptions, allMasterIds
 
   // 2. Filtro por Tipos
   if (options.selectedTypes.length > 0) {
-    const typeArrays = await Promise.all(
-      options.selectedTypes.map(type => fetchIdsByType(type))
-    );
-    const allowedTypeIds = new Set(typeArrays.flat());
+    const catalog = await fetchPokemonMasterList();
+    const normalizedTypes = options.selectedTypes.map(type => type === 'Veneno' ? 'Venenoso' : type === 'Terra' ? 'Terrestre' : type);
+    const allowedTypeIds = new Set(catalog.filter(pokemon => normalizedTypes.some(type => pokemon.types.includes(type))).map(pokemon => pokemon.id));
     validIds = validIds.filter(id => allowedTypeIds.has(id));
   }
 

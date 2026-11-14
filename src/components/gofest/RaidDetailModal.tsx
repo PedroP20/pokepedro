@@ -5,7 +5,7 @@ import Image from "next/image";
 import { GoFestPokemon } from "@/lib/goFest2026";
 import { calculateDefenseMultipliers, POKEMON_TYPES } from "@/lib/typeEffectiveness";
 
-export default function RaidDetailModal({ pokemon, onClose }: { pokemon: GoFestPokemon | null; onClose: () => void }) {
+export default function RaidDetailModal({ pokemon, onClose, kicker = "CHEFE DE REIDE" }: { pokemon: GoFestPokemon | null; onClose: () => void; kicker?: string }) {
   if (!pokemon) return null;
   const artworkId = pokemon.pokeApiId || pokemon.fallbackPokeApiId;
   const results = pokemon.types?.length ? calculateDefenseMultipliers(pokemon.types) : null;
@@ -21,7 +21,7 @@ export default function RaidDetailModal({ pokemon, onClose }: { pokemon: GoFestP
         <header className="bg-gradient-to-r from-[#1B4F9C] to-[#2A75BB] p-5 text-center text-white">
           <button onClick={onClose} className="absolute right-3 top-3 rounded-full bg-black/20 px-2.5 py-1 text-sm font-black">✕</button>
           {artworkId ? <div className="relative mx-auto h-28 w-28"><Image src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${artworkId}.png`} alt={pokemon.name} fill sizes="112px" className="object-contain drop-shadow-lg" unoptimized /></div> : <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/15 text-3xl">?</div>}
-          <p className="mt-1 text-[10px] font-stats font-black tracking-widest text-[#FFCB05]">CHEFE DE REIDE</p><h2 className="font-heading text-2xl font-black">{pokemon.name}</h2>
+          <p className="mt-1 text-[10px] font-stats font-black tracking-widest text-[#FFCB05]">{kicker}</p><h2 className="font-heading text-2xl font-black">{pokemon.name}</h2>
         </header>
         <div className="space-y-4 p-5">
           {pokemon.types?.length ? <><div><p className="mb-1.5 text-xs font-button font-black text-[#1B4F9C]">TIPOS</p><div className="flex flex-wrap gap-1.5">{pokemon.types.map((type) => { const info = POKEMON_TYPES[type]; return <span key={type} className={`rounded-lg px-2 py-1 text-xs font-button font-black ${info.colorBg} ${info.colorText}`}>{info.icon} {type}</span>; })}</div></div>

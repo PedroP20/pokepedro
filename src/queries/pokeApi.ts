@@ -1,6 +1,9 @@
-import { PokemonDetails, PokemonOption, EvolutionNode, EvolutionTreeNode, PokemonVariety, PokemonFormData } from "@/types/pokemon";
+import { PokemonDetails, PokemonOption, PokemonCatalogEntry, EvolutionNode, EvolutionTreeNode, PokemonVariety, PokemonFormData } from "@/types/pokemon";
 
 const BASE_URL = "https://pokeapi.co/api/v2";
+
+// Bound remote requests so a stalled connection cannot leave a sheet spinning forever.
+const apiFetch = (url: string) => fetch(url, { signal: AbortSignal.timeout(12_000) });
 
 const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -28,7 +31,7 @@ const TYPE_MAP_PT: Record<string, string> = {
   normal: "Normal", fire: "Fogo", water: "Água", grass: "Planta",
   electric: "Elétrico", ice: "Gelo", fighting: "Lutador", poison: "Venenoso",
   ground: "Terrestre", flying: "Voador", psychic: "Psíquico", bug: "Inseto",
-  rock: "Pedra", ghost: "Fantasma", dragon: "Dragão", steel: "Aço", fairy: "Fada",
+  rock: "Pedra", ghost: "Fantasma", dragon: "Dragão", steel: "Aço", dark: "Sombrio", fairy: "Fada",
 };
 
 const TYPE_MAP_EN: Record<string, string> = Object.entries(TYPE_MAP_PT).reduce(
@@ -62,20 +65,18 @@ const getIdFromUrl = (url: string): number => {
   return Number(parts[parts.length - 1]);
 };
 
-export async function fetchPokemonMasterList(): Promise<{ id: number; name: string }[]> {
-  const res = await fetch(`${BASE_URL}/pokemon?limit=1025`);
+export async function fetchPokemonMasterList(): Promise<PokemonCatalogEntry[]> {
+  const res = await fetch('/data/pokemon.json');
   if (!res.ok) throw new Error("Erro ao carregar lista mestre da Pokédex");
   const data = await res.json();
-  return data.results.map((item: { name: string; url: string }) => ({
-    id: getIdFromUrl(item.url),
-    name: capitalize(item.name),
-  }));
+  if (!Array.isArray(data) || !data.length || data.some(item => !Number.isInteger(item.id) || !Array.isArray(item.types))) throw new Error('Catálogo da Pokédex inválido');
+  return data;
 }
 
 export async function fetchIdsByType(typeNamePt: string): Promise<number[]> {
   const enType = TYPE_MAP_EN[typeNamePt];
   if (!enType) return [];
-  const res = await fetch(`${BASE_URL}/type/${enType}`);
+  const res = await apiFetch(`${BASE_URL}/type/${enType}`);
   if (!res.ok) throw new Error(`Erro ao carregar Pokémon do tipo ${typeNamePt}`);
   const data = await res.json();
   return data.pokemon.map((p: { pokemon: { url: string } }) => getIdFromUrl(p.pokemon.url));
@@ -141,18 +142,18 @@ const speciesCanEvolve = (chainNode: PokeAPIEvolutionNode, speciesId: number): b
 };
 
 export async function fetchPokemonOption(id: number): Promise<PokemonOption> {
-  const res = await fetch(`${BASE_URL}/pokemon/${id}`);
+  const res = await apiFetch(`${BASE_URL}/pokemon/${id}`);
   if (!res.ok) throw new Error(`Erro ao buscar Pokémon ${id}`);
   const data = await res.json();
   return { id: data.id, name: capitalize(data.name) };
 }
 
 export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
-  const pokemonRes = await fetch(`${BASE_URL}/pokemon/${id}`);
+  const pokemonRes = await apiFetch(`${BASE_URL}/pokemon/${id}`);
   if (!pokemonRes.ok) throw new Error(`Erro ao buscar detalhes do Pokémon ${id}`);
   const pokemonData = await pokemonRes.json();
   // Alternate forms have their own Pokémon ID but share the base species.
-  const speciesRes = await fetch(pokemonData.species.url);
+  const speciesRes = await apiFetch(pokemonData.species?.url || `${BASE_URL}/pokemon-species/${id}`);
   if (!speciesRes.ok) throw new Error(`Erro ao buscar espécie do Pokémon ${id}`);
   const speciesData = await speciesRes.json();
 
@@ -160,7 +161,7 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
   let evolutionTree: EvolutionTreeNode | null = null;
   let canEvolve = false;
   if (speciesData.evolution_chain?.url) {
-    const evoRes = await fetch(speciesData.evolution_chain.url);
+    const evoRes = await apiFetch(speciesData.evolution_chain.url);
     if (evoRes.ok) {
       const evoData = await evoRes.json();
       evolutions = parseEvolutionChain(evoData.chain);
@@ -185,21 +186,21 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
   });
 
   const flavorEntry =
-    speciesData.flavor_text_entries.find((e: PokeAPIFlavorEntry) => e.language.name === "pt" || e.language.name === "pt-BR") ||
-    speciesData.flavor_text_entries.find((e: PokeAPIFlavorEntry) => e.language.name === "en");
+    speciesData.flavor_text_entries?.find((e: PokeAPIFlavorEntry) => e.language.name === "pt" || e.language.name === "pt-BR") ||
+    speciesData.flavor_text_entries?.find((e: PokeAPIFlavorEntry) => e.language.name === "en");
 
-  const genName = speciesData.generation.name.toLowerCase();
+  const genName = speciesData.generation?.name?.toLowerCase() || "unknown";
   const regionName = REGION_MAP[genName] || "Desconhecida";
   const generationPt = GEN_MAP_PT[genName] || capitalize(genName.replace("-", " "));
 
   return {
     id: pokemonData.id,
     speciesId: speciesData.id,
-    name: capitalize(pokemonData.name),
-    spriteUrl: pokemonData.sprites.front_default || "",
-    artworkUrl: pokemonData.sprites.other["official-artwork"].front_default || pokemonData.sprites.front_default,
-    hasShinyArtwork: Boolean(pokemonData.sprites.other?.["official-artwork"]?.front_shiny || pokemonData.sprites.front_shiny),
-    types: pokemonData.types.map((t: PokeAPITypeEntry) => TYPE_MAP_PT[t.type.name.toLowerCase()] || capitalize(t.type.name)),
+    name: toTitleCase(pokemonData.name),
+    spriteUrl: pokemonData.sprites?.front_default || "",
+    artworkUrl: pokemonData.sprites?.other?.["official-artwork"]?.front_default || pokemonData.sprites?.front_default || "",
+    hasShinyArtwork: Boolean(pokemonData.sprites?.other?.["official-artwork"]?.front_shiny || pokemonData.sprites?.front_shiny),
+    types: (pokemonData.types || []).map((t: PokeAPITypeEntry) => TYPE_MAP_PT[t.type.name.toLowerCase()] || capitalize(t.type.name)),
     height: pokemonData.height / 10,
     weight: pokemonData.weight / 10,
     generation: generationPt,
@@ -212,12 +213,14 @@ export async function fetchPokemonDetails(id: number): Promise<PokemonDetails> {
     canEvolve,
     varieties,
     hasGenderDifferences: speciesData.has_gender_differences || false,
+    femaleSpriteUrl: pokemonData.sprites?.front_female || undefined,
+    femaleShinySpriteUrl: pokemonData.sprites?.front_shiny_female || undefined,
   };
 }
 
 /** Dados visuais e físicos da forma ativa. A espécie continua sendo a fonte de texto/evoluções. */
 export async function fetchPokemonFormData(id: number): Promise<PokemonFormData> {
-  const response = await fetch(`${BASE_URL}/pokemon/${id}`);
+  const response = await apiFetch(`${BASE_URL}/pokemon/${id}`);
   if (!response.ok) throw new Error(`Forma ${id} indisponível na PokéAPI`);
 
   const data = await response.json();

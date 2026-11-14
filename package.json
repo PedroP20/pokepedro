@@ -7,15 +7,19 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node scripts/test-events.mjs && node scripts/test-regressions.mjs && node scripts/test-auth.mjs"
+    "catalog:update": "node scripts/update-catalog.mjs",
+    "events:update": "node scripts/update-events.mjs",
+    "events:calendar-import": "node scripts/import-calendar.mjs",
+    "test": "node scripts/test-official-events.mjs && node scripts/test-calendar-import.mjs && node scripts/test-events.mjs && node scripts/test-regressions.mjs && node scripts/test-auth.mjs"
   },
   "dependencies": {
     "@google/model-viewer": "^4.3.1",
     "@tanstack/react-query": "^5.101.2",
     "@tanstack/react-query-devtools": "^5.101.2",
+    "cheerio": "^1.2.0",
     "firebase": "^12.16.0",
     "framer-motion": "^12.42.2",
-    "next": "16.2.10",
+    "next": "^16.4.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zustand": "^5.0.14"
@@ -27,8 +31,13 @@
     "@types/react-dom": "^19",
     "dotenv": "^17.4.2",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "^16.4.0",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "1.13.6"
+    }
   }
 }

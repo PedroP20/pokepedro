@@ -52,7 +52,7 @@ export default function GoFestExperience({ phase }: { phase?: "ASCENSION" | "FIN
 
   const bonusTab = activeTab === "ASCENSION" ? { title: "Mega Ascensão", period: "31 de agosto → 4 de setembro de 2026", cards: GOFEST_BONUSES.ASCENSION, color: "#1B4F9C" } : { title: "Megafinal", period: "5 → 6 de setembro de 2026", cards: GOFEST_BONUSES.FINAL, color: "#EE1515" };
 
-  return <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-5 p-3 sm:p-6 font-navbar">
+  return <main id="main-content" className="club-page gofest-page flex flex-col gap-5 font-navbar">
     <nav aria-label="Caminho do evento" className="flex flex-wrap items-center gap-2 text-sm font-bold text-[#1B4F9C]"><Link href="/events" className="hover:underline">EVENTOS</Link><span aria-hidden="true">›</span><Link href="/events?category=general" className="hover:underline">Eventos</Link><span aria-hidden="true">›</span><span aria-current="page">{title}</span></nav>
     {phase && <Link href="/events/gofest" className="text-sm font-bold text-[#1B4F9C] hover:underline">Ver GOFEST completo →</Link>}
     <section className="overflow-hidden rounded-3xl border border-[#D9D9D9] bg-white shadow-sm">

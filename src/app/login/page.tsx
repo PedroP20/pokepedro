@@ -1,101 +1,24 @@
-// src/app/login/page.tsx
 "use client";
-
-import { useState, useEffect } from "react";
-import { auth, firebaseConfigurationError, googleProvider } from "@/lib/firebase";
-import { signInWithPopup } from "firebase/auth";
-import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/useAuthStore";
-import Image from "next/image";
-import { googleLoginError } from "@/lib/authErrors";
-
+import { useState, useEffect } from 'react';
+import { signInWithPopup } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { auth, firebaseConfigurationError, googleProvider } from '@/lib/firebase';
+import { useAuthStore } from '@/store/useAuthStore';
+import { googleLoginError } from '@/lib/authErrors';
+import ClubIcon from '@/components/ui/ClubIcon';
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [loginError, setLoginError] = useState<string | null>(null);
-  const { user, isLoading } = useAuthStore();
-
-  // Se já estiver logado, joga para a página inicial automaticamente!
-  useEffect(() => {
-    if (!isLoading && user) {
-      router.push("/");
-    }
-  }, [user, isLoading, router]);
-
-  const handleGoogleLogin = async () => {
-    if (!auth || !googleProvider) {
-      setLoginError(firebaseConfigurationError || "A Firebase não está disponível neste ambiente.");
-      return;
-    }
-
-    setLoginError(null);
-    setIsLoggingIn(true);
-    try {
-      await signInWithPopup(auth, googleProvider);
-      // O useEffect acima vai detectar o login e fazer o redirecionamento
-    } catch (error) {
-      console.error("Erro no login:", error);
-      setLoginError(googleLoginError(error));
-    } finally {
-      setIsLoggingIn(false);
-    }
+  const user = useAuthStore(s => s.user);
+  const isLoading = useAuthStore(s => s.isLoading);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [error, setError] = useState('');
+  useEffect(() => { if (user && !isLoading) router.replace('/'); }, [user, isLoading, router]);
+  const login = async () => {
+    if (!auth || !googleProvider) { setError(firebaseConfigurationError || 'Login indisponível neste ambiente.'); return; }
+    setLoggingIn(true); setError('');
+    try { await signInWithPopup(auth, googleProvider); } catch (e) { setError(googleLoginError(e)); } finally { setLoggingIn(false); }
   };
-
-  // Tela de carregamento enquanto o Firebase decide se o usuário está logado
-  if (isLoading || user) {
-    return (
-      <div className="h-screen bg-[#F5F5F5] flex flex-col items-center justify-center">
-        <div className="w-12 h-12 border-4 border-[#1B4F9C] border-t-transparent rounded-full animate-spin mb-4" />
-        <p className="font-button font-black text-[#1B4F9C] animate-pulse uppercase tracking-widest">Carregando Cofre...</p>
-      </div>
-    );
-  }
-
-  return (
-    <main className="flex-1 flex flex-col items-center justify-center p-6 bg-[#F5F5F5] font-body h-screen relative overflow-hidden">
-      
-      {/* Background Decorativo */}
-      <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-[#2A75BB] rounded-full blur-3xl opacity-20" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-[#EE1515] rounded-full blur-3xl opacity-10" />
-
-      <div className="bg-white p-8 sm:p-10 rounded-[2.5rem] shadow-2xl border-4 border-[#1B4F9C] w-full max-w-md text-center relative z-10 font-card">
-        
-        <div className="absolute -top-6 -right-6 w-20 h-20 bg-[#FFCB05] rounded-full flex items-center justify-center border-4 border-white shadow-md rotate-12">
-          <span className="text-3xl">⭐</span>
-        </div>
-
-        <div className="space-y-6">
-          <div className="w-24 h-24 bg-gray-50 rounded-full mx-auto border-4 border-[#2A75BB] flex items-center justify-center text-5xl shadow-inner mb-2">
-            📱
-          </div>
-          
-          <div>
-            <h1 className="text-3xl sm:text-4xl font-heading font-black text-[#1B4F9C] leading-tight">
-              Acesso de<br/><span className="text-[#EE1515] drop-shadow-sm">Treinador</span>
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-500 font-bold mt-3 uppercase tracking-wider">Faça login para salvar suas 3 Estrelas na nuvem!</p>
-          </div>
-
-          <div className="pt-4">
-            <button 
-              onClick={handleGoogleLogin} 
-              disabled={isLoggingIn || !auth || !googleProvider}
-              className="w-full flex items-center justify-center gap-4 bg-white hover:bg-gray-50 text-gray-800 font-button font-black py-4 sm:py-5 px-6 rounded-2xl shadow-lg border-2 border-gray-200 transition transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
-            >
-              {isLoggingIn ? (
-                <span className="animate-pulse">Conectando...</span>
-              ) : (
-                <>
-                  <Image src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google Logo" width={28} height={28} />
-                  <span className="text-sm sm:text-base">Entrar com o Google</span>
-                </>
-              )}
-            </button>
-            {firebaseConfigurationError && <p className="mt-3 text-xs font-bold text-red-600">{firebaseConfigurationError}</p>}
-            {loginError && <p role="alert" className="mt-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-800">{loginError}</p>}
-          </div>
-        </div>
-      </div>
-    </main>
-  );
+  return <main id="main-content" className="club-page login-page"><section className="login-shell"><div className="login-welcome"><span className="eyebrow">SEU UNIVERSO POKÉMON</span><h1>Sua jornada.<br/>Seu clube.<br/><span>Seu próximo nível.</span></h1><p>O conhecimento evolui. As conquistas ficam.<br/>Comece sua história no PokéClub.</p><Image src="/images/pikachu.png" alt="Pikachu" width={310} height={310} className="login-pikachu" priority/></div><div className="login-form"><span className="login-icon"><ClubIcon name="user" size={30}/></span><span className="eyebrow">BEM-VINDO, TREINADOR</span><h2>Vamos nessa?</h2><p>Entre para guardar suas estrelas, acompanhar seu progresso e continuar sua jornada de onde parou.</p><button className="google-login" onClick={() => void login()} disabled={loggingIn || isLoading || Boolean(user) || !auth}><span className="google-letter" aria-hidden="true">G</span>{loggingIn ? 'Conectando ao Google…' : isLoading || user ? 'Preparando sua conta…' : 'Continuar com Google'}<ClubIcon name="arrow" size={18}/></button>{(error || firebaseConfigurationError) && <p className="login-error" role="alert">{error || firebaseConfigurationError}</p>}<div className="login-benefits"><span><ClubIcon name="shield" size={18}/> Progresso salvo na sua conta</span><span><ClubIcon name="trophy" size={18}/> Conquistas para celebrar</span><span><ClubIcon name="spark" size={18}/> Uma jornada no seu ritmo</span></div><Link href="/" className="login-back">← Explorar o clube</Link></div></section></main>;
 }

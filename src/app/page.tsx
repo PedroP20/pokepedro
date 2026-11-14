@@ -1,5 +1,21 @@
-import { redirect } from "next/navigation";
-
+import Link from 'next/link';
+import Image from 'next/image';
+import ClubIcon, { type ClubIconName } from '@/components/ui/ClubIcon';
+const places: { href: string; icon: ClubIconName; title: string; description: string; color: string; number: string }[] = [
+  { href: '/pokedex', icon: 'dex', title: 'Cada Pokémon, uma descoberta.', description: 'Explore 1.025 espécies, suas formas, tipos e evoluções.', color: 'red', number: '01' },
+  { href: '/academy', icon: 'battle', title: 'Conhecimento é seu melhor ataque.', description: 'Compare tipos e encontre as vantagens do seu time.', color: 'blue', number: '02' },
+  { href: '/play', icon: 'play', title: 'Quem é esse Pokémon?', description: 'Imagens, silhuetas e desafios para treinar sua memória.', color: 'yellow', number: '03' },
+  { href: '/events', icon: 'events', title: 'A aventura tem hora marcada.', description: 'Organize seus próximos encontros no Pokémon GO.', color: 'green', number: '04' },
+];
 export default function Home() {
-  redirect("/events");
+  return <main id="main-content" className="club-page home-page">
+    <section className="home-hero">
+      <div className="home-hero-copy"><span className="hero-tag"><span/> BEM-VINDO AO POKÉCLUB 2.0</span><h1>Seu próximo<br/>nível começa<br/><span>aqui.</span><i aria-hidden="true">✦</i></h1><p>Um lugar para descobrir, jogar e evoluir.<br className="hidden sm:block"/> Seu universo Pokémon, em um só clube.</p><div className="hero-actions"><Link href="/pokedex" className="club-button red">Explorar Pokédex <ClubIcon name="arrow" size={18}/></Link><Link href="/play" className="club-button light"><ClubIcon name="play" size={20}/> Bora jogar</Link></div><div className="home-hero-note"><span className="mini-ball"/> Toda grande jornada começa com uma escolha.</div></div>
+      <div className="home-hero-stage"><div className="hero-orbit"/><span className="hero-spark spark-one">✦</span><span className="hero-spark spark-two">+</span><span className="hero-stage-caption">ESCOLHA A CURIOSIDADE.</span><Image src="/images/pikachu.png" alt="Pikachu dando as boas-vindas ao PokéClub" width={450} height={450} priority className="home-pikachu"/><div className="hero-pokemon-tag"><span>025</span><div><b>Pikachu</b><small>Seu parceiro de aventuras</small></div><ClubIcon name="spark" size={25}/></div><span className="hero-floating-tag"><ClubIcon name="spark" size={16}/> Energia de sobra.</span></div>
+    </section>
+    <div className="home-ribbon"><span><b>1.025</b> Pokémon para descobrir</span><i/><span><b>18</b> tipos para dominar</span><i/><span><b>9</b> gerações de aventuras</span><span className="ribbon-end">E um clube inteiro para explorar <ClubIcon name="arrow" size={17}/></span></div>
+    <section className="home-explore"><div className="section-heading"><div><span className="eyebrow">UM MUNDO DE POSSIBILIDADES</span><h2>O que vamos explorar hoje?</h2></div><p>Escolha seu caminho.<br/>O próximo passo é seu.</p></div><div className="destination-grid">{places.map(place => <Link key={place.href} href={place.href} className={`destination-card ${place.color}`}><div className="destination-top"><span className="destination-icon"><ClubIcon name={place.icon} size={27}/></span><span>{place.number}</span></div><h3>{place.title}</h3><p>{place.description}</p><span className="destination-bottom">{place.href === '/academy' ? 'Ir para Combate' : `Abrir ${place.href === '/play' ? 'Jogar' : place.href === '/events' ? 'Eventos' : 'Pokédex'}`}<ClubIcon name="arrow" size={19}/></span></Link>)}</div></section>
+    <section className="home-next"><div className="home-training"><span className="eyebrow">EVOLUA NO SEU RITMO</span><h2>Pequenos desafios.<br/><span>Grandes evoluções.</span></h2><p>Reconheça uma silhueta, descubra uma fraqueza e ganhe suas estrelas. Cada treino conta para a sua jornada.</p><Link href="/play" className="club-button blue">Começar um treino <ClubIcon name="arrow" size={18}/></Link><Image src="/images/eevee.png" alt="Eevee" width={230} height={230} className="home-eevee"/></div><div className="home-profile-promo"><span className="promo-icon"><ClubIcon name="trophy" size={28}/></span><span className="eyebrow">SUA HISTÓRIA NO CLUBE</span><h2>De iniciante<br/>a mestre Pokémon.</h2><p>Acompanhe sua maestria, celebre conquistas e descubra o quanto você já evoluiu.</p><Link href="/profile">Conhecer meu perfil <ClubIcon name="arrow" size={18}/></Link></div></section>
+    <section className="home-tip"><span className="tip-icon"><ClubIcon name="book" size={25}/></span><div><span className="eyebrow">DICA DO PROFESSOR</span><h3>Dois tipos. Muito mais possibilidades.</h3><p>Um Pokémon pode ter até dois tipos. As fraquezas e resistências se combinam: teste Planta + Venenoso na Central de Combate.</p></div><Link href="/academy" className="club-icon-button" aria-label="Testar combinação no Combate"><ClubIcon name="arrow"/></Link></section>
+  </main>;
 }

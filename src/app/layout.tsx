@@ -5,10 +5,11 @@ import QueryProvider from "@/providers/QueryProvider";
 import AuthWrapper from "@/components/AuthWrapper";
 import Navbar from "@/components/Navbar"; // ⭐ IMPORTAMOS A NAVBAR AQUI!
 import AchievementNotifier from "@/components/AchievementNotifier";
+import ClubFooter from "@/components/ClubFooter";
 
 export const metadata: Metadata = {
-  title: "PokéPedro - Mestre da Pokédex",
-  description: "Treine sua memória com silhuetas, modo digitação e repetição inteligente SRS!",
+  title: { default: "PokéClub 2.0 · Seu universo Pokémon", template: "%s | PokéClub" },
+  description: "Descubra Pokémon, prepare sua estratégia, treine sua memória e acompanhe sua jornada no PokéClub.",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: "/icon.png",
@@ -24,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className="antialiased bg-[#F5F5F5] text-[#1E1E1E] min-h-screen flex flex-col">
+      <body className="antialiased min-h-screen flex flex-col">
         <QueryProvider>
           {/* O AuthWrapper monitora o login em todo o app! */}
           <AuthWrapper>
@@ -33,6 +34,7 @@ export default function RootLayout({
             <Navbar />
             
             {children}
+            <ClubFooter />
             <AchievementNotifier />
             
           </AuthWrapper>

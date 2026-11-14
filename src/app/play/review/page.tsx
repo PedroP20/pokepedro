@@ -1,13 +1,15 @@
 // src/app/play/review/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
+import { useAuthStore } from "@/store/useAuthStore";
 import { useLearningStore } from "@/store/useLearningStore";
 import { Region, REGION_RANGES } from "@/types/pokemon";
 import Image from "next/image";
 import Link from "next/link";
 
 type ReviewTab = 'MISSED' | 'STRUGGLED' | 'DIFFICULT';
+const subscribe = () => () => {};
 
 const REGIONS_LIST = [
   { id: "ALL", name: "Todos" },
@@ -24,19 +26,13 @@ const REGIONS_LIST = [
 ];
 
 export default function ReviewPage() {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
+  const isSyncing = useAuthStore(s => s.isSyncing);
   const { getMissedPokemon, getStruggledPokemon, getDifficultPokemon, toggleDifficultyMark } = useLearningStore();
 
   const [activeTab, setActiveTab] = useState<ReviewTab>('MISSED');
   const [selectedRegion, setSelectedRegion] = useState<Region>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setMounted(true);
-    }, 0);
-    return () => clearTimeout(timer);
-  }, []);
 
   // 1. Coleta os dados de forma otimizada
   const missed = getMissedPokemon();
@@ -65,7 +61,7 @@ export default function ReviewPage() {
   });
 
   return (
-    <main className="experience-page review-page flex-1 flex flex-col items-center justify-start p-4 sm:p-8 max-w-6xl mx-auto w-full font-body">
+    <main id="main-content" className="club-page experience-page review-page flex-1 flex flex-col items-center justify-start w-full font-body">
 
       {/* BOTÃO DE VOLTAR AO INÍCIO */}
       <div className="w-full flex justify-start mb-4">
@@ -161,6 +157,7 @@ export default function ReviewPage() {
               {/* Botão de Desmarcar Dificuldade Rápido (Aparece ao passar o mouse) */}
               {activeTab === 'DIFFICULT' && (
                 <button
+                  disabled={isSyncing}
                   onClick={() => toggleDifficultyMark(stat.id)}
                   className="absolute top-2 right-2 w-6 h-6 bg-white border border-gray-200 rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-sm hover:bg-red-50 text-red-500 z-10"
                   title="Remover das Dificuldades"

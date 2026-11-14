@@ -10,7 +10,9 @@ export default function QueryProvider({ children }: { children: React.ReactNode 
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false, // Evita recarregar a PokéAPI à toa ao mudar de aba
-        staleTime: 1000 * 60 * 5,    // Deixa o cache fresco por 5 minutos
+        staleTime: 1000 * 60 * 60 * 24,
+        gcTime: 1000 * 60 * 60,
+        retry: 1,
       },
     },
   }));

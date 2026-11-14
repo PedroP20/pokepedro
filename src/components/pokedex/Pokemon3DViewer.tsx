@@ -1,8 +1,8 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-namespace */
 
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { getExactModel, parseModelCatalog } from "@/lib/pokemonModels";
 
 declare module "react" {
   namespace JSX {
@@ -26,16 +26,6 @@ declare module "react" {
   }
 }
 
-interface ApiForm {
-  formName: string;
-  model: string;
-}
-
-interface ApiPokemon {
-  id: number;
-  forms: ApiForm[];
-}
-
 interface Pokemon3DViewerProps {
   pokemonId: number;
   name: string;
@@ -47,43 +37,32 @@ interface Pokemon3DViewerProps {
 
 const API_URL = "https://pokemon-3d-api.onrender.com/v1/pokemon";
 
-async function fetch3DModels(): Promise<ApiPokemon[]> {
-  const response = await fetch(API_URL);
+async function fetch3DModels({ signal }: { signal: AbortSignal }) {
+  const response = await fetch(API_URL, { signal: AbortSignal.any([signal, AbortSignal.timeout(12_000)]) });
   if (!response.ok) throw new Error("Não foi possível carregar o catálogo 3D.");
 
-  const data = (await response.json()) as { pokemon?: ApiPokemon[] } | ApiPokemon[];
-  return Array.isArray(data) ? data : data.pokemon || [];
-}
-
-const normalize = (value: string) => value.toLowerCase().replace(/[^a-z0-9]/g, "");
-
-function getExactModel(pokemon: ApiPokemon | undefined, baseName: string, formSlug: string, isShiny: boolean) {
-  if (!pokemon) return undefined;
-
-  const base = normalize(baseName);
-  const selected = normalize(formSlug).replace(base, "") || "regular";
-  const wanted = isShiny
-    ? (selected === "regular" ? "shiny" : `shiny${selected}`)
-    : selected;
-
-  return pokemon.forms.find((form) => normalize(form.formName) === wanted);
+  return parseModelCatalog(await response.json());
 }
 
 export default function Pokemon3DViewer({ pokemonId, name, baseName, formSlug, isShiny, gradient }: Pokemon3DViewerProps) {
-  useEffect(() => {
-    void import("@google/model-viewer");
-  }, []);
+  const viewerRuntime = useQuery({
+    queryKey: ["modelViewerRuntime"],
+    queryFn: async () => { await import("@google/model-viewer"); return true; },
+    staleTime: Infinity,
+    retry: 1,
+  });
 
   const { data: models = [], isLoading, isError } = useQuery({
     queryKey: ["pokemon3DModels"],
     queryFn: fetch3DModels,
     staleTime: 1000 * 60 * 60,
+    retry: 1,
   });
 
   const pokemon = models.find((item) => item.id === pokemonId);
   const model = getExactModel(pokemon, baseName, formSlug, isShiny);
 
-  if (isLoading) {
+  if (isLoading || viewerRuntime.isLoading) {
     return (
       <div className="h-[340px] sm:h-[420px] flex flex-col items-center justify-center gap-3 text-white">
         <div className="w-11 h-11 border-4 border-white/80 border-t-transparent rounded-full animate-spin" />
@@ -92,7 +71,7 @@ export default function Pokemon3DViewer({ pokemonId, name, baseName, formSlug, i
     );
   }
 
-  if (isError || !model) {
+  if (isError || viewerRuntime.isError || !model) {
     return (
       <div className="h-[340px] sm:h-[420px] flex flex-col items-center justify-center gap-3 px-8 text-center text-white">
         <span className="text-5xl">📦</span>

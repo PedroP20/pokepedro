@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { EVENT_CATEGORIES, type GameEvent } from '@/lib/events';
+import { eventCategory, type GameEvent } from '@/lib/events';
 
 // Artwork-inspired accents, with dark text colors for readable badges.
 const PALETTES: Record<number, [string, string]> = {
@@ -25,7 +25,7 @@ export function eventArtIds(event: GameEvent) {
   return [...new Set([...(event.featured?.map(p => p.id) || []), ...(event.maxBattles?.map(p => p.id) || []), ...(event.imageId ? [event.imageId] : [])])].slice(0, 3);
 }
 export function eventTheme(event: GameEvent): CSSProperties {
-  const [accent, tint] = PALETTES[event.imageId ?? 0] ?? [EVENT_CATEGORIES.find(c => c.id === event.categoryId)?.color ?? '#1b4f9c', '#edf3fc'];
+  const [accent, tint] = PALETTES[event.imageId ?? 0] ?? [eventCategory(event).color, '#edf3fc'];
   return { '--event-accent': accent, '--event-tint': tint } as CSSProperties;
 }
 export function eventHighlights(event: GameEvent) {

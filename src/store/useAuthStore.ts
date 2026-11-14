@@ -10,6 +10,7 @@ let authUnsubscribe: Unsubscribe | null = null;
 interface AuthState {
   user: User | null;
   isLoading: boolean;
+  isSyncing: boolean;
   initAuthListener: () => void;
   logout: () => Promise<void>;
 }
@@ -17,6 +18,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isLoading: true, // O app começa "carregando" para não piscar a tela errada
+  isSyncing: false,
 
   initAuthListener: () => {
     if (authUnsubscribe) return;
@@ -31,14 +33,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         useLearningStore.getState().clearLearningData();
         useAchievementStore.getState().clearLocalProgress();
       }
-      set({ user: currentUser, isLoading: Boolean(currentUser) });
+      // Authentication unlocks the shell immediately; cloud progress has its own state.
+      set({ user: currentUser, isLoading: false, isSyncing: Boolean(currentUser) });
       
       if (currentUser) {
         // Se logou, baixa as estrelas do banco de dados
         await useLearningStore.getState().syncFromFirebase(currentUser.uid);
         if (get().user?.uid !== currentUser.uid) return;
         await useAchievementStore.getState().syncFromFirebase(currentUser.uid);
-        if (get().user?.uid === currentUser.uid) set({ isLoading: false });
+        if (get().user?.uid === currentUser.uid) set({ isSyncing: false });
       } else {
         // Se saiu, limpa a memória
         useLearningStore.getState().clearLearningData();
@@ -55,6 +58,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await signOut(auth);
     useLearningStore.getState().clearLearningData();
     useAchievementStore.getState().clearLocalProgress();
-    set({ user: null });
+    set({ user: null, isLoading: false, isSyncing: false });
   },
 }));
